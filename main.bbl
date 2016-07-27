@@ -1,0 +1,208 @@
+\begin{thebibliography}{10}
+
+\bibitem{WALA2}
+Wala - t.j. watson libraries for analysis.
+
+\bibitem{Bodin:2014}
+Martin Bodin, Arthur Chargueraud, Daniele Filaretti, Philippa Gardner, Sergio
+  Maffeis, Daiva Naudziuniene, Alan Schmitt, and Gareth Smith.
+\newblock A trusted mechanised javascript specification.
+\newblock In {\em Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on
+  Principles of Programming Languages}, POPL '14, pages 87--100, New York, NY,
+  USA, 2014. ACM.
+
+\bibitem{Bogdanas:2015}
+Denis Bogdanas and Grigore Ro\c{s}u.
+\newblock K-java: A complete semantics of java.
+\newblock In {\em Proceedings of the 42Nd Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '15, pages 445--456, New York,
+  NY, USA, 2015. ACM.
+
+\bibitem{chargueraud-13-pretty}
+Arthur Chargu{\'e}raud.
+\newblock Pretty-big-step semantics.
+\newblock In Matthias Felleisen and Philippa Gardner, editors, {\em Programming
+  Languages and Systems}, volume 7792 of {\em Lecture Notes in Computer
+  Science}, pages 41--60. Springer Berlin Heidelberg, March 2013.
+
+\bibitem{Clavel:2007}
+Manuel Clavel, Francisco Dur\'{a}n, Steven Eker, Patrick Lincoln, Narciso
+  Mart\'{\i}-Oliet, Jos{\'e} Meseguer, and Carolyn Talcott.
+\newblock {\em All About Maude - a High-performance Logical Framework: How to
+  Specify, Program and Verify Systems in Rewriting Logic}.
+\newblock Springer-Verlag, Berlin, Heidelberg, 2007.
+
+\bibitem{WALA}
+Julian Dolby and Manu Sridharan.
+\newblock Static and dynamic program analysis using wala.
+\newblock online, 2010.
+
+\bibitem{Drossopoulou:1999}
+S~Drossopoulou and S~Eisenbach.
+\newblock {\em Towards an Operational Semantics and Proof of Type Soundness for
+  Java}.
+\newblock Springer-Verlag, 1999.
+
+\bibitem{drossopoulou1998towards}
+Sophia Drossopoulou and Susan Eisenbach.
+\newblock Towards an operational semantics and proof of type soundness for
+  java.
+\newblock {\em Formal Syntax and Semantics of Java}, 1523, 1998.
+
+\bibitem{EcmaScript}
+{ECMA International}.
+\newblock {\em Standard ECMA-262 - ECMAScript Language Specification}.
+\newblock 5.1 edition, June 2011.
+
+\bibitem{international2015ecmascript}
+{ECMA International}.
+\newblock {\em ECMAScript 2015 Language Specification}.
+\newblock Geneva, 6th edition, 2015.
+
+\bibitem{Ellison:2012}
+Chucky Ellison and Grigore Rosu.
+\newblock An executable formal semantics of c with applications.
+\newblock In {\em Proceedings of the 39th Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '12, pages 533--544, New York,
+  NY, USA, 2012. ACM.
+
+\bibitem{Gardner:2012}
+Philippa~Anne Gardner, Sergio Maffeis, and Gareth~David Smith.
+\newblock Towards a program logic for javascript.
+\newblock In {\em Proceedings of the 39th Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '12, pages 31--44, New York,
+  NY, USA, 2012. ACM.
+
+\bibitem{Lecture2}
+Phillipa Gardner.
+\newblock Models of computation, lecture 2.
+\newblock University Lecture, 2010.
+
+\bibitem{Guha:2010}
+Arjun Guha, Claudiu Saftoiu, and Shriram Krishnamurthi.
+\newblock The essence of javascript.
+\newblock In {\em Proceedings of the 24th European Conference on
+  Object-oriented Programming}, ECOOP'10, pages 126--150, Berlin, Heidelberg,
+  2010. Springer-Verlag.
+
+\bibitem{Gurevich:1992}
+Yuri Gurevich and James~K. Huggins.
+\newblock The semantics of the c programming language.
+\newblock In {\em Selected Papers from the Workshop on Computer Science Logic},
+  CSL '92, pages 274--308, London, UK, UK, 1993. Springer-Verlag.
+
+\bibitem{Harper:1993}
+Robert Harper, Furio Honsell, and Gordon Plotkin.
+\newblock A framework for defining logics.
+\newblock {\em J. ACM}, 40(1):143--184, January 1993.
+
+\bibitem{Harper:2000}
+Robert Harper and Christopher Stone.
+\newblock Proof, language, and interaction.
+\newblock chapter A Type-theoretic Interpretation of Standard ML, pages
+  341--387. MIT Press, Cambridge, MA, USA, 2000.
+
+\bibitem{unevalizer2012}
+Simon~Holm Jensen, Peter~A. Jonsson, and Anders M\o{}ller.
+\newblock Remedying the eval that men do.
+\newblock In {\em Proc. 21st International Symposium on Software Testing and
+  Analysis (ISSTA)}, July 2012.
+
+\bibitem{KleinN-TOPLAS}
+Gerwin Klein and Tobias Nipkow.
+\newblock A machine-checked model for a {Java}-like language, virtual machine
+  and compiler.
+\newblock {\em ACM Transactions on Programming Languages and Systems},
+  28(4):619--695, 2006.
+
+\bibitem{Lee:2007}
+Daniel~K. Lee, Karl Crary, and Robert Harper.
+\newblock Towards a mechanized metatheory of standard ml.
+\newblock In {\em Proceedings of the 34th Annual ACM SIGPLAN-SIGACT Symposium
+  on Principles of Programming Languages}, POPL '07, pages 173--184, New York,
+  NY, USA, 2007. ACM.
+
+\bibitem{Leroy-Compcert-CACM}
+Xavier Leroy.
+\newblock Formal verification of a realistic compiler.
+\newblock {\em Communications of the ACM}, 52(7):107--115, 2009.
+
+\bibitem{Livshits:2016:Misc}
+Ben Livshits.
+\newblock {JSIR -- an intermediate representation for JavaScript analysis}, May
+  2016.
+
+\bibitem{Maffeis:2008}
+Sergio Maffeis, John~C. Mitchell, and Ankur Taly.
+\newblock An operational semantics for javascript.
+\newblock In {\em Proceedings of the 6th Asian Symposium on Programming
+  Languages and Systems}, APLAS '08, pages 307--325, Berlin, Heidelberg, 2008.
+  Springer-Verlag.
+
+\bibitem{Necula2002}
+George~C. Necula, Scott McPeak, Shree~P. Rahul, and Westley Weimer.
+\newblock {\em Compiler Construction: 11th International Conference, CC 2002
+  Held as Part of the Joint European Conferences on Theory and Practice of
+  Software, ETAPS 2002 Grenoble, France, April 8--12, 2002 Proceedings},
+  chapter CIL: Intermediate Language and Tools for Analysis and Transformation
+  of C Programs, pages 213--228.
+\newblock Springer Berlin Heidelberg, Berlin, Heidelberg, 2002.
+
+\bibitem{norrish:1998}
+Michael Norrish.
+\newblock C formalised in hol.
+\newblock Technical Report UCAM-CL-TR-453, University of Cambridge - Computer
+  Laboratory, December 1998.
+
+\bibitem{Park:2015}
+Daejun Park, Andrei Stef\u{a}nescu, and Grigore Ro\c{s}u.
+\newblock Kjs: A complete formal semantics of javascript.
+\newblock In {\em Proceedings of the 36th ACM SIGPLAN Conference on Programming
+  Language Design and Implementation}, PLDI 2015, pages 346--356, New York, NY,
+  USA, 2015. ACM.
+
+\bibitem{Paulson1989}
+Lawrence~C. Paulson.
+\newblock The foundation of a generic theorem prover.
+\newblock {\em Journal of Automated Reasoning}, 5(3):363--397, 1989.
+
+\bibitem{Pfenning98guide}
+Frank Pfenning and Carsten Sch{\"u}rmann.
+\newblock {\em Twelf User's Guide}, 1.2 edition, September 1998.
+\newblock Available as Technical Report CMU-CS-98-173, Carnegie Mellon
+  University.
+
+\bibitem{PittsAM:opespe}
+A.~M. Pitts.
+\newblock Operational semantics and program equivalence.
+\newblock In G.~Barthe, P.~Dybjer, and J.~Saraiva, editors, {\em Applied
+  Semantics, Advanced Lectures}, volume 2395 of {\em Lecture Notes in Computer
+  Science, Tutorial}, pages 378--412. Springer-Verlag, 2002.
+\newblock International Summer School, {APPSEM} 2000, Caminha, Portugal,
+  September 9--15, 2000.
+
+\bibitem{Politz:2012}
+Joe~Gibbs Politz, Matthew~J. Carroll, Benjamin~S. Lerner, Justin Pombrio, and
+  Shriram Krishnamurthi.
+\newblock A tested semantics for getters, setters, and eval in javascript.
+\newblock In {\em Proceedings of the 8th Symposium on Dynamic Languages}, DLS
+  '12, pages 1--16, New York, NY, USA, 2012. ACM.
+
+\bibitem{LectureBS}
+Grigore Rosu.
+\newblock Big-step structural operational semantics (big-step sos).
+\newblock University Lecture, 2011.
+
+\bibitem{rosu-serbanuta-2010-jlap}
+Grigore Ro{\c s}u and Traian~Florin {\c S}erb{\u a}nu{\c t}{\u a}.
+\newblock An overview of the {K} semantic framework.
+\newblock {\em Journal of Logic and Algebraic Programming}, 79(6):397--434,
+  2010.
+
+\bibitem{k-primer-2013-v32}
+Traian~Florin {\c S}erb{\u a}nu{\c t}a, Andrei Arusoaie, David Lazar, Chucky
+  Ellison, Dorel Lucanu, and Grigore Ro{\c s}u.
+\newblock The {K} primer (version 3.2).
+\newblock Technical report.
+
+\end{thebibliography}

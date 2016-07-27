@@ -1,0 +1,66 @@
+\BOOKMARK [0][]{chapter.3}{1 Introduction}{}% 1
+\BOOKMARK [1][]{section.4}{1.1 What is JavaScript}{chapter.3}% 2
+\BOOKMARK [1][]{section.5}{1.2 Verification and its Importance}{chapter.3}% 3
+\BOOKMARK [1][]{section.6}{1.3 JavaScript Verification}{chapter.3}% 4
+\BOOKMARK [1][]{section.7}{1.4 Outline of This Report}{chapter.3}% 5
+\BOOKMARK [0][]{chapter.8}{2 Background}{}% 6
+\BOOKMARK [1][]{section.9}{2.1 History of Mechanized Specifications}{chapter.8}% 7
+\BOOKMARK [2][]{subsection.10}{2.1.1 ML}{section.9}% 8
+\BOOKMARK [2][]{subsection.11}{2.1.2 C}{section.9}% 9
+\BOOKMARK [2][]{subsection.12}{2.1.3 Java}{section.9}% 10
+\BOOKMARK [2][]{subsection.13}{2.1.4 JavaScript}{section.9}% 11
+\BOOKMARK [1][]{section.14}{2.2 Operational Semantics}{chapter.8}% 12
+\BOOKMARK [2][]{subsection.15}{2.2.1 Small Step}{section.14}% 13
+\BOOKMARK [2][]{subsection.17}{2.2.2 Big Step}{section.14}% 14
+\BOOKMARK [2][]{subsection.18}{2.2.3 Pretty Big Step}{section.14}% 15
+\BOOKMARK [1][]{section.19}{2.3 JavaScript Specifications}{chapter.8}% 16
+\BOOKMARK [2][]{subsection.20}{2.3.1 JS Logic}{section.19}% 17
+\BOOKMARK [2][]{subsection.21}{2.3.2 JSCert and JSRef}{section.19}% 18
+\BOOKMARK [2][]{subsection.22}{2.3.3 JSVerify}{section.19}% 19
+\BOOKMARK [2][]{subsection.23}{2.3.4 Intermediate Languages for JavaScript Verification}{section.19}% 20
+\BOOKMARK [1][]{section.26}{2.4 Operational Semantics and Specification in Action}{chapter.8}% 21
+\BOOKMARK [2][]{subsection.27}{2.4.1 While Loop}{section.26}% 22
+\BOOKMARK [2][]{subsection.48}{2.4.2 Internal JavaScript Function: Get}{section.26}% 23
+\BOOKMARK [0][]{chapter.81}{3 This Project and Concurrent Progress}{}% 24
+\BOOKMARK [1][]{section.82}{3.1 ES5 Strict and Core ES5 Strict}{chapter.81}% 25
+\BOOKMARK [1][]{section.83}{3.2 Contrast JSIL Without and With Descriptors}{chapter.81}% 26
+\BOOKMARK [1][]{section.116}{3.3 Scope and Aims}{chapter.81}% 27
+\BOOKMARK [1][]{section.117}{3.4 Testing}{chapter.81}% 28
+\BOOKMARK [0][]{chapter.118}{4 JavaScript}{}% 29
+\BOOKMARK [1][]{section.119}{4.1 Definition of Objects}{chapter.118}% 30
+\BOOKMARK [1][]{section.120}{4.2 Categories of Properties}{chapter.118}% 31
+\BOOKMARK [2][]{subsection.121}{4.2.1 Descriptors}{section.120}% 32
+\BOOKMARK [2][]{subsection.122}{4.2.2 Attributes}{section.120}% 33
+\BOOKMARK [1][]{section.123}{4.3 Prototype Inheritance}{chapter.118}% 34
+\BOOKMARK [1][]{section.124}{4.4 Initial Heap}{chapter.118}% 35
+\BOOKMARK [1][]{section.125}{4.5 Function Objects}{chapter.118}% 36
+\BOOKMARK [0][]{chapter.126}{5 JSIL}{}% 37
+\BOOKMARK [1][]{section.127}{5.1 Starting JSIL Syntax}{chapter.126}% 38
+\BOOKMARK [1][]{section.128}{5.2 Final JSIL Syntax}{chapter.126}% 39
+\BOOKMARK [1][]{section.129}{5.3 Semantics}{chapter.126}% 40
+\BOOKMARK [1][]{section.130}{5.4 Heap Model}{chapter.126}% 41
+\BOOKMARK [0][]{chapter.131}{6 Array Library}{}% 42
+\BOOKMARK [1][]{section.132}{6.1 Arrays in JavaScript}{chapter.131}% 43
+\BOOKMARK [2][]{subsection.133}{6.1.1 Indices and Length}{section.132}% 44
+\BOOKMARK [2][]{subsection.134}{6.1.2 DefineOwnProperty}{section.132}% 45
+\BOOKMARK [2][]{subsection.138}{6.1.3 Array Creation}{section.132}% 46
+\BOOKMARK [2][]{subsection.145}{6.1.4 A Working Example}{section.132}% 47
+\BOOKMARK [1][]{section.154}{6.2 Array Library Functions}{chapter.131}% 48
+\BOOKMARK [2][]{subsection.155}{6.2.1 Array Object Constructor Functions}{section.154}% 49
+\BOOKMARK [2][]{subsection.161}{6.2.2 Array Object Prototype Functions}{section.154}% 50
+\BOOKMARK [2][]{subsection.184}{6.2.3 Filter In Detail}{section.154}% 51
+\BOOKMARK [2][]{subsection.266}{6.2.4 Sort In Detail}{section.154}% 52
+\BOOKMARK [0][]{chapter.309}{7 Arguments Object}{}% 53
+\BOOKMARK [1][]{section.310}{7.1 Full ES5}{chapter.309}% 54
+\BOOKMARK [2][]{subsection.311}{7.1.1 Internal Methods}{section.310}% 55
+\BOOKMARK [2][]{subsection.312}{7.1.2 CreateArgumentObject Algorithm}{section.310}% 56
+\BOOKMARK [1][]{section.313}{7.2 ES5 Strict}{chapter.309}% 57
+\BOOKMARK [2][]{subsection.314}{7.2.1 CreateArgumentObject Algorithm}{section.313}% 58
+\BOOKMARK [2][]{subsection.315}{7.2.2 JSIL Implementation}{section.313}% 59
+\BOOKMARK [1][]{section.351}{7.3 A Working Example}{chapter.309}% 60
+\BOOKMARK [0][]{chapter.365}{8 String Library}{}% 61
+\BOOKMARK [0][]{chapter.366}{9 Testing}{}% 62
+\BOOKMARK [1][]{section.367}{9.1 Array Library}{chapter.366}% 63
+\BOOKMARK [1][]{section.368}{9.2 Arguments Object}{chapter.366}% 64
+\BOOKMARK [1][]{section.369}{9.3 String Library}{chapter.366}% 65
+\BOOKMARK [0][]{chapter.370}{10 Conclusion}{}% 66
