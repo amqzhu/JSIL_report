@@ -36,46 +36,48 @@
 \contentsline {section}{\numberline {3.4}Testing}{15}{section.117}
 \contentsline {chapter}{\numberline {4}JavaScript}{16}{chapter.118}
 \contentsline {section}{\numberline {4.1}Definition of Objects}{16}{section.119}
-\contentsline {section}{\numberline {4.2}Categories of Properties}{16}{section.120}
-\contentsline {subsection}{\numberline {4.2.1}Descriptors}{17}{subsection.121}
-\contentsline {subsection}{\numberline {4.2.2}Attributes}{17}{subsection.122}
-\contentsline {section}{\numberline {4.3}Prototype Inheritance}{17}{section.123}
-\contentsline {section}{\numberline {4.4}Initial Heap}{17}{section.124}
-\contentsline {section}{\numberline {4.5}Function Objects}{17}{section.125}
-\contentsline {chapter}{\numberline {5}JSIL}{18}{chapter.126}
-\contentsline {section}{\numberline {5.1}Starting JSIL Syntax}{18}{section.127}
-\contentsline {section}{\numberline {5.2}Final JSIL Syntax}{19}{section.128}
-\contentsline {section}{\numberline {5.3}Semantics}{19}{section.129}
-\contentsline {section}{\numberline {5.4}Heap Model}{19}{section.130}
-\contentsline {chapter}{\numberline {6}Array Library}{20}{chapter.131}
-\contentsline {section}{\numberline {6.1}Arrays in JavaScript}{20}{section.132}
-\contentsline {subsection}{\numberline {6.1.1}Indices and Length}{20}{subsection.133}
-\contentsline {subsection}{\numberline {6.1.2}DefineOwnProperty}{21}{subsection.134}
-\contentsline {paragraph}{Length}{21}{section*.135}
-\contentsline {paragraph}{Index}{21}{section*.136}
-\contentsline {paragraph}{Default}{22}{section*.137}
-\contentsline {subsection}{\numberline {6.1.3}Array Creation}{22}{subsection.138}
-\contentsline {subsection}{\numberline {6.1.4}A Working Example}{22}{subsection.145}
-\contentsline {section}{\numberline {6.2}Array Library Functions}{23}{section.154}
-\contentsline {subsection}{\numberline {6.2.1}Array Object Constructor Functions}{23}{subsection.155}
-\contentsline {subsection}{\numberline {6.2.2}Array Object Prototype Functions}{23}{subsection.161}
-\contentsline {subsection}{\numberline {6.2.3}Filter In Detail}{26}{subsection.184}
-\contentsline {subsubsection}{ECMAScript Standard}{26}{section*.185}
-\contentsline {subsubsection}{Pretty Big Step Operational Semantics}{27}{section*.198}
-\contentsline {subsubsection}{JSIL Code}{27}{section*.199}
-\contentsline {subsection}{\numberline {6.2.4}Sort In Detail}{28}{subsection.266}
-\contentsline {subsubsection}{Sorting Algorithms}{29}{section*.267}
-\contentsline {chapter}{\numberline {7}Arguments Object}{31}{chapter.309}
-\contentsline {section}{\numberline {7.1}Full ES5}{31}{section.310}
-\contentsline {subsection}{\numberline {7.1.1}Internal Methods}{31}{subsection.311}
-\contentsline {subsection}{\numberline {7.1.2}\textit {CreateArgumentObject} Algorithm}{31}{subsection.312}
-\contentsline {section}{\numberline {7.2}ES5 Strict}{32}{section.313}
-\contentsline {subsection}{\numberline {7.2.1}\textit {CreateArgumentObject} Algorithm}{32}{subsection.314}
-\contentsline {subsection}{\numberline {7.2.2}JSIL Implementation}{32}{subsection.315}
-\contentsline {section}{\numberline {7.3}A Working Example}{33}{section.351}
-\contentsline {chapter}{\numberline {8}String Library}{34}{chapter.365}
-\contentsline {chapter}{\numberline {9}Testing}{35}{chapter.366}
-\contentsline {section}{\numberline {9.1}Array Library}{35}{section.367}
-\contentsline {section}{\numberline {9.2}Arguments Object}{35}{section.368}
-\contentsline {section}{\numberline {9.3}String Library}{35}{section.369}
-\contentsline {chapter}{\numberline {10}Conclusion}{36}{chapter.370}
+\contentsline {section}{\numberline {4.2}Properties}{17}{section.147}
+\contentsline {subsection}{\numberline {4.2.1}Attributes}{17}{subsection.148}
+\contentsline {subsection}{\numberline {4.2.2}Descriptors}{18}{subsection.149}
+\contentsline {subsection}{\numberline {4.2.3}Internal Properties}{18}{subsection.150}
+\contentsline {subsection}{\numberline {4.2.4}Optional Internal Properties}{20}{subsection.151}
+\contentsline {section}{\numberline {4.3}Prototype Inheritance}{20}{section.152}
+\contentsline {section}{\numberline {4.4}Initial Heap}{20}{section.153}
+\contentsline {section}{\numberline {4.5}Function Objects}{20}{section.154}
+\contentsline {chapter}{\numberline {5}JSIL}{21}{chapter.155}
+\contentsline {section}{\numberline {5.1}Starting JSIL Syntax}{21}{section.156}
+\contentsline {section}{\numberline {5.2}Final JSIL Syntax}{22}{section.157}
+\contentsline {section}{\numberline {5.3}Heap Model}{22}{section.158}
+\contentsline {chapter}{\numberline {6}Object.Prototype Library}{23}{chapter.159}
+\contentsline {section}{\numberline {6.1}Object Prototype Functions}{23}{section.160}
+\contentsline {chapter}{\numberline {7}Arrays in JavaScript}{24}{chapter.168}
+\contentsline {section}{\numberline {7.1}Indices and Length}{24}{section.169}
+\contentsline {section}{\numberline {7.2}DefineOwnProperty}{25}{section.170}
+\contentsline {paragraph}{Length}{25}{section*.171}
+\contentsline {paragraph}{Index}{25}{section*.172}
+\contentsline {paragraph}{Default}{26}{section*.173}
+\contentsline {section}{\numberline {7.3}Array Creation}{26}{section.174}
+\contentsline {section}{\numberline {7.4}A Working Example}{27}{section.181}
+\contentsline {chapter}{\numberline {8}Array Library}{28}{chapter.190}
+\contentsline {section}{\numberline {8.1}Array Object Constructor Functions}{28}{section.191}
+\contentsline {section}{\numberline {8.2}Array Object Prototype Functions}{28}{section.197}
+\contentsline {section}{\numberline {8.3}Filter In Detail}{31}{section.220}
+\contentsline {subsection}{\numberline {8.3.1}ECMAScript Standard}{31}{subsection.221}
+\contentsline {subsection}{\numberline {8.3.2}Pretty Big Step Operational Semantics}{32}{subsection.234}
+\contentsline {subsection}{\numberline {8.3.3}JSIL Code}{32}{subsection.235}
+\contentsline {section}{\numberline {8.4}Sort In Detail}{33}{section.302}
+\contentsline {subsection}{\numberline {8.4.1}Sorting Algorithms}{34}{subsection.303}
+\contentsline {chapter}{\numberline {9}Arguments Object}{36}{chapter.345}
+\contentsline {section}{\numberline {9.1}Full ES5}{36}{section.346}
+\contentsline {subsection}{\numberline {9.1.1}Internal Methods}{36}{subsection.347}
+\contentsline {subsection}{\numberline {9.1.2}\textit {CreateArgumentObject} Algorithm}{36}{subsection.348}
+\contentsline {section}{\numberline {9.2}ES5 Strict}{37}{section.349}
+\contentsline {subsection}{\numberline {9.2.1}\textit {CreateArgumentObject} Algorithm}{37}{subsection.350}
+\contentsline {subsection}{\numberline {9.2.2}JSIL Implementation}{37}{subsection.351}
+\contentsline {section}{\numberline {9.3}A Working Example}{38}{section.387}
+\contentsline {chapter}{\numberline {10}String Library}{39}{chapter.401}
+\contentsline {chapter}{\numberline {11}Testing}{40}{chapter.402}
+\contentsline {section}{\numberline {11.1}Array Library}{40}{section.403}
+\contentsline {section}{\numberline {11.2}Arguments Object}{40}{section.404}
+\contentsline {section}{\numberline {11.3}String Library}{40}{section.405}
+\contentsline {chapter}{\numberline {12}Conclusion}{41}{chapter.406}

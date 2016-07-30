@@ -467,12 +467,142 @@ The interactive testing framework is available online from inside the Imperial n
 \section{Definition of Objects}
 JavaScript is a language that relies heavily and primarily on Objects, which are collections of \textbf{properties}, each with zero or more \textbf{attributes} that define the property \cite{EcmaScript}. Properties can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned. Objects can be created via literal notation or via Object constructors that create and initialize the Objects, and then establishes the prototype chain for the Object \cite{EcmaScript}. Within an object, there are two types of properties - own properties and inherited properties. Own properties are those defined within the current object, and inherited properties are those defined in the object's prototype chain.
 
-\section{Categories of Properties}
-There are two types of properties in JavaScript - named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined names with JavaScript constructs, called descriptors, whereas internal properties do not have user-defined names. Data properties associate a name with a JavaScript value, as well as a set of boolean values that specify whether this property's value can be altered, whether the property is used in for-in enumeration, and whether it can be deleted or changed into an accessor property. Accessor properties associate a name with two JavaScript functions, a getter and a setters, in addition to a similar set of boolean values that specify whether the property is used in for-in enumeration and whether it can be deleted or changed into a data property. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the prototype property mentioned above, and the object's class, whether more properties can be added to the ojbect, the default value of the object, and so on. There are an additional twelve internal properties that only apply to certain types of objects, for example, Function Objects alone always have the [[Call]] internal method.
+Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after they are created. For example, a Person class is defined in Java below. This class has two attributes - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another attribute, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, any Object of Person class cannot possibly have an attribute of \textit{gender}.
+
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstlisting}
+public class Person {
+    private String name;
+    private int age;
+    
+    public Person(String n, int a) {
+        name = n;
+        age = a;
+    }
+    
+    public static void main(String[] args) {
+        Person bob = new Person("Bob", 30);
+        bob.age = 31;
+        bob.gender = "male";
+    }
+}
+\end{lstlisting}
+\end{adjustwidth}
+
+In JavaScript below, a similar Person class is defined, intentionally using similar syntax as the Java code above for comparison. The \textit{alice} Object is created on line 8 with a name String as "Alice", and an age of 35 years old. When \textit{alice} celebrates her birthday, her age can be altered using dot notation similar to that of \textit{bob}. When we want to specify the gender of \textit{alice} however, using code on line 10, JavaScript would throw no error and simply change the \textit{alice} Object as required.
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstlisting}
+class Person {
+	constructor(n, a) {
+		this.name = n;
+		this.age = a;
+	}
+}
+
+var alice = new Person("Alice", 35);
+alice.age = 36;
+alice.gender = "female";
+\end{lstlisting}
+\end{adjustwidth}
+
+It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer accidentally makes changes to an Object in this manner, no error message will alert him or her of this, and thus a verification tool would come in extremely handy.
+
+\section{Properties}
+There are two types of properties in JavaScript - named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined name strings with JavaScript descriptors, whereas internal properties do not have user-defined names. Data properties associate a name with a JavaScript value, as well as a set of boolean values that specify additional information about the property. These boolean values will be explained in further detail in section~\ref{attributes}. Accessor properties associate a name with two JavaScript functions, a getter and a setter, in addition to a similar set of boolean values. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the prototype property mentioned above, and the object's class, and so on. There are an additional twelve internal properties that only apply to certain types of objects, for example, Function Objects alone always have the [[Call]] internal method.
+
+\subsection{Attributes}\label{sec:attributes}
+Both categories of named JavaScript properties have attributes that serve to describe the state of the property. Data properties and accessor properties share two of these attributes, [[Enumerable]] and [[Configurable]], while they differ in the other two. Data properties have the [[Value]] and [[Writable]] attributes, while accessor properties have [[Get]] and [[Set]].
+
+\begin{description}
+\item[Value] The [[Value]] attribute can take on any of the ECMAScript types, and it represents what is intuitively the value of the property. Valid types are listed below, and the default value is Undefined.
+\begin{multicols}{2}
+\begin{itemize}
+	\item Undefined
+	\item Null
+	\item Boolean
+	\item String
+	\item Number
+	\item Object
+	\item Reference Specification
+	\item List Specification
+	\item Completion Specification
+	\item Lexical Environment Specification
+	\item Environment Record Specification
+\end{itemize}
+\end{multicols}
+
+\item[Writable] The [[Writable]] attribute is a Boolean value, and it describes whether this property's [[Value]] attribute can be altered using the [[Put]] internal method. The default value is False.
+
+\item[Get] The [[Get]] attribute can be of the Function Object type, but the default value is Undefined. When the property's getter is invoked, the [[Call]] internal method of the Function Object is called with no arguments in order to return the property's value.
+
+\item[Set] The [[Set]] attribute can be of the Function Object type, but the default value is Undefined. When the property's setter is invoked, the [[Call]] internal method of the Function Object is called with an appropriate assignment value for the property. This setter function call may or may not alter the result of the getter function call.
+
+\item[Enumerable] The [[Enumerable]] attribute is a Boolean value. If true, the property will be used in for-in enumeration. The default value is false.
+
+\item[Configurable] The [[Configurable]] attribute is a Boolean value, and it describes whether the property can be deleted, whether the property's attributes can be altered, and whether a data property can be changed into an accessor property and vice versa. The default value is False.
+\end{description}
 
 \subsection{Descriptors}
+Descriptors are a JavaScript language construct used to describe properties. 
 
-\subsection{Attributes}
+\subsection{Internal Properties}
+Internal properties describe additional inherent information about Objects, and they cannot be directly accessed by the programmer. The following internal properties hold one or multiple particular types of JavaScript values, and their values can be modified through implementation-specific helper functions.
+
+\begin{description}
+\item[Prototype] The [[Prototype]] property can be of Object type or Null, and it represents the prototype for the current Object. This property is accessed in the prototype chain to determine inheritance behavior. The prototype chain of any Object must be of finite length. 
+
+\item[Class] The [[Class]] property is a String value that specifies the classification of the current Object. The value of [[Class]] for built-in JavaScript Objects are the following.
+\begin{multicols}{3}
+\begin{itemize}
+	\item "Arguments"
+	\item "Array"
+	\item "Boolean"
+	\item "Date"
+	\item "Error"
+	\item "Function"
+	\item "JSON"
+	\item "Math"
+	\item "Number"
+	\item "Object"
+	\item "RegExp"
+	\item "String"
+\end{itemize}
+\end{multicols}
+
+\item[Extensible] The [[Extensible]] property is a Boolean value that indicates whether additional named own properties can be added to the current Object, and once it has been changed to False, it cannot be changed back to True. If the value is False, the values for [[Prototype]] and [[Class]] of the current Object also can no longer be altered. A JavaScript Object would behave more closely to a class-based Object if its [[Extensible]] property is False.
+\end{description}
+
+The following internal properties represent internal methods of the same name, consisting of predefined procedures that operate on the Object in some manner.
+\begin{description}
+\item[GetOwnProperty] The [[GetOwnProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists in the Object itself, and returns Undefined if it does not exist.
+
+\item[GetProperty] The [[GetProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists at any stage within the Object's prototype chain, and returns Undefined if it does not exist. [[GetProperty]] is recursively defined - it first calls the [[GetOwnProperty]] internal method on the current Object, and if the property is not found, it retrieves the value of the [[Prototype]] internal property of the current Object, and calls [[GetProperty]] on the prototype, until the property is found or the entire prototype chain is traversed.
+
+\item[Get] The [[Get]] internal method takes a property name as input, and it calls the [[GetProperty]] internal method using the same property name as input. If [[GetProperty]] returns Undefined, [[Get]] will return Undefined. Otherwise, [[Get]] takes the descriptor returned by [[GetProperty]], and will return the value of the descriptor if it is a data descriptor, or call the getter if it is an accessor descriptor.
+
+\item[CanPut] The [[CanPut]] internal method takes a property name as input. It first calls the [[GetOwnProperty]] and [[GetProperty]] internal methods to to find the descriptor corresponding to the property. It then returns a Boolean value for whether the property's value can be changed, either based on the [[Writable]] attribute if the descriptor found earlier is a data descriptor, or on the [[Setter]] attribute if the descriptor is an accessor descriptor.
+
+\item[Put] The [[Put]] internal method takes a property name, a JavaScript value, and a Boolean flag for error handling as input. It first calls the [[CanPut]] internal method to determine if a value can be set for the given property. If so, it calls [[GetOwnProperty]] and [[GetProperty]] as necessary to find the descriptor corresponding to the property, and calls the [[DefineOwnProperty]] internal method with thee property name, the descriptor, and the Boolean flag to set the given value to be the value of the given property.
+
+\item[HasProperty] The [[HasProperty]] internal method takes a property name as input, and returns a Boolean value for whether the property already exists in the current Object or its prototype chain.
+
+\item[Delete] The [[Delete]] internal method takes a property name and a Boolean flag for error handling as input. It calls [[GetOwnProperty]] to get the descriptor corresponding to the property, and removes the given property from the Object if the descriptor's [[Configurable]] attribute is True. If the current Object does not have the given property as an own property, the method will assume the operation is successful.
+
+\item[DefaultValue] The [[DefaultValue]] internal method takes a String or a Number as input, and returns the default value for the current Object. If a String is given as input, [[DefaultValue]] will call [[Get]] with "toString" as the argument first, and if a Number is given as input, it will call with "valueOf" as the argument first. If unsuccessful the first time, [[DefaultValue]] will switch to use the other String value in calling [[Get]]. Then, [[DefaultValue]] would determine whether the result from [[Get]] is callable, and if so, call the corresponding [[Call]] internal method and return. If not, an error will be thrown.
+
+\item[DefineOwnProperty] The [[DefineOwnProperty]] internal method takes a property name, a property descriptor, and a Boolean flag for error handling as input. It returns True if the operation successfully creates or alters the named own property, and False otherwise. This is a complicated internal property that makes use of other internal properties like [[GetOwnProperty]], [[Extensible]], and operates based on the [[Configurable]] and [[Enumerable]] attributes of the descriptor returned by [[GetOwnProperty]], before altering the descriptor based on the [[Writable]] or [[Setter]] attributes for data descriptors and accessor descriptors, respectively. At each stage of the method, an error may be thrown upon certain conditions.
+\end{description}
+
+\subsection{Optional Internal Properties}
+There are twelve additional internal properties that could belong to JavaScript Objects, but only specific types of Objects possess these properties. A selection of those optional properties are presented below.
+
+\begin{description}
+\item[Construct]
+
+\item[Call]
+
+\item[ParameterMap]
+\end{description}
 
 \section{Prototype Inheritance}
 As mentioned in the background section, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. Each object has a property named \textbf{prototype} in order to implement prototype-based inheritance \cite{EcmaScript}. When an object is created, the new object's prototype property is implicitly set to the value of the object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
@@ -482,6 +612,7 @@ As mentioned in the background section, rather than using class-based inheritanc
 \section{Function Objects}
 What does it mean to call a function?
 How to construct a function? 
+Actually, the Function Object is the sole possessor of [[HasInstance]], [[Scope]], [[FormalParameters]], [[Code]]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JSIL}\label{sec:jsil}
@@ -509,14 +640,11 @@ where $lit$ denotes JavaScript literals (undefined, null, numbers, booleans, and
 
 $\mathtt{x} := \mathtt{e}(\overline{e})\ \mathtt{with}\ \textit{j}$ is a dynamic procedure call. When executed, the procedure will evaluate the expression $\mathtt{e}$ with the arguments $\overline{e}$ as provided, and assign the resulting value to $\mathtt{x}$. If evaluating the procedure results in an error, then flow control will proceed to the code block labeled by \textit{j}, otherwise, flow control will continue to the next line in the program. This dynamic procedure call syntax is commonly used in the implementation component in this project, as it is necessary to evaluate results for when internal functions are called.
 
-A top level JSIL program follows the syntax of proc m($\overline{x}$)($\overline{c}$), which executes procedure \texttt{m} with $\overline{x}$ as formal parameters and $\overline{c}$ as a list of JSIL commands. The implementation stage of this project defines a number of JavaScript library functions, and each function follows this syntax of top level program. JSIL programs do not have explicit return statements, rather, they contain a return label and optionally an error label, usually denoted as \textit{rlab} and \textit{elab}, respectively. When the program flow of control reaches one of these labels, the corresponding return variable, a normal value $x_{ret}$ or an error value $x_{err}$, will be returned by the procedure.
+A top level JSIL program follows the syntax of proc m($\overline{x}$)$\{\overline{c}\}$, which executes procedure \texttt{m} with $\overline{x}$ as formal parameters and $\overline{c}$ as a list of JSIL commands. The implementation stage of this project defines a number of JavaScript library functions, and each function follows this syntax of top level program. JSIL programs do not have explicit return statements, rather, they contain a return label and optionally an error label, usually denoted as \textit{rlab} and \textit{elab}, respectively. When the program flow of control reaches one of these labels, the corresponding return variable, a normal value $x_{ret}$ or an error value $x_{err}$, will be returned by the procedure.
 
 \section{Final JSIL Syntax}
 Components of this syntax have evolved since the start of the project, and the differences are as follows:
 %%TODO%%
-
-\section{Semantics}
-Since JSIL procedures are top level, 
 
 \section{Heap Model}
 The JSIL Heap Model is designed to correspond as closely as possible to the JavaScript Heap Model (beta indistinguishability relation)
@@ -535,18 +663,37 @@ $\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharp
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Array Library}
-\section{Arrays in JavaScript}
+\chapter{Object.Prototype Library}
+\section{Object Prototype Functions}
+The following functions belong to the Object prototype: 
+\begin{enumerate}
+\item Object.prototype.constructor \newline
+This is the constructor.
+\item Object.prototype.toString() \newline
+
+\item Object.prototype.toLocaleString() \newline
+
+\item Object.prototype.valueOf() \newline
+
+\item Object.prototype.hasOwnProperty(V) \newline
+
+\item Object.prototype.isPrototypeOf(V) \newline
+
+\item Object.prototype.propertyIsEnumerable(V) \newline
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Arrays in JavaScript}
 Array Objects are a type of built-in Object in the JavaScript language, and they have predefined methods and special properties. 
 
-\subsection{Indices and Length}
+\section{Indices and Length}
 An Array in JavaScript is a special type of Object, referred to as Array Objects. Array Objects differ from normal Objects in the treatment of property names. Given a property name P, ToUint32(P) converts P into an unsigned 32-bit integer, and ToString(ToUint32(P)) converts this integer back to a string value. If the unsigned integer does not equal 2\textsuperscript{32-1}, which is the largest value an unsigned 32-bit integer can be, and if this converted string value is equal to the original string, P, then this property name is considered to be an index in the Array Object \cite{EcmaScript}. Thus, P has to be a string value containing non-negative integer values, otherwise performing the two operations would not result in the same string value. 
 
 If a property's name is an Array index, then this property is commonly referred to as an element. An element can be Objects, primitive values, or functions, and the elements within an Array Object do not have to be of the same type. By convention, JavaScript Arrays are zero-indexed, meaning that the first element in an Array Object has index equals zero, the second equals one, and the last equals the length of the Array Object minus one. The length of an Array Object is stored as a special property of the Array Object, with its name as "length", and its value as an integer that measures the number of elements, including empty elements, inside the Array. This integer must be non-negative and less than 2\textsuperscript{32}, which restricts the size of the maximum possible Array Object. 
 
 An interesting feature of JavaScript Array length that possibly sets it apart from Array implementations in other languages, however, is that Array elements can contain absolutely nothing, and hence be completely empty, so the length value technically does not reflect the number of actual elements in the Array. Rather, the length value is simply the integer that is 1 greater than the largest property name in the Array Object. When altering the Array Object, such as adding or deleting elements, the length property's value must change accordingly. When an element is added, length will be changed to the element's array index plus 1, and when an element is deleted, length will be changed to the maximum array index plus 1. If the length property itself is changed, then all elements whose array indices are larger than the length value minus 1 will be deleted. Hence, the length invariant will be maintained in all Array operations \cite{EcmaScript}.
 
-\subsection{DefineOwnProperty}
+\section{DefineOwnProperty}
 Array Objects also differ from other Objects in their implementation of the [[DefineOwnProperty]] internal function. [[DefineOwnProperty]] takes in the following parameters - a property name P, a property descriptor Desc, and a boolean value Throw for whether an error would be thrown given TypeError exceptions. The purpose of this internal function is to "create or alter the named own property to have the state described by a Property Descriptor" and to "test various fields of the Property Descriptor Desc for specific values" If the field is "absent from Desc then its value is considered to be false" \cite{EcmaScript}. 
 
 [[DefineOwnProperty]] allows the Array Object to change the value of a particular element and to add new elements. Many Array Library functions make use of the internal function [[Put]], which in turn calls [[DefineOwnProperty]]. [[DefineOwnProperty]] works by getting the original length property's value of the Array Object, then performs different actions based on whether the property P argument is the \textbf{length} property or an array index. 
@@ -570,7 +717,7 @@ On the other hand, if property P is an array index, the function proceeds to det
 \paragraph{Default}
 In the event that [[DefineOwnProperty]] has not yet produced a return value, the default [[DefineOwnProperty]] internal function for general Objects will be called with the same arguments provided.
 
-\subsection{Array Creation}\label{sec:arraycreate}
+\section{Array Creation}\label{sec:arraycreate}
 An Array Object can be created in one of three ways - using an Array literal, using the Array Object constructor, and using the constructor as a function. Array literal notation utilizes square brackets to enclose the elements, and is used in the following manner:
 
 \begin{center}
@@ -606,7 +753,7 @@ Both constructors will set the following internal properties of the Array Object
 
 The Array Object constructor itself is a JavaScript Object, and its prototype property is set to the Function Object prototype, which will not be discussed in further detail here.
 
-\subsection{A Working Example}
+\section{A Working Example}
 \begin{center}
 \begin{minipage}{10cm}
 \begin{lstlisting}
@@ -625,10 +772,12 @@ Here, a new Array Object named arr with elements "a" and "b" is created on line 
 
 Line 5 changes the [[Extensible]] internal property of Array arr to \textbf{false}, so no new elements can be added to arr. As a result, if line 6 tries to add a seventh element to Array arr, the length value of arr stays at 6.
 
-\section{Array Library Functions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Array Library}
 Below is an outline of all of the functions in the ECMAScript 5 Array Library. Each function's name will be listed then followed by a brief explanation of the intended usage of the function.
 
-\subsection{Array Object Constructor Functions}
+\section{Array Object Constructor Functions}
 The following functions belong to the Array Object constructor, and the first two have been described in detail in~\ref{sec:arraycreate}.
 \begin{enumerate}
 \item new Array( [item0 [, item1 [, ...]]] )
@@ -641,7 +790,7 @@ This property's initial value is Array Prototype Object, and this property's val
 This method checks to see if the [[class]] internal property of arg is equal to the String "Array".
 \end{enumerate}
 
-\subsection{Array Object Prototype Functions}
+\section{Array Object Prototype Functions}
 The following functions belong to the Array Object prototype: 
 \begin{enumerate}
 \item Array.prototype.constructor \newline
@@ -723,14 +872,14 @@ The callback function must take four arguments, namely the value from the previo
 This method is similar to Array.prototype.reduce(callbackfn [, thisArg] ), but rather than traversing through the Array in ascending order, it traverses in descending order.
 \end{enumerate}
 
-\subsection{Filter In Detail}\label{sec:filter}
+\section{Filter In Detail}\label{sec:filter}
 This method requires a callback function to be provided as an argument, and an optional argument to be used for the \textbf{this} value of the callback function. The method creates a new Array Object, calls the callback function for each of the elements in the original Array in ascending order and stores the element for which the callback function has returned \textbf{true} in the new Array, and lastly returns after the entire original Array is traversed. 
 
 The callback function must take three arguments, namely the value and index of each Array element, and the Array Object that calls it. Its return value must be coercible to a boolean value, to be passed back to the Array method.
 
 This method is used to filter out all elements in an Array that satisfy certain criteria laid out in the callback function. It is similar to both Array.prototype.every(callbackfn [, thisArg] ) and Array.prototype.some(callbackfn [, thisArg] ), but rather than only providing a boolean return value, it actually shows all the successful elements.
 
-\subsubsection{ECMAScript Standard}
+\subsection{ECMAScript Standard}
 \begin{enumerate}
 \item Let \textit{O} be the result of calling ToObject passing the \textbf{this} value as the argument.
 \item Let \textit{lenValue} be the result of calling the [[Get]] internal method of \textit{O} with the argument \textbf{"length"}.
@@ -759,8 +908,8 @@ This method is used to filter out all elements in an Array that satisfy certain 
 \item Return $A$.
 \end{enumerate}
 
-\subsubsection{Pretty Big Step Operational Semantics}
-\subsubsection{JSIL Code}
+\subsection{Pretty Big Step Operational Semantics}
+\subsection{JSIL Code}
 \begin{adjustwidth}{2cm}{2cm}
 \begin{lstlisting}
 proc AP_filter() {
@@ -831,10 +980,10 @@ with
 \end{lstlisting}
 \end{adjustwidth}
 
-\subsection{Sort In Detail}\label{sec:sort}
+\section{Sort In Detail}\label{sec:sort}
 The Array.prototype.sort(comparefn) method is undoubtedly the most complicated in the Array Library. If the Array Object falls into any of the four predefined scenarios, then an implementation defined algorithm will be used to sort the Array. If an Array is not a special Array, then the method will use the [[Get]], [[Put]], and [[Delete]] internal methods and the \textbf{sortCompare} method in an implementation defined manner to sort the Array. JSIL, like all other JavaScript implementations, has a choice of which sorting algorithm to utilize. 
 
-\subsubsection{Sorting Algorithms}
+\subsection{Sorting Algorithms}
 Sorting a list of elements has long been a favorite topic of study for computer scientists, and many sorting algorithms currently exist. Some algorithms prefer memory efficiency, while others prefer runtime efficiency. 
 
 One of the most widely used sorting algorithms is Quicksort. This algorithm takes a list, and randomly chooses a pivot element. It then finds the correct list index for the pivot and proceeds to sort all the elements below the pivot and above the pivot independently and recursively.
