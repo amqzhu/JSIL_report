@@ -382,6 +382,8 @@ with
 \end{center}
 
 \chapter{This Project and Concurrent Progress}
+%%TODO%%
+%%%%%%%%%%%%%%%%CHAPTER NEEDS TO BE UPDATED%%%%%%%%%%%%%%%%%%
 Previous work has already been done on JSIL and the compiler, and this project seeks to expand JSIL to include descriptors, arguments object, and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. For example, the memory model for both JavaScript and JSIL representations has already been changed to incorporate JavaScript descriptors, $\mathcal{D}_{JS}$, and the new JavaScript heap model will look like below, rather than the one presented in section~\ref{sec:ir}.
 
 \begin{center}
@@ -397,7 +399,7 @@ $\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharp
 \end{center}
 
 \section{ES5 Strict and Core ES5 Strict}\label{sec:strict}
-Strict mode was a concept introduced in the fifth version of the ECMAScript standard \cite{EcmaScript}, and it presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so JavaScript programs could include both strict and non-strict code components \cite{EcmaScript}.
+Strict mode was a concept introduced in the fifth version of the ECMAScript standard \cite{EcmaScript}, and it presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
 
 Strict mode influences the implementation of the language in multiple ways. One example would be in resolving the naming reference of variables. An abstract operation, IsStrictReference(V) (V is a Reference), returns the strict reference component of V \cite{EcmaScript}, and it is used in internal functions such as [[getValue]] and [[putValue]], like the [[Get]] internal function discussed in section~\ref{sec:get}.
 
@@ -465,9 +467,9 @@ The interactive testing framework is available online from inside the Imperial n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
 \section{Definition of Objects}
-JavaScript is a language that relies heavily and primarily on Objects, which are collections of \textbf{properties}, each with zero or more \textbf{attributes} that define the property \cite{EcmaScript}. Properties can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned. Objects can be created via literal notation or via Object constructors that create and initialize the Objects, and then establishes the prototype chain for the Object \cite{EcmaScript}. Within an object, there are two types of properties - own properties and inherited properties. Own properties are those defined within the current object, and inherited properties are those defined in the object's prototype chain.
+JavaScript is a language that relies heavily and primarily on Objects, which are collections of \textbf{properties}, each with zero or more \textbf{attributes} that define the property \cite{EcmaScript}. Properties can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and additional boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned. Objects can be created via literal notation or via Object constructors that create and initialize the Objects, and then establishes the prototype chain for the Object \cite{EcmaScript}. Within an object, there are two types of properties - own properties and inherited properties. Own properties are those defined within the current object, and inherited properties are those defined in the object's prototype chain.
 
-Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after they are created. For example, a Person class is defined in Java below. This class has two attributes - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another attribute, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, any Object of Person class cannot possibly have an attribute of \textit{gender}.
+Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after creation. For example, a Person class is defined in Java below. This class has two properties - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another property, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, any Object of Person class cannot possibly have a \textit{gender} property.
 
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstlisting}
@@ -489,7 +491,7 @@ public class Person {
 \end{lstlisting}
 \end{adjustwidth}
 
-In JavaScript below, a similar Person class is defined, intentionally using similar syntax as the Java code above for comparison. The \textit{alice} Object is created on line 8 with a name String as "Alice", and an age of 35 years old. When \textit{alice} celebrates her birthday, her age can be altered using dot notation similar to that of \textit{bob}. When we want to specify the gender of \textit{alice} however, using code on line 10, JavaScript would throw no error and simply change the \textit{alice} Object as required.
+Below defines a Person class in JavaScript, intentionally using similar syntax as the Java code above for comparison. The \textit{alice} Object is created on line 8 with a name String as "Alice", and an age of 35 years old. When \textit{alice} celebrates her birthday, her age can be altered using dot notation similar to that of \textit{bob}. When we want to specify the gender of \textit{alice} however, using code on line 10, JavaScript would throw no error and simply change the \textit{alice} Object as required.
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstlisting}
 class Person {
@@ -505,10 +507,10 @@ alice.gender = "female";
 \end{lstlisting}
 \end{adjustwidth}
 
-It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer accidentally makes changes to an Object in this manner, no error message will alert him or her of this, and thus a verification tool would come in extremely handy.
+It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer accidentally makes changes to an Object in this manner, no error message will alert him or her of this, and hence a verification tool would come in extremely handy.
 
 \section{Properties}
-There are two types of properties in JavaScript - named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined name strings with JavaScript descriptors, whereas internal properties do not have user-defined names. Data properties associate a name with a JavaScript value, as well as a set of boolean values that specify additional information about the property. These boolean values will be explained in further detail in section~\ref{attributes}. Accessor properties associate a name with two JavaScript functions, a getter and a setter, in addition to a similar set of boolean values. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the prototype property mentioned above, and the object's class, and so on. There are an additional twelve internal properties that only apply to certain types of objects, for example, Function Objects alone always have the [[Call]] internal method.
+There are two types of properties in JavaScript - named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined name strings with JavaScript descriptors, whereas internal properties do not have user-defined names. Named properties can either be data properties or accessor properties. Data properties associate a name with a JavaScript value, plus a set of boolean values that specify additional information about the property. These boolean values will be explained in further detail in section~\ref{sec:attributes}. Accessor properties associate a name with two JavaScript functions, a getter and a setter, in addition to a similar set of boolean values. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the Object's prototype, class, and so on. There are an additional twelve internal properties that only apply to certain types of Objects, for example, Function Objects alone have the [[Call]] internal method.
 
 \subsection{Attributes}\label{sec:attributes}
 Both categories of named JavaScript properties have attributes that serve to describe the state of the property. Data properties and accessor properties share two of these attributes, [[Enumerable]] and [[Configurable]], while they differ in the other two. Data properties have the [[Value]] and [[Writable]] attributes, while accessor properties have [[Get]] and [[Set]].
@@ -535,15 +537,29 @@ Both categories of named JavaScript properties have attributes that serve to des
 
 \item[Get] The [[Get]] attribute can be of the Function Object type, but the default value is Undefined. When the property's getter is invoked, the [[Call]] internal method of the Function Object is called with no arguments in order to return the property's value.
 
-\item[Set] The [[Set]] attribute can be of the Function Object type, but the default value is Undefined. When the property's setter is invoked, the [[Call]] internal method of the Function Object is called with an appropriate assignment value for the property. This setter function call may or may not alter the result of the getter function call.
+\item[Set] The [[Set]] attribute can be of the Function Object type, but the default value is Undefined. When the property's setter is invoked, the [[Call]] internal method of the Function Object is called with an appropriate assignment value for the property. This setter function call may or may not alter the result of the getter function call, since the setter is not required to set the same variable as the getter retrieves.
 
-\item[Enumerable] The [[Enumerable]] attribute is a Boolean value. If true, the property will be used in for-in enumeration. The default value is false.
+\item[Enumerable] The [[Enumerable]] attribute is a Boolean value. If True, the property will be used in for-in enumeration. The default value is False.
 
 \item[Configurable] The [[Configurable]] attribute is a Boolean value, and it describes whether the property can be deleted, whether the property's attributes can be altered, and whether a data property can be changed into an accessor property and vice versa. The default value is False.
 \end{description}
 
 \subsection{Descriptors}
-Descriptors are a JavaScript language construct used to describe properties. 
+Descriptors are a JavaScript language construct used to describe named property attributes, so that programs can access and manipulate the attributes as necessary. Descriptors are represented as name-value pairs, similar to Objects in a way, except the only valid names are the named property attribute names, and the values are the corresponding attribute values. Thus, descriptors can either be data descriptors or accessor descriptors, determined by the following two abstract operations.
+
+\begin{description}
+\item[IsDataDescriptor(Desc)] Returns False if Desc is Undefined, and returns True if both the [[Value]] and [[Writable]] fields are present.
+
+\item[IsAccessorDescriptor(Desc)] Returns False if Desc is Undefined, and returns True if both the [[Get]] and [[Set]] fields are present.
+\end{description}
+
+In case that a descriptor is defined, but is neither a data descriptor nor an accessor descriptor, then it is a generic descriptor. Because of the similarity in structure between descriptors and Objects, the two can be interchanged using the following abstract operations.
+
+\begin{description}
+\item[FromPropertyDescriptor(Desc)] This operation takes a descriptor, Desc, and converts it into an Object with four properties. If Desc is a data descriptor, the new Object will have two properties named "value" and "writable", and if Desc is an accessor descriptor, the new Object will have two properties named "get" and "set". The new Object will also have the "enumerable" and "configurable" properties. Each new property will be represented by a new data descriptor with the [[Value]] attribute being the descriptor's original value field, and the Boolean value True for the [[Writable]], [[Enumerable]], and [[Configurable]] attributes.
+
+\item[ToPropertyDescriptor(Obj)] This operation takes an Object, Obj, and converts it into a descriptor by calling the [[HasProperty]] internal method, described in the next section, on each of these String values: "enumerable", "configurable", "value", "writable", "get", "set". If Obj has properties with the same names as these Strings, then the corresponding descriptor field is populated with the value returned by the [[Get]] internal method of Obj with the String as input. If Obj has property names that correspond to both data descriptor and accessor descriptor field names, the conversion operation is considered illegal.
+\end{description}
 
 \subsection{Internal Properties}
 Internal properties describe additional inherent information about Objects, and they cannot be directly accessed by the programmer. The following internal properties hold one or multiple particular types of JavaScript values, and their values can be modified through implementation-specific helper functions.
@@ -598,14 +614,21 @@ There are twelve additional internal properties that could belong to JavaScript 
 
 \begin{description}
 \item[Construct]
+The [[Construct]] internal property is an internal method that takes a List as argument returns an Object. The list can consist of any valid JavaScript types, and it is passed to the \textbf{new} operator as an argument. Objects that have this internal property are referred to as \textit{constructors}, because they create new Objects via the \textbf{new} operator.
 
 \item[Call]
+The [[Call]] internal property is an internal method that takes two arguments, the first argument can be of any valid JavaScript type representing the caller of a function, and the second argument is a list of any valid JavaScript type representing the arguments passed to the function. This internal method is what executes the code associated with the Object, usually a Function Object, and Objects that possess this internal property is referred to as \textit{callable}. The return value of this method may be any valid JavaScript type or it may be a Reference value if the caller is a callable host object.
 
 \item[ParameterMap]
+The [[ParameterMap]] internal property is an Object property that belongs to JavaScript Objects that are Arguments Objects. The ParameterMap maps the named properties of an Arguments Object to the formal parameters of the function that invoked the Arguments Object. The exact workings of the Arguments Object will be described in Chapter~ref{sec:argumentsobject}.
 \end{description}
 
 \section{Prototype Inheritance}
-As mentioned in the background section, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. Each object has a property named \textbf{prototype} in order to implement prototype-based inheritance \cite{EcmaScript}. When an object is created, the new object's prototype property is implicitly set to the value of the object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
+As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
+
+An example is ... %%TODO%%
+
+%%MAKE A CHART HERE%%
 
 \section{Initial Heap}
 
@@ -668,18 +691,26 @@ $\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharp
 The following functions belong to the Object prototype: 
 \begin{enumerate}
 \item Object.prototype.constructor \newline
-This is the constructor.
+This is the standard Object constructor. The Object constructor can be used as a constructor with the \textbf{new} keyword, or it could be invoked as a function call without using \textbf{new}. Both usages correspond to the same set of internal operations. The constructor can be called with no arguments, or one argument representing a value, and the syntax is "new Object( [value] )".
+The prototype property is set to the Object prototype object, the class is set to "Object", and extensible is set to True.
+
 \item Object.prototype.toString() \newline
+This method returns a String value that indicates the value of the [[Class]] internal property of the Object, unless it is Undefined or Null, in which case the String value would give the proper indication.
 
 \item Object.prototype.toLocaleString() \newline
+This method determines if the Object has a property called "toString" using the [[Get]] internal method, calls the corresponding function if available, and returns the result. It results in an error if there is no callable "toString" property.
 
 \item Object.prototype.valueOf() \newline
+This method converts the calling Object prototype into an Object and returns this Object. It could also return a different value based on the specific implementation.
 
 \item Object.prototype.hasOwnProperty(V) \newline
+This method converts the argument, V, into a String value, before calling the [[GetOwnProperty]] internal method to determine if the current Object prototype has an own property named V.
 
 \item Object.prototype.isPrototypeOf(V) \newline
+This method first determines whether V is of Object type, since it cannot have a prototype if it is not an Object itself. It then determines whether the prototype internal property of V corresponds to the Object calling this method. If so, the method returns True.
 
 \item Object.prototype.propertyIsEnumerable(V) \newline
+This method converts the argument, V, into a String value, before calling the [[GetOwnProperty]] internal method to determine if the current Object prototype has a property named V. If so, V can be represented by a descriptor, which by definition has a field "enumerable". The method returns the value of this field.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
