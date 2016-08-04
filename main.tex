@@ -609,7 +609,7 @@ The following internal properties represent internal methods of the same name, c
 \item[DefineOwnProperty] The [[DefineOwnProperty]] internal method takes a property name, a property descriptor, and a Boolean flag for error handling as input. It returns True if the operation successfully creates or alters the named own property, and False otherwise. This is a complicated internal property that makes use of other internal properties like [[GetOwnProperty]], [[Extensible]], and operates based on the [[Configurable]] and [[Enumerable]] attributes of the descriptor returned by [[GetOwnProperty]], before altering the descriptor based on the [[Writable]] or [[Setter]] attributes for data descriptors and accessor descriptors, respectively. At each stage of the method, an error may be thrown upon certain conditions.
 \end{description}
 
-\subsection{Optional Internal Properties}
+\subsection{Optional Internal Properties}\label{sec:opip}
 There are twelve additional internal properties that could belong to JavaScript Objects, but only specific types of Objects possess these properties. A selection of those optional properties are presented below.
 
 \begin{description}
@@ -624,18 +624,52 @@ The [[ParameterMap]] internal property is an Object property that belongs to Jav
 \end{description}
 
 \section{Prototype Inheritance}
-As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
+As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype, or an object's prototype value could be altered post-creation. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
 
 An example is ... %%TODO%%
 
 %%MAKE A CHART HERE%%
 
 \section{Initial Heap}
+When a JavaScript Object is stored in memory, each memory cell holds a certain piece of information related to this Object. And as a result, a type of representation must exist to keep track of which memory cells are holding what information. A JavaScript heap serves this function of mapping memory locations and property names to heap values and scope chains. %%CITE%%  
+
+When a JavaScript program is executed, it must first create a global object that contains all of the global variables declared in the program using the \textbf{var} keyword, and the constructors for all the built-in Object types in JavaScript. Global variables are assigned Undefined as their value if they are not initialized right away. A constructor of an Object is the special function that, along with the \textbf{new} keyword, declares and initializes an Object. The constructor must reserve space in memory to hold the Object, and it creates the internal properties required by the Object and sets them to be their default values. Because constructors are also Objects, they too have the prototype property that points to the prototype object of their specific type, for example, the prototype of the Object constructor holds the Object prototype object, whereas the prototype of the Array constructor holds the Array prototype object. The global object also has a Prototype property like all other Objects, and this property's value is the built-in Object prototype object. 
+
+Continuing with the previous example ... %%TODO%%
+
+%%MAKE A CHART HERE%%
+\smartdiagramset{
+  planet size=3cm,
+  satellite size=3cm,
+  distance planet-satellite=4cm,
+  /tikz/connection planet satellite/.append style={<-},
+  /tikz/planet/.append style={rectangle,rounded corners=5mm}, 
+  /tikz/satellite/.append style={rectangle,rounded corners=5mm}
+}
+\smartdiagram[constellation diagram]{Global Object, Object constructor, Array constructor, Other constructors, global variables, Prototype: Object prototype}
 
 \section{Function Objects}
-What does it mean to call a function?
-How to construct a function? 
-Actually, the Function Object is the sole possessor of [[HasInstance]], [[Scope]], [[FormalParameters]], [[Code]]
+In general, functions in programming represent a cohesive block of code commands that perform a desired action. This block of code may or may not take arguments as inputs that affect its inner workings, and it may or may not produce a final result value. Functions can be blocks of code that stand alone in a program, or they may be included in class definitions, in which case they would be referred to as \textit{methods} rather than functions. The typical components of a function are the parameters and the body. The parameters are the names of the inputs to the function, and the body is the code block that specifies the actions. A separate scope exists within the function body, meaning variables that are declared and initialized within a function body are destroyed upon the completion of function execution. Although a function can access variables outside its body, unless it makes use of a global variable or produced an output, others cannot access the variables within a function.
+
+In most object oriented languages, functions are represented differently from object classes, but in JavaScript, Function Objects are a special type of Objects. Function Objects are the sole possessor of the  [[HasInstance]], [[Scope]], [[FormalParameters]], and [[Code]] optional internal properties, and the Function.prototype.bind method is the sole possessor of the [[TargetFunction]], [[BoundThis]], and [[BoundArguments]] optional internal properties. Some of these optional internal properties are discussed in detail below.
+
+\begin{description}
+\item[Scope] The [[Scope]] internal property's value is a lexical environment, which indicates the "environment in which the Function object is executed" \cite{EcmaScript}. What this environment encompasses may be unexpected given JavaScript's prototype inheritance.
+
+\item[FormalParameters] The [[FormalParameters]] internal property is a possibly empty list of String values, called the \textit{FormalParameterList} that represents the names of the input arguments to a Function Object. The actual input arguments during a function call do not have to correspond exactly to the formal parameters in a Function Object definition, and this topic will be addressed in section~\ref{sec:argobj}.
+
+\item[Code] The [[Code]] internal property holds the actual code block of the Function Object. This is the commands to be executed when a Function Object is called.
+\end{description}
+
+\subsection{Constructing a Function Object}
+A Function Object can be constructed via a function call or via the constructor. Both follow the syntax below, except the constructor is preceded by the \textbf{new} keyword. \\
+\indent Function (p\textsubscript{0}, p\textsubscript{1}, ..., p\textsubscript{n}, body) \\
+As formal parameters are optional, if there is only one argument provided for the Function initialization, it is taken to be the body. If no argument is provided, the body is taken to be the empty String, and therefore the Function will perform no actions when called.
+
+If formal parameters are provided as arguments, the constructor will convert them to Strings, concatenate them together, before passing the whole String value to be processed by the \textit{FormalParameterList}. The value of the [[FormalParameters]] internal property will be set to the list of Strings corresponding to the Strings passed in via the \textit{FormalParameterList}. The [[Scope]] of the newly created Function Object is set to the global environment by default, and its [[Prototype]] is the Function Prototype object, which is \textit{Writable}, not \textit{Enumerable}, and not \textit{Configurable}.
+
+\subsection{Calling a Function Object}
+In order to call a Function Object, the Function Object must have a valid [[Call]] internal property, described in section~\ref{sec:opip}. When the Function is invoked, the [[Call]] internal method will establish a new but temporary execution context that includes the [[FormalParameters]] internal property, the actual arguments passed into the function call, and the calling Function Object. It then executes what is inside the [[Code]] internal property as appropriate, and produces an intermediate result, before restoring the original execution context before the function call. Depending on the type of the result, [[Call]] will either thrown an error, return a value, or return Undefined. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JSIL}\label{sec:jsil}
@@ -1068,7 +1102,7 @@ One of the most widely used sorting algorithms is Quicksort. This algorithm take
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Arguments Object}
+\chapter{Arguments Object}\label{sec:argobj}
 Like the Array Object, the Arguments Object is also a special type of JavaScript Object whose prototype is is the standard built-in Object prototype and whose [[Class]] internal property's value is "Arguments". It is used to capture all the arguments provided to a function call, and associates the actual arguments provided to the function to named variable references. 
 
 The \textit{CreateArgumentObject} operation, called when the Function Objects execute, is what creates the Arguments Object, and it differs quite drastically in its treatment of code written in strict mode versus non-strict mode. 
@@ -1166,12 +1200,35 @@ In non-strict code, the Arguments Object would have the following new properties
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{String Library}
+\section{String Library Functions}
+The JavaScript String Library includes three String Object constructor functions, and 20 String Prototype functions. A significant portion of the String Library methods depend on additional constructs, such as the JavaScript Regular Expressions Library and Unicode implementations, and therefore was outside the scope of this project. Thus, a selection of methods was focused upon and described below.
+
+\begin{enumerate}
+\item String.prototype.charAt(pos) \newline
+
+
+\item String.prototype.concat( [ string1 [, string2 [, ...]]] ) \newline
+
+
+\item String.prototype.indexOf(searchString, position) \newline
+
+
+\item String.prototype.lastIndexOf(searchString, position) \newline
+
+
+\item String.prototype.slice(start, end) \newline
+
+
+\item String.prototype.substring(start, end) \newline
+
+\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Testing}
-\section{Array Library}
+\section{Array Library and Arguments Object}
+\subsection{Array Library}
 
-\section{Arguments Object}
+\subsection{Arguments Object}
 
 \section{String Library}
 

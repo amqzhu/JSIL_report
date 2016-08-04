@@ -43,41 +43,45 @@
 \contentsline {subsection}{\numberline {4.2.4}Optional Internal Properties}{20}{subsection.151}
 \contentsline {section}{\numberline {4.3}Prototype Inheritance}{21}{section.152}
 \contentsline {section}{\numberline {4.4}Initial Heap}{21}{section.153}
-\contentsline {section}{\numberline {4.5}Function Objects}{21}{section.154}
-\contentsline {chapter}{\numberline {5}JSIL}{22}{chapter.155}
-\contentsline {section}{\numberline {5.1}Starting JSIL Syntax}{22}{section.156}
-\contentsline {section}{\numberline {5.2}Final JSIL Syntax}{23}{section.157}
-\contentsline {section}{\numberline {5.3}Heap Model}{23}{section.158}
-\contentsline {chapter}{\numberline {6}Object.Prototype Library}{24}{chapter.159}
-\contentsline {section}{\numberline {6.1}Object Prototype Functions}{24}{section.160}
-\contentsline {chapter}{\numberline {7}Arrays in JavaScript}{26}{chapter.168}
-\contentsline {section}{\numberline {7.1}Indices and Length}{26}{section.169}
-\contentsline {section}{\numberline {7.2}DefineOwnProperty}{27}{section.170}
-\contentsline {paragraph}{Length}{27}{section*.171}
-\contentsline {paragraph}{Index}{27}{section*.172}
-\contentsline {paragraph}{Default}{28}{section*.173}
-\contentsline {section}{\numberline {7.3}Array Creation}{28}{section.174}
-\contentsline {section}{\numberline {7.4}A Working Example}{29}{section.181}
-\contentsline {chapter}{\numberline {8}Array Library}{30}{chapter.190}
-\contentsline {section}{\numberline {8.1}Array Object Constructor Functions}{30}{section.191}
-\contentsline {section}{\numberline {8.2}Array Object Prototype Functions}{30}{section.197}
-\contentsline {section}{\numberline {8.3}Filter In Detail}{33}{section.220}
-\contentsline {subsection}{\numberline {8.3.1}ECMAScript Standard}{33}{subsection.221}
-\contentsline {subsection}{\numberline {8.3.2}Pretty Big Step Operational Semantics}{34}{subsection.234}
-\contentsline {subsection}{\numberline {8.3.3}JSIL Code}{34}{subsection.235}
-\contentsline {section}{\numberline {8.4}Sort In Detail}{35}{section.302}
-\contentsline {subsection}{\numberline {8.4.1}Sorting Algorithms}{36}{subsection.303}
-\contentsline {chapter}{\numberline {9}Arguments Object}{38}{chapter.345}
-\contentsline {section}{\numberline {9.1}Full ES5}{38}{section.346}
-\contentsline {subsection}{\numberline {9.1.1}Internal Methods}{38}{subsection.347}
-\contentsline {subsection}{\numberline {9.1.2}\textit {CreateArgumentObject} Algorithm}{38}{subsection.348}
-\contentsline {section}{\numberline {9.2}ES5 Strict}{39}{section.349}
-\contentsline {subsection}{\numberline {9.2.1}\textit {CreateArgumentObject} Algorithm}{39}{subsection.350}
-\contentsline {subsection}{\numberline {9.2.2}JSIL Implementation}{39}{subsection.351}
-\contentsline {section}{\numberline {9.3}A Working Example}{40}{section.387}
-\contentsline {chapter}{\numberline {10}String Library}{41}{chapter.401}
-\contentsline {chapter}{\numberline {11}Testing}{42}{chapter.402}
-\contentsline {section}{\numberline {11.1}Array Library}{42}{section.403}
-\contentsline {section}{\numberline {11.2}Arguments Object}{42}{section.404}
-\contentsline {section}{\numberline {11.3}String Library}{42}{section.405}
-\contentsline {chapter}{\numberline {12}Conclusion}{43}{chapter.406}
+\contentsline {section}{\numberline {4.5}Function Objects}{22}{section.154}
+\contentsline {subsection}{\numberline {4.5.1}Constructing a Function Object}{23}{subsection.155}
+\contentsline {subsection}{\numberline {4.5.2}Calling a Function Object}{23}{subsection.156}
+\contentsline {chapter}{\numberline {5}JSIL}{24}{chapter.157}
+\contentsline {section}{\numberline {5.1}Starting JSIL Syntax}{24}{section.158}
+\contentsline {section}{\numberline {5.2}Final JSIL Syntax}{25}{section.159}
+\contentsline {section}{\numberline {5.3}Heap Model}{25}{section.160}
+\contentsline {chapter}{\numberline {6}Object.Prototype Library}{26}{chapter.161}
+\contentsline {section}{\numberline {6.1}Object Prototype Functions}{26}{section.162}
+\contentsline {chapter}{\numberline {7}Arrays in JavaScript}{28}{chapter.170}
+\contentsline {section}{\numberline {7.1}Indices and Length}{28}{section.171}
+\contentsline {section}{\numberline {7.2}DefineOwnProperty}{29}{section.172}
+\contentsline {paragraph}{Length}{29}{section*.173}
+\contentsline {paragraph}{Index}{29}{section*.174}
+\contentsline {paragraph}{Default}{30}{section*.175}
+\contentsline {section}{\numberline {7.3}Array Creation}{30}{section.176}
+\contentsline {section}{\numberline {7.4}A Working Example}{31}{section.183}
+\contentsline {chapter}{\numberline {8}Array Library}{32}{chapter.192}
+\contentsline {section}{\numberline {8.1}Array Object Constructor Functions}{32}{section.193}
+\contentsline {section}{\numberline {8.2}Array Object Prototype Functions}{32}{section.199}
+\contentsline {section}{\numberline {8.3}Filter In Detail}{35}{section.222}
+\contentsline {subsection}{\numberline {8.3.1}ECMAScript Standard}{35}{subsection.223}
+\contentsline {subsection}{\numberline {8.3.2}Pretty Big Step Operational Semantics}{36}{subsection.236}
+\contentsline {subsection}{\numberline {8.3.3}JSIL Code}{36}{subsection.237}
+\contentsline {section}{\numberline {8.4}Sort In Detail}{37}{section.304}
+\contentsline {subsection}{\numberline {8.4.1}Sorting Algorithms}{38}{subsection.305}
+\contentsline {chapter}{\numberline {9}Arguments Object}{40}{chapter.347}
+\contentsline {section}{\numberline {9.1}Full ES5}{40}{section.348}
+\contentsline {subsection}{\numberline {9.1.1}Internal Methods}{40}{subsection.349}
+\contentsline {subsection}{\numberline {9.1.2}\textit {CreateArgumentObject} Algorithm}{40}{subsection.350}
+\contentsline {section}{\numberline {9.2}ES5 Strict}{41}{section.351}
+\contentsline {subsection}{\numberline {9.2.1}\textit {CreateArgumentObject} Algorithm}{41}{subsection.352}
+\contentsline {subsection}{\numberline {9.2.2}JSIL Implementation}{41}{subsection.353}
+\contentsline {section}{\numberline {9.3}A Working Example}{42}{section.389}
+\contentsline {chapter}{\numberline {10}String Library}{43}{chapter.403}
+\contentsline {section}{\numberline {10.1}String Library Functions}{43}{section.404}
+\contentsline {chapter}{\numberline {11}Testing}{44}{chapter.411}
+\contentsline {section}{\numberline {11.1}Array Library and Arguments Object}{44}{section.412}
+\contentsline {subsection}{\numberline {11.1.1}Array Library}{44}{subsection.413}
+\contentsline {subsection}{\numberline {11.1.2}Arguments Object}{44}{subsection.414}
+\contentsline {section}{\numberline {11.2}String Library}{44}{section.415}
+\contentsline {chapter}{\numberline {12}Conclusion}{45}{chapter.416}

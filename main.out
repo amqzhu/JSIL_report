@@ -36,37 +36,41 @@
 \BOOKMARK [1][]{section.152}{4.3 Prototype Inheritance}{chapter.118}% 36
 \BOOKMARK [1][]{section.153}{4.4 Initial Heap}{chapter.118}% 37
 \BOOKMARK [1][]{section.154}{4.5 Function Objects}{chapter.118}% 38
-\BOOKMARK [0][]{chapter.155}{5 JSIL}{}% 39
-\BOOKMARK [1][]{section.156}{5.1 Starting JSIL Syntax}{chapter.155}% 40
-\BOOKMARK [1][]{section.157}{5.2 Final JSIL Syntax}{chapter.155}% 41
-\BOOKMARK [1][]{section.158}{5.3 Heap Model}{chapter.155}% 42
-\BOOKMARK [0][]{chapter.159}{6 Object.Prototype Library}{}% 43
-\BOOKMARK [1][]{section.160}{6.1 Object Prototype Functions}{chapter.159}% 44
-\BOOKMARK [0][]{chapter.168}{7 Arrays in JavaScript}{}% 45
-\BOOKMARK [1][]{section.169}{7.1 Indices and Length}{chapter.168}% 46
-\BOOKMARK [1][]{section.170}{7.2 DefineOwnProperty}{chapter.168}% 47
-\BOOKMARK [1][]{section.174}{7.3 Array Creation}{chapter.168}% 48
-\BOOKMARK [1][]{section.181}{7.4 A Working Example}{chapter.168}% 49
-\BOOKMARK [0][]{chapter.190}{8 Array Library}{}% 50
-\BOOKMARK [1][]{section.191}{8.1 Array Object Constructor Functions}{chapter.190}% 51
-\BOOKMARK [1][]{section.197}{8.2 Array Object Prototype Functions}{chapter.190}% 52
-\BOOKMARK [1][]{section.220}{8.3 Filter In Detail}{chapter.190}% 53
-\BOOKMARK [2][]{subsection.221}{8.3.1 ECMAScript Standard}{section.220}% 54
-\BOOKMARK [2][]{subsection.234}{8.3.2 Pretty Big Step Operational Semantics}{section.220}% 55
-\BOOKMARK [2][]{subsection.235}{8.3.3 JSIL Code}{section.220}% 56
-\BOOKMARK [1][]{section.302}{8.4 Sort In Detail}{chapter.190}% 57
-\BOOKMARK [2][]{subsection.303}{8.4.1 Sorting Algorithms}{section.302}% 58
-\BOOKMARK [0][]{chapter.345}{9 Arguments Object}{}% 59
-\BOOKMARK [1][]{section.346}{9.1 Full ES5}{chapter.345}% 60
-\BOOKMARK [2][]{subsection.347}{9.1.1 Internal Methods}{section.346}% 61
-\BOOKMARK [2][]{subsection.348}{9.1.2 CreateArgumentObject Algorithm}{section.346}% 62
-\BOOKMARK [1][]{section.349}{9.2 ES5 Strict}{chapter.345}% 63
-\BOOKMARK [2][]{subsection.350}{9.2.1 CreateArgumentObject Algorithm}{section.349}% 64
-\BOOKMARK [2][]{subsection.351}{9.2.2 JSIL Implementation}{section.349}% 65
-\BOOKMARK [1][]{section.387}{9.3 A Working Example}{chapter.345}% 66
-\BOOKMARK [0][]{chapter.401}{10 String Library}{}% 67
-\BOOKMARK [0][]{chapter.402}{11 Testing}{}% 68
-\BOOKMARK [1][]{section.403}{11.1 Array Library}{chapter.402}% 69
-\BOOKMARK [1][]{section.404}{11.2 Arguments Object}{chapter.402}% 70
-\BOOKMARK [1][]{section.405}{11.3 String Library}{chapter.402}% 71
-\BOOKMARK [0][]{chapter.406}{12 Conclusion}{}% 72
+\BOOKMARK [2][]{subsection.155}{4.5.1 Constructing a Function Object}{section.154}% 39
+\BOOKMARK [2][]{subsection.156}{4.5.2 Calling a Function Object}{section.154}% 40
+\BOOKMARK [0][]{chapter.157}{5 JSIL}{}% 41
+\BOOKMARK [1][]{section.158}{5.1 Starting JSIL Syntax}{chapter.157}% 42
+\BOOKMARK [1][]{section.159}{5.2 Final JSIL Syntax}{chapter.157}% 43
+\BOOKMARK [1][]{section.160}{5.3 Heap Model}{chapter.157}% 44
+\BOOKMARK [0][]{chapter.161}{6 Object.Prototype Library}{}% 45
+\BOOKMARK [1][]{section.162}{6.1 Object Prototype Functions}{chapter.161}% 46
+\BOOKMARK [0][]{chapter.170}{7 Arrays in JavaScript}{}% 47
+\BOOKMARK [1][]{section.171}{7.1 Indices and Length}{chapter.170}% 48
+\BOOKMARK [1][]{section.172}{7.2 DefineOwnProperty}{chapter.170}% 49
+\BOOKMARK [1][]{section.176}{7.3 Array Creation}{chapter.170}% 50
+\BOOKMARK [1][]{section.183}{7.4 A Working Example}{chapter.170}% 51
+\BOOKMARK [0][]{chapter.192}{8 Array Library}{}% 52
+\BOOKMARK [1][]{section.193}{8.1 Array Object Constructor Functions}{chapter.192}% 53
+\BOOKMARK [1][]{section.199}{8.2 Array Object Prototype Functions}{chapter.192}% 54
+\BOOKMARK [1][]{section.222}{8.3 Filter In Detail}{chapter.192}% 55
+\BOOKMARK [2][]{subsection.223}{8.3.1 ECMAScript Standard}{section.222}% 56
+\BOOKMARK [2][]{subsection.236}{8.3.2 Pretty Big Step Operational Semantics}{section.222}% 57
+\BOOKMARK [2][]{subsection.237}{8.3.3 JSIL Code}{section.222}% 58
+\BOOKMARK [1][]{section.304}{8.4 Sort In Detail}{chapter.192}% 59
+\BOOKMARK [2][]{subsection.305}{8.4.1 Sorting Algorithms}{section.304}% 60
+\BOOKMARK [0][]{chapter.347}{9 Arguments Object}{}% 61
+\BOOKMARK [1][]{section.348}{9.1 Full ES5}{chapter.347}% 62
+\BOOKMARK [2][]{subsection.349}{9.1.1 Internal Methods}{section.348}% 63
+\BOOKMARK [2][]{subsection.350}{9.1.2 CreateArgumentObject Algorithm}{section.348}% 64
+\BOOKMARK [1][]{section.351}{9.2 ES5 Strict}{chapter.347}% 65
+\BOOKMARK [2][]{subsection.352}{9.2.1 CreateArgumentObject Algorithm}{section.351}% 66
+\BOOKMARK [2][]{subsection.353}{9.2.2 JSIL Implementation}{section.351}% 67
+\BOOKMARK [1][]{section.389}{9.3 A Working Example}{chapter.347}% 68
+\BOOKMARK [0][]{chapter.403}{10 String Library}{}% 69
+\BOOKMARK [1][]{section.404}{10.1 String Library Functions}{chapter.403}% 70
+\BOOKMARK [0][]{chapter.411}{11 Testing}{}% 71
+\BOOKMARK [1][]{section.412}{11.1 Array Library and Arguments Object}{chapter.411}% 72
+\BOOKMARK [2][]{subsection.413}{11.1.1 Array Library}{section.412}% 73
+\BOOKMARK [2][]{subsection.414}{11.1.2 Arguments Object}{section.412}% 74
+\BOOKMARK [1][]{section.415}{11.2 String Library}{chapter.411}% 75
+\BOOKMARK [0][]{chapter.416}{12 Conclusion}{}% 76
