@@ -25,6 +25,70 @@
 
 \date{\today}
 
+% Comments
+\newif\ifComments
+\Commentstrue
+
+% Aubrianna
+\newcommand{\az}[1]{%
+\ifComments
+\begin{center}
+\fbox{%
+\begin{minipage}{3in} \color{red}
+{\bf AZ:} {\rm #1}
+\end{minipage}
+}
+\end{center}
+\fi
+}
+
+% Petar
+\newcommand{\pmax}[1]{%
+\ifComments
+\begin{center}
+\fbox{%
+\begin{minipage}{3in} \color{blue}
+{\bf PM:} {\rm #1}
+\end{minipage}
+}
+\end{center}
+\fi
+}
+
+
+%JavaScript - pretty
+\definecolor{SkyBlue}{rgb}{0.20,0.39,0.64}
+\definecolor{Plum}{rgb}{0.46,0.31,0.48}
+\definecolor{Chocolate}{rgb}{0.75,0.49,0.07}
+\definecolor{Aluminium5}{rgb}{0.33,0.34,0.32}
+\definecolor{DarkGreen}{rgb}{0.2,0.5,0.2}
+
+\lstdefinelanguage{JavaScript}{
+  morekeywords=[1]{typeof, new, true, false, catch,
+    function, return, null, catch, switch, var,
+    if, in, while, do, else, case, break, continue},
+  morekeywords=[2]{class, export, boolean, throw, implements, import, this},
+  numbers=left,
+  numbersep=4pt,
+  numberstyle=\tiny\color{dkblue},
+  columns=fullflexible,
+  sensitive=false,
+  comment=[l]{//},
+  captionpos=b,   
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  basicstyle=\scriptsize\texttt,
+  identifierstyle=\ttfamily\color{Aluminium5},
+  keywordstyle=[1]\ttfamily\color{Plum},
+  keywordstyle=[2]\ttfamily\color{SkyBlue},
+  stringstyle=\ttfamily\color{DarkGreen},
+  commentstyle=\ttfamily
+}[keywords,comments,strings]
+
+\lstnewenvironment{lstjs}{\lstset{language=JavaScript,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
+\def\jsinline{\lstinline[language=JavaScript, basicstyle=\small]}
+
 \begin{document}
 
 % load title page
@@ -63,118 +127,152 @@ TODO
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction}
 
-\section{What is JavaScript}
-JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by controlling both the style and the content of a browser's document object model. Increasingly, JavaScript is also being used on the server-side, as a means of interacting with databases. It exhibits a number of interesting features; for example, it supports prototypical inheritance rather than class inheritance, which is favored by many other programming languages. It allows for extensible objects---objects that can be altered after creation. Also, as there is virtually no difference between an object and a type, JavaScript does not have static typing or require type declarations~\cite{EcmaScript}. The intricacies of JavaScript will be discussed in chapter~\ref{sec:javascript}.
+\section{What is JavaScript?}
+JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by giving the programmer control over the browser's Document Object Model,~i.e.~both the pages' style and their content. In addition, JavaScript is being increasingly used on the server side as well, primarily as a means of interacting with databases. It is a high-level, dynamic, untyped language, based on extensible objects and exhibiting a number of intricate, complex, and often unpredictable features. 
 
-Since its inception, six versions of the standard have been developed, with the 6\textsuperscript{th} having been released in June 2015 \cite{international2015ecmascript}. This project will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011. Significant changes have occurred in the 5\textsuperscript{th} edition, including the addition of accessor properties and a strict mode \cite{EcmaScript}, both of which will be addressed in this project.
+For example, JavaScript supports prototypical inheritance rather than class inheritance, which is favoured by many object-oriented programming languages, such as Java or C++. It allows for first-class functions, i.e.~functions that can be passed as parameters to other functions, and also for partial function application. It features implicit, silent coercions between numbers, strings, booleans, and objects, which are the source of numerous programming errors that can at times be exceptionally difficult to debug.
+Also, JavaScript does not have static typing or require type declarations~\cite{EcmaScript}. As an illustration of the complexity of JavaScript, we direct the reader's attention to the following (valid) JavaScript expression:
 
-\section{Verification and its Importance}
-Computer scientists have created programming languages like JavaScript with the idea of instructing machines to perform actions in a human-like way, but possibilities for mistakes exist even in the creation phase. Indeed, a real life programming language was shown to have failed type safety five years after its creation \cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. When a programmer writes a piece of code that performs a certain task, without proper tools he cannot be entirely sure that his program will perform the task as required without side effects. In order to reduce errors and inconsistencies in different implementations of the same language, a formal verification system is necessary to prove that the programming languages are indeed performing correctly and as expected, with no ambiguity.
+$$\jsinline|(![]+[])[+!+[]]|$$
+
+\noindent which, remarkably, evaluates to the string \jsinline|"a"|; we will discuss how this particular evaluation is performed, as well as the above-mentioned intricacies of JavaScript in detail in Chapter~\ref{sec:javascript}.
+
+JavaScript is being developed by the ECMAScript committee, which is in charge of publishing the ECMAScript standard, addressing the language syntax, semantics, libraries, and complementary technologies that support the language. Since its inception, six versions of the standard have been developed, with the latest one having been released in June 2015 \cite{international2015ecmascript}. For this project, we will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011, while discussing some of the differences between itself and its predecessor, ECMAScript 3, as well as its successor, ECMAScript 6.
+
+% This edition incorporated extensive changes 
+% Significant changes have occurred in the 5\textsuperscript{th} edition, including the addition of accessor properties and a strict mode \cite{EcmaScript}, both of which will be addressed in this project.
+
+\section{The Importance of Verification}
+Computer scientists have created high-level programming languages such as JavaScript with the idea of stepping away from machine code and assembly and, instead, instructing machines to perform actions in a more human-like way. Designing a programming language is a complicated endeavour, and possibilities for mistakes exist even in the earliest stages. For instance, five years after its creation, Java, a real life programming language, was shown not to comply with type safety~\cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. One should contrast this with the fact that program correctness plays a crucial role in life-critical or security-critical settings, such as in the aviation or banking industries.
+Therefore, when a programmer writes a piece of code that is intended to perform a certain task, without proper tools they cannot be entirely sure that their program will perform the task as required without any side effects. In order to reduce the errors and inconsistencies in different implementations of the same language, a formal verification system is necessary so that one could prove that programming languages and programs written in those languages are indeed performing correctly, as expected, with no ambiguities.
 
 \section{JavaScript Verification}
-Previous work on JavaScript verification that makes this project possible include formal reasoning about JavaScript using program logics \cite{Gardner:2012}; JSCert and JSRef, which are a mechanized specification of the ECMAScript standard and a certified reference interpreter, both written in the Coq proof assistant \cite{Bodin:2014}; and the JSIL intermediate language, which relies on JSCert and is at the core of this project. All of these works will be discussed in more detail in sections~\ref{sec:jslogic} to~\ref{sec:jsverify}.
+
+\pmax{JavaScript, Internet, widespread, data security, leaks, this and that}
+
+Previous work on JavaScript verification that makes this project possible includes formal reasoning about JavaScript using program logics \cite{Gardner:2012}; JSCert and JSRef, which are a mechanized specification of the ECMAScript standard and a certified reference interpreter, both written in the Coq proof assistant \cite{Bodin:2014}; and the JSIL intermediate language, which relies on JSCert and is at the core of this project. All of these works will be discussed in more detail in sections~\ref{sec:jslogic} to~\ref{sec:jsverify}.
 
 \section{Outline of This Report}
-After introducing programming language verification, this report will proceed to give an overview of the history and landscape of mechanized specifications for a variety of programming languages. Then, it will give a detailed explanation of operational semantics, a formalization method used by many mechanized verification projects, before providing more detail on the topic of JavaScript verification. Next, it will demonstrate existing work on translating ECMAScript standards into operational semantics, and from operational semantics to actual JSIL code. It will then provide detailed discussions on the topics of JavaScript, JSIL as an intermediate language, the JavaScript Array Library, and the Arguments Object, before moving on to discuss the process and results of testing the JSIL implementation. Lastly, a brief conclusion will wrap up the topics studied, and introduce possible future extensions. 
+After the introduction, in Chapter \ref{cha:bckgnd} we proceed to give an overview of the background and related work for this thesis.
+
+\pmax{Polish as structure finalises.}
+
+It will then provide detailed discussions on the topics of JavaScript, JSIL as an intermediate language, the JavaScript Array Library, and the Arguments Object, before moving on to discuss the process and results of testing the JSIL implementation. Lastly, a brief conclusion will wrap up the topics studied, and introduce possible future extensions. 
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Background}
-\section{History of Mechanized Specifications}\label{sec:hist}
-There has been a long history of mechanized specification of programming languages. Initial formalizations were often simple, as they did not cover all aspects of the languages they targeted. Additionally, they tended to be non-executable and thus the appropriateness of their definitions were at times uncertain \cite{Ellison:2012}. Gradually, formalizations became increasingly mechanized, executable, and testable against standard test suites such as ECMAScript Test262 and GCC torture tests, or specific implementations such as Mozilla's JavaScript in order to ascertain real life correctness of these specifications. The following subsections will describe a number of mechanized specifications for various programming languages.
+\chapter{Background} \label{cha:bckgnd}
+In this chapter, we focus on the background of this thesis, including: the history and landscape of mechanised specifications for a variety of programming languages (Section \ref{sec:hist}); a detailed explanation of operational semantics, a technology for formalising the semantics of programming languages (Section \ref{sec:opsem}); a more in-depth look at the related work on JavaScript verification (Section \ref{sec:jsspec}); and initial work, which predates this thesis, on translating the ECMAScript standard first into pretty-big-step operational semantics and then from this operational semantics to JSIL, an intermediate language for JavaScript verification (Section \ref{sec:opsemac}).
+
+\section{History of Mechanised Specifications}\label{sec:hist}
+There has been a long history of mechanised specification of programming languages. Initial formalisations were often simple and would not cover all of the aspects of the languages they targeted. Additionally, they tended to be non-executable and thus the appropriateness of their definitions was at times uncertain \cite{Ellison:2012}. Gradually, formalisations became increasingly mechanised, executable, and testable against standard test suites such as ECMAScript Test262 and GCC torture tests, or specific implementations such as Mozilla's JavaScript in order to ascertain actual real-life correctness of these specifications. The following subsections describe a number of mechanised specifications for various programming languages.
 
 \subsection{ML}
 \begin{description}
-\item[Lee et al. 2007] This study created an internal language (IL), whose semantics is an explicitly-typed $\lambda$-calculus and follows a variation of the Harper and Stone\cite{Harper:2000} style, for standard ML \cite{Lee:2007}. This IL was able to capture all of the features in standard ML, and the proof of its type safety was successfully formalized in LF \cite{Harper:1993} and Twelf \cite{Pfenning98guide}.
+\item[Lee et al. 2007] This study created an internal language (IL), whose semantics is an explicitly-typed $\lambda$-calculus which follows a variation of the Harper and Stone\cite{Harper:2000} style, for standard ML \cite{Lee:2007}. This IL was able to capture all of the features in standard ML, and the proof of its type safety was successfully formalized in LF \cite{Harper:1993} and Twelf \cite{Pfenning98guide}.
 \end{description}
 
 \subsection{C}\label{sec:chist}
-There has been many formal semantics written for C, ranging from those using abstract state machines \cite{Gurevich:1992}, to the HOL theorem proving system \cite{norrish:1998}, in addition to the two described below.
+There have been many formal semantics written for the C programming language, ranging from those using abstract state machines \cite{Gurevich:1992} to those done in the HOL theorem proving system \cite{norrish:1998}, in addition to the two described below.
 \begin{description}
-\item[Leroy 2009] CompCert is a certified compiler from Clight to PowerPC assembly code, and it was designed to address the correctness of compilers, as most formal verification is done on source code rather than on code produced by optimized compilation. It used the Coq proof assistant for formal verification, to prove that the semantics of the generated assembly code corresponds exactly to the semantics of the source code \cite{Leroy-Compcert-CACM}. This verification is accomplished using eight intermediate languages from Clight to assembly, with each transformation having a formal proof that it preserves the semantics of the previous language in the translation chain.
+\item[Leroy 2009] CompCert is a certified compiler from (almost all of) the ISO C 99 standard to PowerPC assembly code, and it was designed to address the correctness of compilers, as most formal verification is done on source code rather than on code produced by optimized compilation. It used the Coq proof assistant for formal verification, to prove that the semantics of the generated assembly code corresponds exactly to the semantics of the source code \cite{Leroy-Compcert-CACM}. This verification is accomplished using eight intermediate languages from ISO C 99 to assembly, with each transformation having a formal proof that it preserves the semantics of the previous language in the translation chain.
 
 \item[Ellison and Rosu 2012] This work employs $\mathbb{K}$ \cite{rosu-serbanuta-2010-jlap}, a semantic framework based on rewriting-logic, and Maude \cite{Clavel:2007}, a rewriting-logic engine that enables execution and analysis of the mechanized semantics \cite{Ellison:2012}. The $\mathbb{K}$-based semantics for C is executable and was tested against the GCC torture test suite \cite{Ellison:2012}. 
 \end{description}
 
 \subsection{Java}
-As for C, there exists a large body of work concerning the formalization of Java. 
+As for C, there exists a large body of work concerning the formalisation of Java. 
 \begin{description}
-\item[Drossopoulou and Eisenbach 1998] As early as 1998, a small step operational semantics has been defined for Java \cite{drossopoulou1998towards} \cite{Drossopoulou:1999} using a term rewrite system. This work has covered a substantial subset of the Java language, with a focus on proving that the type system indeed works correctly.
+\item[Drossopoulou and Eisenbach 1998] As early as 1998, a small step operational semantics has been defined for Java \cite{drossopoulou1998towards,Drossopoulou:1999} using a term rewriting system. This work has covered a substantial subset of the Java language, with a focus on proving that the type system indeed works correctly.
 
-\item[Klein and Nipkow 2006] Another example is work done using the Isabelle theorem prover \cite{Paulson1989}, an environment to formalize and prove the type safety for Jinja \cite{KleinN-TOPLAS}, a variation of Java. The authors utilized both small step and big step operational semantics---the two styles are used in different aspects of the proof, but they are shown to be equivalent. This work is important because it was the first holistic formal analysis of a Java-like language, its virtual machine, and its compiler \cite{KleinN-TOPLAS}.
+\item[Klein and Nipkow 2006] Another example is the work done using the Isabelle theorem prover \cite{Paulson1989}, an environment to formalise and prove the type safety for Jinja \cite{KleinN-TOPLAS}, a variation of Java. The authors utilised both small step and big step operational semantics---the two styles are used in different aspects of the proof, but they are shown to be equivalent. This work is important because it was the first holistic formal analysis of a Java-like language, its virtual machine, and its compiler \cite{KleinN-TOPLAS}.
 
-\item[Bogdanas and Rosu 2015] The most recent work done on formalizing Java follows the C example from section~\ref{sec:chist}, using $\mathbb{K}$ as the development tool for Java 1.4. In this project, all features in the Java specification were covered and tested \cite{Bogdanas:2015}, as $\mathbb{K}$ automatically provides the executable environment for the formal specification, named K-Java. 
+\item[Bogdanas and Rosu 2015] The most recent work done on formalising Java follows the C example from section~\ref{sec:chist}, using $\mathbb{K}$ as the development tool for Java 1.4. In this project, all features in the Java specification were covered and tested \cite{Bogdanas:2015}, as $\mathbb{K}$ automatically provides the executable environment for the formal specification, named K-Java. 
 \end{description}
 
 \subsection{JavaScript}
 This section presents four sample studies, with the first being a purely theoretical translation of the ECMAScript standard, whereas the other three also have executable portions.
 
 \begin{description}
-\item[Maffeis et al. 2008] The authors produced an extensive small step operational semantics for ECMAScript 3, encompassing about 70 pages of rules and definitions \cite{Maffeis:2008}. The main goal of this formalization was to analyze the security properties of JavaScript programs running in web browsers, as the operational semantics allowed the authors to understand what can and cannot interact with the heap when a program is run. This operational semantics was not directly executable, but the authors designed experiments to test certain constructs on different browser implementations, and found discrepancies between Firefox, Safari, and the JavaScript standard implementation \cite{Maffeis:2008}. This work was important in inspiring other researchers to pursue operational semantics as a way to fully understand JavaScript behavior.
+\item[Maffeis et al. 2008] The authors produced an extensive small step operational semantics for ECMAScript 3, encompassing about 70 pages of rules and definitions \cite{Maffeis:2008}. The main goal of this formalisation was to analyse the security properties of JavaScript programs running in web browsers, as the operational semantics allowed the authors to understand what can and cannot interact with the heap when a program is run. This operational semantics was not directly executable, but the authors designed experiments to test certain constructs on different browser implementations, and found discrepancies between Firefox, Safari, and the JavaScript standard implementation \cite{Maffeis:2008}. This work was important in inspiring other researchers to pursue operational semantics as a way to fully understand JavaScript behaviour.
 
-\item[Politz et al. 2012] A formal semantics, S5, for the strict mode of ECMAScript 5.1 was developed following the semantics of $\lambda$\textsubscript{JS} \cite{Guha:2010}. It covers the core semantics of JavaScript, and all JavaScript features that are not immediately covered can be transformed via a desugaring function. It is executable and tested for conformance with the ECMAScript test suite, Test262. S5 focuses in particular, on the getters and setters (accessor properties), and the \texttt{eval} operator \cite{Politz:2012}.
+\item[Politz et al. 2012] A formal semantics, S5, for the strict mode of ECMAScript 5.1 was developed following the semantics of $\lambda$\textsubscript{JS} \cite{Guha:2010}. The authors aim to cover the core semantics of JavaScript, and provide a desugaring function that compiles JavaScript code to S5. This formalisation is executable and tested for conformance with the ECMAScript test suite, Test262. S5 focuses in particular, on getters and setters, and the \texttt{eval} operator \cite{Politz:2012}.
 
-\item[Bodin et al. 2014] In this work, the ECMAScript 5 standard was mechanized using pretty big step semantics (JSCert) and a reference interpreter (JSRef) was implemented using the Coq theorem prover. JSRef was proven correct with respect to JSCert, then extracted to OCaml using Coq's built-in extraction mechanism, and tested against Test262 \cite{Bodin:2014}. The correctness result ensures that both JSCert and JSRef are correct with respect to the JavaScript standard. The current project stems from this work, and JSCert and JSRef will be discussed in more detail in section~\ref{sec:jscert}.
+\item[Bodin et al. 2014] In this work, the ECMAScript 5 standard was mechanised using pretty-big-step semantics (JSCert) and a reference interpreter (JSRef) was implemented using the Coq theorem prover. JSRef was proven correct with respect to JSCert, then extracted to OCaml using Coq's built-in extraction mechanism, and tested against Test262 \cite{Bodin:2014}. This correctness result ensures that both JSCert and JSRef are correct with respect to the JavaScript standard. The work done in this thesis stems from this work, and both JSCert and JSRef will be discussed in more detail in section~\ref{sec:jscert}.
 
-\item[Park et al. 2015] Similar to the study presented in Section~\ref{sec:chist}, this formal semantics of JavaScript is also based on $\mathbb{K}$ \cite{k-primer-2013-v32}. KJS was tested against Test262, and its language construct closely resembles the ECMAScript standard. In addition, it was able to discover coverage deficiencies in Test262 itself \cite{Park:2015}.
+\item[Park et al. 2015] Similar to the study presented in Section~\ref{sec:chist}, this formal semantics of JavaScript, called KJS, is also based on $\mathbb{K}$ \cite{k-primer-2013-v32}. KJS was tested against Test262, and its language constructs closely resemble the ECMAScript standard. In addition, it was able to discover coverage deficiencies in Test262 itself. This framework, however, does not allow reasoning on the meta-properties of JavaScript \cite{Park:2015}.
 \end{description}
 
 \section{Operational Semantics}\label{sec:opsem}
-Like natural languages, programming languages have the distinction between syntax and semantics. Syntax refers to the physical structure and rules of the language, defining valid variable names and correct placement of semicolons; semantics refers to the meaning of the program, specifying the actions and results of program commands. In regards to verification, semantics is what makes a program correct or incorrect. There are three different categories of program semantics: denotational, axiomatic, and operational. Operational semantics has turned out to be the category of choice, since it specifies meaning by giving the steps and behavior of a program during execution \cite{PittsAM:opespe}. In general, there are two ways of representing the semantics: small step and big step. 
-
-Presented below is the syntax of a simple imperative programming language, whose syntax will be followed in the upcoming subsections. The $\mathtt{While}$ command will serve as a running example throughout this report.
+Similarly to natural languages, when talking about programming languages one needs to distinguish between syntax and semantics. Syntax refers to the physical structure and rules of the language, defining valid variable names and correct placement of separators; semantics refers to the meaning of the program, specifying the actions and results of program commands. In regards to verification, semantics is what makes a program correct or incorrect. There are three different categories of program semantics: denotational, axiomatic, and operational. Out of these, operational semantics is our category of choice, as it specifies meaning by giving the steps and behaviour of a program during execution \cite{PittsAM:opespe}. In general, there are two ways of representing semantics operationally: small step and big step, and we will now explain each of them in detail using the simple imperative programming language based on integer arithmetic, shown below:
 
 $$
 \arraycolsep=1.5pt
 \begin{array}{rclcl}
-B & \in & \mathrm{Bool} & ::= & \texttt{true} \myor \texttt{false} \myor E = E \myor E < E \myor B \& B \myor\neg B \myor \ldots \\
-E & \in & \mathrm{Exp} & ::= & \texttt{x} \myor \texttt{n} \myor E + E \myor \ldots \\
-C & \in & \mathrm{Com} & ::= & \texttt{x}:=E \myor \texttt{if B then C else C} \myor C; C \myor \texttt{skip} \myor \texttt{while B do C} \myor ...
+E & \in & \mathrm{Exp} & ::= & \texttt{x} \myor \texttt{n} \myor - E \myor E + E \\
+B & \in & \mathrm{Bool} & ::= & \texttt{true} \myor \texttt{false} \myor B \land B \myor \neg B \myor E = E \myor E < E \\
+C & \in & \mathrm{Com} & ::= & \texttt{skip} \myor \texttt{x}:=E \myor \texttt{if B then C else C} \myor \texttt{while B do C} \myor C; C 
 \end{array}
 $$
 
-\noindent where we denote variables by $\texttt{x}$ and numbers by $\texttt{n}$. 
-Configurations are defined as $\langle E,s \rangle$, $\langle B,s\rangle$ and $\langle C,s \rangle$, meaning expressions, booleans, and commands with respect to state $s$.
+\noindent where we denote variables by $\texttt{x}$ and integer literals by $\texttt{n}$. As we can see, this language has three syntactic categories: {\bfseries(1)} expressions $E$, which include variables (taking integer values), integer literals, the unary minus, and addition; {\bfseries(2)} booleans $B$, which include the standard $\mathtt{true}$ and $\mathtt{false}$ boolean literals, conjunction, negation, and the two comparison operators $=$ and $<$ on expressions; and {\bfseries(3)} commands {C}, which include the empty statement, variable assignment, the standard $\mathtt{if}$ and $\mathtt{while}$ statements, and command sequencing. We define states $s$ as mappings from variables to integers, and, finally, we define configurations as $\langle E,s \rangle$, $\langle B,s\rangle$ and $\langle C,s \rangle$, meaning expressions, booleans, and commands with respect to a given state $s$.
 
-\subsection{Small Step}
-Small step operational semantics is also called structural operational semantics, and it evaluates expressions one step at a time \cite{Lecture2}. Due to its fine granularity, small step semantics is often used to model type systems and concurrency \cite{chargueraud-13-pretty}, as well as mechanized programming language definitions. The relation between two states is represented by the $\rightarrow$ symbol, and an example of this semantics is given below. In S-LEFT, an expression is evaluated in the order from left to right, thus $\mathbf{E}_1$ is evaluated before $\mathbf{E}_2$. If the left hand side is already a numeral, then the expression on the right hand side, $\mathbf{E}$, will be evaluated in S-RIGHT. Once all expressions are evaluated, addition will occur as in S-ADD.
+\subsection{Small Step Semantics}
+Small step operational semantics is also called structural operational semantics, and it evaluates expressions one step at a time \cite{Lecture2}. Due to its fine granularity, small step semantics is often used to model type systems and concurrency \cite{chargueraud-13-pretty}, as well as mechanised programming language definitions. The relation between two states is represented by the $\rightarrow$ symbol, and an example of this semantics is given below. In S-LEFT, an expression is evaluated from left to right: $\mathbf{E}_1$ is evaluated before $\mathbf{E}_2$. If the left hand side is already a literal, then the expression on the right hand side, $\mathbf{E}$, will be evaluated using the S-RIGHT rule. Once all expressions have been evaluated, actual addition will occur using the S-ADD rule. Note that the underlined literals in S-ADD denote  actual natural numbers, while those that are not underlined are only symbols of our language.
 \begin{mathpar}
 \inferrule[S-LEFT]{\mathbf{E}_1 \rightarrow \mathbf{E}'_1}{\mathbf{E}_1 + \mathbf{E}_2 \rightarrow \mathbf{E}'_1 + \mathbf{E}_2}
 \and
-\inferrule[S-RIGHT] {\mathbf{E} \rightarrow \mathbf{E}'}{n + \mathbf{E} \rightarrow n + \mathbf{E}'}
+\inferrule[S-RIGHT] {\mathbf{E} \rightarrow \mathbf{E}'}{\text{{\texttt{n}}} + \mathbf{E} \rightarrow \text{{\texttt{n}}} + \mathbf{E}'}
 \and
 \inferrule[S-ADD]{\underline{\texttt{n}_1} + \underline{\texttt{n}_2} = \underline{\texttt{n}_3}}{\texttt{n}_1 + \texttt{n}_2 \rightarrow \texttt{n}_3 }
 \end{mathpar}
 
-A more concrete example, $3 + ( 2 + 1 ) \rightarrow 3 + 3 \rightarrow 6$, would require the S-RIGHT rule to be applied to ( 2 + 1 ) and the S-ADD rule to produce 3 to give the intermediate stage 3 + 3, then another S-ADD to give the final result 6 \cite{Lecture2}.
+A more concrete evaluation example, $(1 + 3) + ( 2 + 1 ) \rightarrow 4 + (2 + 1) \rightarrow 4 + 3 \rightarrow 6$, would require first the S-LEFT rule to be applied to $(1 + 3)$, then the S-ADD rule to procude 4 and give the intermediate result $4 + (2 + 1)$; next, the S-RIGHT rule needs to be applied to $(2 + 1)$ and the S-ADD rule to produce 3 to give the intermediate result $4 + 3$; finally, another application of S-ADD yields the final result, which is 7 \cite{Lecture2}.
 
-As for a $\mathtt{While}$ command, only one rule is necessary as the semantics takes care of the recursive looping on its own. Only the initial step needs to be defined and the rule will carry on until it reaches a $\mathtt{skip}$ condition. Details for the small step evaluation rules for  sequential composition and conditionals have been omitted, but they both contribute towards defining the $\mathtt{While}$ semantics. The following small step semantics for $\mathtt{While}$ is presented in the Models of Computation course at Imperial for second-year Computing students. \footnote{It was necessary to self-study a portion of the materials presented in the second-year Models of Computation course to get up to speed with operational semantics.}
+As for the $\mathtt{while}$ command, only one rule is necessary as the semantics takes care of the recursive looping on its own. Only the initial step needs to be defined and the rule will carry on until it reaches a $\mathtt{skip}$ condition. Details for the small step evaluation rules for sequential composition and conditionals have been omitted. The following small step semantics for the $\mathtt{while}$ command is presented in the Models of Computation course at Imperial for second-year Computing students.\footnote{It was necessary to self-study a portion of the materials presented in the second-year Models of Computation course to get up to speed with operational semantics.}
 
-\begin{mathpar}
+$$
 \inferrule[SS-WHILE]{ }{\langle \texttt{while B do C, s} \rangle \rightarrow_c \langle \texttt{if B then (C; while B do C) else skip, s} \rangle}
-\end{mathpar}
+$$
 
-\subsection{Big Step}
-Big step operational semantics is also called natural operation semantics, and in contrast to small step, it evaluates the entire expression in one step and returns the final result immediately \cite{Lecture2}, and the behavior of one term can be seen as the composition of the behaviors of the sub-terms \cite{chargueraud-13-pretty}. The relation between two states is represented by the $\Downarrow$ symbol, and the same example is given below. In B-NUM, a number is evaluated to a number. The equivalent was not in the small step semantics because numbers are considered to be fully evaluated. In B-ADD, $\mathbf{E}_1$ and $\mathbf{E}_2$ are evaluated separately to two numbers, $\texttt{n}_1$ and $\texttt{n}_2$, respectively, while applying actual addition in the same rule to arrive at the final answer $\texttt{n}_3$.
+\noindent We can see that, if $B$ evaluates to $\mathtt{false}$, the loop terminates as we reach the $\mathtt{skip}$ command in the $\mathtt{else}$ branch. Otherwise, $B$ evaluates to $\mathtt{true}$ and
+we \emph{unroll} the loop once, i.e.~we execute sequentially the body $C$ of the loop (which may change the state) with the recursive call of the original $\mathtt{while}$ command. 
 
-\begin{mathpar}
+\subsection{Big Step Semantics}
+Big step operational semantics is also called natural operation semantics, and in contrast to small step, it evaluates the entire expression in one step and returns the final result immediately \cite{Lecture2}, and the behavior of one term can be seen as the composition of the behaviors of its sub-terms \cite{chargueraud-13-pretty}. The relation between two states is commonly represented by the $\Downarrow$ symbol, and the evaluation for the addition operator is given below. In B-NUM, a number evaluates to itself. The equivalent rule does not exists in the small step semantics, because numbers are considered to be fully evaluated there. In B-ADD, $\mathbf{E}_1$ and $\mathbf{E}_2$ are evaluated separately to two numbers, $\texttt{n}_1$ and $\texttt{n}_2$, respectively, while applying actual addition in the same rule to arrive at the final answer $\texttt{n}_3$.
+
+$$
 \inferrule[B-NUM]{ }{\texttt{n} \Downarrow \texttt{n}}
-\and
+\hspace*{2cm}
 \inferrule[B-ADD] {\mathbf{E}_1 \Downarrow \texttt{n}_1 \\ \mathbf{E}_2 \Downarrow \texttt{n}_2 \\ \underline{\texttt{n}_1} + \underline{\texttt{n}_2} = \underline{\texttt{n}_3}}{\mathbf{E}_1 + \mathbf{E}_2 \Downarrow \texttt{n}_3}
-\end{mathpar}
+$$
 
-The same example yields $3 + ( 2 + 1 ) \Downarrow 6 $ for big step semantics because the final result is produced immediately \cite{Lecture2}. 
+The expression from the previous subsection, $(1 + 3) + (2 + 1)$, is evaluated to $7$ here as well~\cite{Lecture2}. Below, we present the full evaluation tree, consisting of four applications of B-NUM and three applications of B-ADD:
 
- The $\mathtt{While}$ command for big step semantics requires two different rules \cite{LectureBS}, one for when the boolean condition is $\mathtt{true}$, another for $\mathtt{false}$. In BS-WHILE-FALSE, the boolean condition \textit{B} evaluates to $\mathtt{false}$, so the command \textit{C} is never executed, and the program state \textit{s} stays the same after evaluation. In BS-WHILE-TRUE, \textit{B} evaluates to $\mathtt{true}$, so the while loop is unrolled once, command $C$ is executed, which alters the state from $s$ to $s'$, and the while loop is called recursively with the state $s'$.
+$$
+\inferrule[] 
+ {
+  \inferrule[]{1 \Downarrow 1 \\ 3 \Downarrow 3 \\ \underline{1} + \underline{3} = \underline{4}}
+  {(1 + 3) \Downarrow 4}
+   \\ 
+   \inferrule[]{2 \Downarrow 2 \\ 1 \Downarrow 1 \\ \underline{2} + \underline{1} = \underline{3}}
+   {(2 + 1) \Downarrow 3}
+  \\ 
+  \underline{4} + \underline{3} = \underline{7}}
+  {(1 + 3) + (2 + 1) \Downarrow 7}.
+$$
 
-\begin{mathpar}
-\inferrule[BS-WHILE-FALSE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{false} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s} \rangle} \qquad
-\inferrule[BS-WHILE-TRUE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{true} \rangle \quad \langle \texttt{C, s} \rangle \Downarrow \langle \texttt{s'} \rangle \quad \langle \texttt{while B do C, s'} \rangle \Downarrow \langle \texttt{s''} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s''} \rangle}
-\end{mathpar} 
+ The $\mathtt{while}$ command for big step semantics requires two different rules \cite{LectureBS}, one for when the boolean condition is $\mathtt{true}$, another for $\mathtt{false}$. In BS-WHILE-FALSE, the boolean condition \textit{B} evaluates to $\mathtt{false}$, so the command \textit{C} is never executed, and the program state \textit{s} stays the same after evaluation. In BS-WHILE-TRUE, \textit{B} evaluates to $\mathtt{true}$, so the while loop is unrolled once, command $C$ is executed, which alters the state from $s$ to $s'$, and the while loop is called recursively with the state $s'$:
+$$
+\inferrule[BS-WHILE-FALSE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{false} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s} \rangle} \hspace*{1cm}
+\inferrule[BS-WHILE-TRUE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{true} \rangle \quad \langle \texttt{C, s} \rangle \Downarrow \langle \texttt{s'} \rangle \quad \langle \texttt{while B do C, s'} \rangle \Downarrow \langle \texttt{s''} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s''} \rangle}.
+$$
 
-\subsection{Pretty Big Step}
-A variation of big step semantics has been used in describing JavaScript program logic \cite{Bodin:2014} developed by Charguéraud \cite{chargueraud-13-pretty}. While big step semantics has the advantage of immediacy and hence intuitively makes more sense, it does have several disadvantages, the biggest of which is the redundancy of premises for many different evaluation rules when exceptions and/or divergence occur \cite{chargueraud-13-pretty}. Thus, for programs with no rule repetitions, big step semantics and pretty big step semantics can be quite indistinguishable, but if an entire programming language must be mechanized, big step semantics simply does not scale. Indeed, the work done so far with JavaScript verification follows the style of pretty big step semantics since it addresses the redundancy problem. The running example is given below. 
+\subsection{Pretty-Big-Step Semantics}
+A variation of big step semantics has been used in describing JavaScript program logic \cite{Bodin:2014} developed by Chargu\'eraud \cite{chargueraud-13-pretty}. While big step semantics has the advantage of immediacy and hence intuitively makes more sense, it does have several disadvantages, the biggest of which is the redundancy of premises for many different evaluation rules when exceptions and/or divergence occur~\cite{chargueraud-13-pretty}. Thus, for programs with no rule repetitions, big step semantics and pretty-big-step semantics can be fairly indistinguishable, but if an entire programming language must be mechanised, big step semantics simply does not scale. Indeed, the work done so far with JavaScript verification follows the style of pretty-big-step semantics since it adequately contains the redundancy issue. The running example, the evaluation of addition, is given below. 
 
-In $\mathbf{E}_1$ + $\mathbf{E}_2$, to avoid redundancy as in big step semantics, one expression is evaluated at a time and in the order from left to right. So PB-ADD evaluates the first expression, $\mathbf{E}_1$, and utilizes an operator $+_1$ for when the first expression is already evaluated. In PB-+\textsubscript{1}, the $+_1$ rule is defined by evaluating the second expression and utilizing a $+_2$ operator for when both expressions are numbers. PB-+\textsubscript{2} then performs the actual addition between two numbers using $+_2$, propagating the result of $+_2$ back to PB-+\textsubscript{1}, which then propagates its result to PB-ADD to yield the final result, and the cycle is complete. 
+In $\mathbf{E}_1$ + $\mathbf{E}_2$, to avoid the big step redundancy, one expression is evaluated at a time, from left to right. So, PB-ADD evaluates the first expression, $\mathbf{E}_1$, and uses a new operator $+_1$ for when the first expression is already evaluated. In PB-+\textsubscript{1}, the $+_1$ rule is defined by evaluating the second expression and utilizing a $+_2$ operator for when both expressions are numbers. PB-+\textsubscript{2} then performs the actual addition between two numbers using $+_2$, propagating the result of $+_2$ back to PB-+\textsubscript{1}, which then propagates its result to PB-ADD, yielding the final result and completing the cycle. 
 \begin{mathpar}
 \inferrule[PB-ADD]{\mathbf{E}_1 \Downarrow \texttt{n}_1 \\ \texttt{n}_1 +_1 \mathbf{E} \Downarrow \texttt{n}}{\mathbf{E}_1 + \mathbf{E}_2 \Downarrow \texttt{n}}
 \and
@@ -183,9 +281,7 @@ In $\mathbf{E}_1$ + $\mathbf{E}_2$, to avoid redundancy as in big step semantics
 \inferrule[PB-+\textsubscript{2}] { }{\texttt{n}_1 +_2 \texttt{n}_2 \Downarrow \underline{\texttt{n}_1} + \underline{\texttt{n}_2}}
 \end{mathpar}
 
-This would also yield $3 + ( 2 + 1 ) \Downarrow 6$, but the difference here is that two different versions of the + operator were defined.
-
-\section{JavaScript Specifications}
+\section{JavaScript Specifications}\label{sec:jsspec}
 
 \subsection{JS Logic}\label{sec:jslogic}
 Gardner et al. \cite{Gardner:2012} have demonstrated that a program logic based on separation logic can be used to reason about JavaScript, since separation logic is useful to reason about programs that manipulate the heap, and JavaScript stores the entire program state in the object heap. A concept of weak locality was employed to establish the soundness of reasoning, since program commands are required to be local but JavaScript commands are not \cite{Gardner:2012}. The actual soundness proof was done using big step operational semantics that was defined for most of the ECMAScript 3 standard. This big step  semantics supplements previous effort to develop a small step operational semantics for core ECMAScript 3 functionality by Maffeis et al. \cite{Maffeis:2008}. An explanation of operational semantics can be seen in Section~\ref{sec:opsem}.
@@ -211,7 +307,7 @@ Currently, many intermediate languages exist, and one of the most prominent is t
 
 \item[WALA] Another interesting intermediate language, initially developed by IBM, is WALA \cite{WALA}. Unlike most other intermediate languages which are developed and used in academia, WALA is a set of full-fledged Java libraries used in production code for static and dynamic analyses. Although the bytecode is written in Java, it also supports simple program analyses for JavaScript in the form of JS-WALA \cite{WALA2}.
 
-\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript, except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and it focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features of S5 include accessors and covering the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and $S5$ are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
+\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript, except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and it focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features of S5 include accessors and covering the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
 
 \item[JSIL] Like other intermediate languages, JSIL does not have many of the high-level language constructs. Instead, it has simple $\texttt{goto}$ commands with labels and actions that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
 
@@ -232,7 +328,7 @@ The syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
 \item[High-Level Languages] Lastly, there are many studies focusing on high level constructs of JavaScript rather than using intermediate representations for JavaScript verification. For example, Jensen et al. \cite{unevalizer2012} describes a way to transform JavaScript programs to eliminate the use of \texttt{eval} functions to improve static analysis of JavaScript source code. But as these methods only verify the source programs, and not the programming language itself, they are outside the scope of this project and will not be discussed in further detail.
 \end{description}
 
-\section{Operational Semantics and Specification in Action}
+\section{Operational Semantics and Specification in Action}\label{sec:opsemac}
 \subsection{While Loop}
 A simple $\mathtt{While}$ command in operational semantics was demonstrated for both small step and big step semantics in section~\ref{sec:opsem}. In JavaScript, however, the definition for $\mathtt{While}$ is much more complicated. The following subsections will describe the $\mathtt{While}$ command as defined in the JavaScript standard, in operational semantics, and finally in JSIL code.
 
