@@ -78,10 +78,12 @@
 \contentsline {subsection}{\numberline {9.2.2}JSIL Implementation}{41}{subsection.353}
 \contentsline {section}{\numberline {9.3}A Working Example}{42}{section.389}
 \contentsline {chapter}{\numberline {10}String Library}{43}{chapter.403}
-\contentsline {section}{\numberline {10.1}String Library Functions}{43}{section.404}
-\contentsline {chapter}{\numberline {11}Testing}{44}{chapter.411}
-\contentsline {section}{\numberline {11.1}Array Library and Arguments Object}{44}{section.412}
-\contentsline {subsection}{\numberline {11.1.1}Array Library}{44}{subsection.413}
-\contentsline {subsection}{\numberline {11.1.2}Arguments Object}{44}{subsection.414}
-\contentsline {section}{\numberline {11.2}String Library}{44}{section.415}
-\contentsline {chapter}{\numberline {12}Conclusion}{45}{chapter.416}
+\contentsline {section}{\numberline {10.1}JavaScript Strings}{43}{section.404}
+\contentsline {section}{\numberline {10.2}String Library Functions}{43}{section.405}
+\contentsline {chapter}{\numberline {11}Testing}{45}{chapter.412}
+\contentsline {section}{\numberline {11.1}The Testing Interface}{45}{section.413}
+\contentsline {section}{\numberline {11.2}Array Library and Arguments Object}{49}{section.419}
+\contentsline {subsection}{\numberline {11.2.1}Array Library}{49}{subsection.420}
+\contentsline {subsection}{\numberline {11.2.2}Arguments Object}{49}{subsection.421}
+\contentsline {section}{\numberline {11.3}String Library}{49}{section.422}
+\contentsline {chapter}{\numberline {12}Conclusion}{51}{chapter.429}

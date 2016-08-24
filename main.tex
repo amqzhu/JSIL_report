@@ -1200,37 +1200,275 @@ In non-strict code, the Arguments Object would have the following new properties
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{String Library}
+\section{JavaScript Strings}
+JavaScript distinguishes between string primitives and String Objects. String primitives are simply a sequence of characters enclosed in either single quotation marks or double quotation marks, whereas String Objects are created with the String Object constructor and the \textbf{new} keyword. When a String Object method is called on a primitive string value, JavaScript automatically converts the primitive into an Object in order to execute the method.
+
+Strings are represented as ... in JavaScript
+
 \section{String Library Functions}
 The JavaScript String Library includes three String Object constructor functions, and 20 String Prototype functions. A significant portion of the String Library methods depend on additional constructs, such as the JavaScript Regular Expressions Library and Unicode implementations, and therefore was outside the scope of this project. Thus, a selection of methods was focused upon and described below.
 
 \begin{enumerate}
 \item String.prototype.charAt(pos) \newline
-
+This method takes in an input that could be coerced into an integer, and returns a string value that is the character at this position in the original String Object. If no character exists at the position, the empty string is returned. \\
+This method works the same way as using bracket notation. A String Object can be treated as an Array Object consisting of characters, and using bracket notation on a specific position, or index, returns a String value with the corresponding character.
 
 \item String.prototype.concat( [ string1 [, string2 [, ...]]] ) \newline
-
+This method takes in zero or more inputs, and appends the characters in each input to the characters list in the original String Object in the order given. Each of the inputs is converted to a String, and the result is a string value, not a String Object.
 
 \item String.prototype.indexOf(searchString, position) \newline
-
+This method searches for the entire searchString value within the String Object after it is converted into a string value, starting from the given position input, and returns the index within the String for which the searchString starts. If no position input is given, then the entire String is searched for searchString, and if there are multiple matches, the first instance of the match is returned. 
 
 \item String.prototype.lastIndexOf(searchString, position) \newline
-
+This method is similar to String.prototype.indexOf(searchString, position), except it starts looking for searchString at the end of the String and returns the first match of searchString from the end of String.
 
 \item String.prototype.slice(start, end) \newline
-
+This method takes the starting and ending positions within a String value converted from the String Object, and returns a substring corresponding to the characters within the starting and ending positions. The starting position is inclusive but the ending position is exclusive. If end is not defined, then it is assumed to be the end of the String. If either the starting or ending positions is negative, then the length of the String is added, essentially working as if counting from the end of the String. The returned substring is a string value, not a String Object.
 
 \item String.prototype.substring(start, end) \newline
-
+This method also takes the starting and ending positions within a String value converted from the String Object, and returns the corresponding substring, as in String.prototype.slice(start, end). The main difference is the treatment of the start and end inputs. In this method, if either input is negative, it is replaced with zero, and if either is larger than the length of the String Object, it is replaced with the length. If start is greater than end, the two values are swapped during method execution.
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Testing}
+\section{The Testing Interface}
+Once a user finishes implementing a feature and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. This site utilizes the ES6 test suite rather than the ES5 test suite for a number of reasons: %%TODO%%
+
+\begin{figure}[h!]
+  \caption{Main Testing Screen}
+  \includegraphics[width=1.0\textwidth]{main_testing_screen_boxed}
+\end{figure}
+
+The testing interface can be found at the following web address: https://psvg.doc.ic.ac.uk/ci/jscert-testing/jobs. Figure 11.1 is a screen shot of the landing page of the testing interface. The most important pieces of information on this page are the Job ID, which is boxed in red, and the Title, which is boxed in blue. The Job ID represents the a numbered sequence of Git commits made to the resource-reasoning/JavaScriptVerification project, with the most recent commits at the top of the screen. The Title represents the Git commit message, which ideally includes information about the content of the commit.
+
+\begin{figure}[h!]
+  \caption{Individual Job Testing Screen}
+  \includegraphics[width=1.0\textwidth]{job_testing_screen_boxed}
+\end{figure}
+
+Clicking on either the Job ID or the Title of a commit brings the user to the testing screen for that commit, shown in Figure 11.2. This is the main page for analyzing the tests, and it includes the following pieces of information.
+
+\begin{description}
+\item[Job ID] The Job ID is highlighted in black in the header. It shows the user which commit he or she is working with.
+
+\item[Summary Statistics] The summary statistics highlighted in green describes the number of tests in each of the following categories: TIMEOUT, FAIL, ABORT, and PASS. Tests in TIMEOUT are ones that took too long to run, either because the code being tested ran into infinite loops or other such reasons. Tests in FAIL are ones that threw errors into the standard output stream, because the code being tested did not produce the expected results. Tests in ABORT are ones that threw errors into the standard error stream, and they are usually due to JavaScript features that have not yet been implemented in JSIL. Tests in PASSED are ones that produced normal output to the standard output stream with expected results.
+
+\item[Category Checkboxes] The checkboxes highlighted in orange allows the user to filter out tests in one or more specific categories. The first four checkboxes correspond to the categories described previously, and the last checkbox corresponds to the UNKNOWN condition. Tests in UNKNOWN are ones that are still in the queue to be run once a commit is registered on the testing site.
+
+\item[Include Groups] The numerous test cases can be categorized into groups of tests, each targeting a related subset of tests. Most of these groups are created manually, and the creation process will be addressed later. When a group is selected, only the tests belonging to the group will be displayed. Multiple groups can be selected.
+
+\item[Exclude Groups] Groups of tests can be purposefully excluded from the display as well. For example, tests that only pertain to ES6 should be excluded from the analysis because they are outside the scope of this project.
+
+\item[Test Cases] The list of test cases is highlighted in red, and it includes the names of all of the tests the user is looking at. This list includes all of the tests in the test suite by default, and it will be different if the user has included and/or excluded specific groups. Each test is referred to by a test name, which is a hyperlink to a detailed test case page, which will be presented later.
+
+\item[Standard Output and Standard Error] The output of the tests is highlighted in pink, and it includes output to both the standard output stream and the standard error stream. Usually PASSED tests start with "Normal" and the FAILED tests start with "Error" in Stdout, and ABORTED tests start with "Fatal error" in Stderr.
+
+\item[Result] The results are highlighted in yellow, and they show what category the tests fall under.
+\end{description} 
+
+\begin{figure}[h!]
+  \caption{Test Cases Group}
+  \includegraphics[width=1.0\textwidth]{group_testing_screen_boxed}
+\end{figure}
+
+The different test cases groups can be found at https://psvg.doc.ic.ac.uk/ci/jscert-testing/groups/, and from that page, the user can view a specific group like Group 86 presented in Figure 11.3. Highlighted in black in the header is the group number, and highlighted in red is a search box, in which a user can type the name of a test case to see whether a test is already included in the group. The green button for \textbf{Add Test} enables the user to add additional tests into the group. Highlighted in blue is the list of tests belonging to this group. Each test is referred to by a name, and the hyperlink leads the user to a test case history page, which displays the results for this test case for all the recorded test runs. 
+
+\begin{figure}[h!]
+  \caption{Test Case Details}
+  \includegraphics[width=1.0\textwidth]{test_case_testing_screen_boxed}
+\end{figure}
+
+If the user clicked the hyperlink on the job page from Figure 11.2, he or she will see a test case details page like the one presented in Figure 11.4. The highlighted black box in the header, as well as the \textbf{Source} text in the red box contain hyperlinks to the source code of the test. The \textbf{Other Runs} text in the red box contains a hyperlink to the test case history page, which is also linked from the test cases group page as mentioned in Figure 11.3. The right hand side shows the group membership of this test, and the group of interest is highlighted in blue.
+
+\begin{figure}[h!]
+  \caption{Test Case Source Code}
+  \includegraphics[width=1.0\textwidth]{source_testing_screen_boxed}
+\end{figure}
+
+The source code of each test can be viewed on a Github page as shown in Figure 11.5. Highlighted in black on top shows the repository name, which is \textbf{test262}, which belongs to \textbf{tc39}. TC39 refers to Ecma International, Technical Committee 39 - ECMAScript, who are the owner of the \textbf{test262} suite. Highlighted in red is the name of the particular test case, and highlighted in blue is the source code. For tests that produced unexpected behavior, reading the source code to figure out what exactly the test case targets greatly helps in debugging the JSIL program.
+
 \section{Array Library and Arguments Object}
 \subsection{Array Library}
 
 \subsection{Arguments Object}
 
 \section{String Library}
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.charAt(pos)}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.concat( [ string1 [, string2 [, ...]]] )}
+\end{table}
+
+
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.indexOf(searchString, position)}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.lastIndexOf(searchString, position)}
+\end{table}
+
+
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.slice(start, end)}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{BLALALA}
+\end{subtable}%
+\begin{subtable}{0.5\textwidth}
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|} \hline
+\textbf{Test Category} & \textbf{Count} \\ \hline
+Pass & 5 \\
+Fail & 2 \\
+Abort & 18 \\
+Timeout & 0 \\
+Total & 25 \\ \hline
+\end{tabular}
+\caption{LALALASKJDLE}
+\end{subtable}
+\caption{String.prototype.substring(start, end)}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}
