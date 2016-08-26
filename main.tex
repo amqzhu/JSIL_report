@@ -55,6 +55,16 @@
 \fi
 }
 
+\definecolor{ltblue}{rgb}{0,0.4,0.4}
+\definecolor{dkblue}{rgb}{0,0.2,0.7}
+\definecolor{dkgreen}{rgb}{0,0.4,0}
+\definecolor{dkviolet}{rgb}{0.3,0,0.5}
+\definecolor{dkred}{rgb}{0.6,0,0}
+\definecolor{talkred}{rgb}{0.69,.20,0.22}
+\definecolor{talkblue}{rgb}{0.04,0.40,0.80}
+\definecolor{talkgreen}{rgb}{0.34,.81,0.10}
+\definecolor{oldtalkblue}{rgb}{0.22,.20,0.69}
+\definecolor{greenish}{rgb}{.0,.65,.0}
 
 %JavaScript - pretty
 \definecolor{SkyBlue}{rgb}{0.20,0.39,0.64}
@@ -88,6 +98,29 @@
 
 \lstnewenvironment{lstjs}{\lstset{language=JavaScript,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
 \def\jsinline{\lstinline[language=JavaScript, basicstyle=\small]}
+
+\lstdefinelanguage{JSIL}{
+  morekeywords=[1]{proc, ret, err, with, goto, {l-nth}},
+  numbers=left,
+  numbersep=4pt,
+  numberstyle=\tiny\color{dkblue},
+  columns=fullflexible,
+  sensitive=false,
+  comment=[l]{//},
+  captionpos=b,   
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  basicstyle=\scriptsize\texttt,
+  identifierstyle=\ttfamily\color{Aluminium5},
+  keywordstyle=[1]\ttfamily\color{Plum},
+  keywordstyle=[2]\ttfamily\color{SkyBlue},
+  stringstyle=\ttfamily\color{DarkGreen},
+  commentstyle=\ttfamily
+}[keywords,comments,strings]
+
+\lstnewenvironment{lstjsil}{\lstset{language=JSIL,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
+\def\jsilinline{\lstinline[language=JSIL, basicstyle=\small]}
 
 \begin{document}
 
@@ -146,14 +179,18 @@ JavaScript is being developed by the ECMAScript committee, which is in charge of
 Computer scientists have created high-level programming languages such as JavaScript with the idea of stepping away from machine code and assembly and, instead, instructing machines to perform actions in a more human-like way. Designing a programming language is a complicated endeavour, and possibilities for mistakes exist even in the earliest stages. For instance, five years after its creation, Java, a real life programming language, was shown not to comply with type safety~\cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. One should contrast this with the fact that program correctness plays a crucial role in life-critical or security-critical settings, such as in the aviation or banking industries.
 Therefore, when a programmer writes a piece of code that is intended to perform a certain task, without proper tools they cannot be entirely sure that their program will perform the task as required without any side effects. In order to reduce the errors and inconsistencies in different implementations of the same language, a formal verification system is necessary so that one could prove that programming languages and programs written in those languages are indeed performing correctly, as expected, with no ambiguities.
 
-\section{JavaScript Verification}
+\subsection{JavaScript Verification}
 
 \pmax{JavaScript, Internet, widespread, data security, leaks, this and that}
 
 Previous work on JavaScript verification that makes this project possible includes formal reasoning about JavaScript using program logics \cite{Gardner:2012}; JSCert and JSRef, which are a mechanized specification of the ECMAScript standard and a certified reference interpreter, both written in the Coq proof assistant \cite{Bodin:2014}; and the JSIL intermediate language, which relies on JSCert and is at the core of this project. All of these works will be discussed in more detail in sections~\ref{sec:jslogic} to~\ref{sec:jsverify}.
 
-\section{Outline of This Report}
-After the introduction, in Chapter \ref{cha:bckgnd} we proceed to give an overview of the background and related work for this thesis.
+\section{Thesis Project}
+
+\pmax{What is the project?}
+
+\section{Report Outline}
+Following the introduction, in Chapter \ref{cha:bckgnd} we proceed to give an overview of the background and related work for this thesis.
 
 \pmax{Polish as structure finalises.}
 
@@ -163,7 +200,7 @@ It will then provide detailed discussions on the topics of JavaScript, JSIL as a
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Background} \label{cha:bckgnd}
-In this chapter, we focus on the background of this thesis, including: the history and landscape of mechanised specifications for a variety of programming languages (Section \ref{sec:hist}); a detailed explanation of operational semantics, a technology for formalising the semantics of programming languages (Section \ref{sec:opsem}); a more in-depth look at the related work on JavaScript verification (Section \ref{sec:jsspec}); and initial work, which predates this thesis, on translating the ECMAScript standard first into pretty-big-step operational semantics and then from this operational semantics to JSIL, an intermediate language for JavaScript verification (Section \ref{sec:opsemac}).
+In this chapter, we focus on the background of this thesis, including: the history and landscape of mechanised specifications for a variety of programming languages (Section \ref{sec:hist}); a detailed explanation of operational semantics, a technology for formalising the semantics of programming languages (Section \ref{sec:opsem}); a more in-depth look at the related work on JavaScript specification and verification (Section \ref{sec:jsspec}); and initial work, which predates this thesis, on translating the ECMAScript standard first into pretty-big-step operational semantics and then from this operational semantics to JSIL, an intermediate language for JavaScript verification (Section \ref{sec:opsemac}).
 
 \section{History of Mechanised Specifications}\label{sec:hist}
 There has been a long history of mechanised specification of programming languages. Initial formalisations were often simple and would not cover all of the aspects of the languages they targeted. Additionally, they tended to be non-executable and thus the appropriateness of their definitions was at times uncertain \cite{Ellison:2012}. Gradually, formalisations became increasingly mechanised, executable, and testable against standard test suites such as ECMAScript Test262 and GCC torture tests, or specific implementations such as Mozilla's JavaScript in order to ascertain actual real-life correctness of these specifications. The following subsections describe a number of mechanised specifications for various programming languages.
@@ -228,7 +265,7 @@ Small step operational semantics is also called structural operational semantics
 \inferrule[S-ADD]{\underline{\texttt{n}_1} + \underline{\texttt{n}_2} = \underline{\texttt{n}_3}}{\texttt{n}_1 + \texttt{n}_2 \rightarrow \texttt{n}_3 }
 \end{mathpar}
 
-A more concrete evaluation example, $(1 + 3) + ( 2 + 1 ) \rightarrow 4 + (2 + 1) \rightarrow 4 + 3 \rightarrow 6$, would require first the S-LEFT rule to be applied to $(1 + 3)$, then the S-ADD rule to procude 4 and give the intermediate result $4 + (2 + 1)$; next, the S-RIGHT rule needs to be applied to $(2 + 1)$ and the S-ADD rule to produce 3 to give the intermediate result $4 + 3$; finally, another application of S-ADD yields the final result, which is 7 \cite{Lecture2}.
+A more concrete evaluation example, $(1 + 3) + ( 2 + 1 ) \rightarrow 4 + (2 + 1) \rightarrow 4 + 3 \rightarrow 7$, would require first the S-LEFT rule to be applied to $(1 + 3)$, then the S-ADD rule to procude 4 and give the intermediate result $4 + (2 + 1)$; next, the S-RIGHT rule needs to be applied to $(2 + 1)$ and the S-ADD rule to produce 3 to give the intermediate result $4 + 3$; finally, another application of S-ADD yields the final result, which is 7 \cite{Lecture2}.
 
 As for the $\mathtt{while}$ command, only one rule is necessary as the semantics takes care of the recursive looping on its own. Only the initial step needs to be defined and the rule will carry on until it reaches a $\mathtt{skip}$ condition. Details for the small step evaluation rules for sequential composition and conditionals have been omitted. The following small step semantics for the $\mathtt{while}$ command is presented in the Models of Computation course at Imperial for second-year Computing students.\footnote{It was necessary to self-study a portion of the materials presented in the second-year Models of Computation course to get up to speed with operational semantics.}
 
@@ -237,7 +274,7 @@ $$
 $$
 
 \noindent We can see that, if $B$ evaluates to $\mathtt{false}$, the loop terminates as we reach the $\mathtt{skip}$ command in the $\mathtt{else}$ branch. Otherwise, $B$ evaluates to $\mathtt{true}$ and
-we \emph{unroll} the loop once, i.e.~we execute sequentially the body $C$ of the loop (which may change the state) with the recursive call of the original $\mathtt{while}$ command. 
+we {unroll} the loop once, i.e.~we execute sequentially the body $C$ of the loop (which may result in a change to the state) with the recursive call of the original $\mathtt{while}$ command. 
 
 \subsection{Big Step Semantics}
 Big step operational semantics is also called natural operation semantics, and in contrast to small step, it evaluates the entire expression in one step and returns the final result immediately \cite{Lecture2}, and the behavior of one term can be seen as the composition of the behaviors of its sub-terms \cite{chargueraud-13-pretty}. The relation between two states is commonly represented by the $\Downarrow$ symbol, and the evaluation for the addition operator is given below. In B-NUM, a number evaluates to itself. The equivalent rule does not exists in the small step semantics, because numbers are considered to be fully evaluated there. In B-ADD, $\mathbf{E}_1$ and $\mathbf{E}_2$ are evaluated separately to two numbers, $\texttt{n}_1$ and $\texttt{n}_2$, respectively, while applying actual addition in the same rule to arrive at the final answer $\texttt{n}_3$.
@@ -281,79 +318,83 @@ In $\mathbf{E}_1$ + $\mathbf{E}_2$, to avoid the big step redundancy, one expres
 \inferrule[PB-+\textsubscript{2}] { }{\texttt{n}_1 +_2 \texttt{n}_2 \Downarrow \underline{\texttt{n}_1} + \underline{\texttt{n}_2}}
 \end{mathpar}
 
-\section{JavaScript Specifications}\label{sec:jsspec}
+\section{JavaScript Specification and Verification}\label{sec:jsspec}
 
 \subsection{JS Logic}\label{sec:jslogic}
-Gardner et al. \cite{Gardner:2012} have demonstrated that a program logic based on separation logic can be used to reason about JavaScript, since separation logic is useful to reason about programs that manipulate the heap, and JavaScript stores the entire program state in the object heap. A concept of weak locality was employed to establish the soundness of reasoning, since program commands are required to be local but JavaScript commands are not \cite{Gardner:2012}. The actual soundness proof was done using big step operational semantics that was defined for most of the ECMAScript 3 standard. This big step  semantics supplements previous effort to develop a small step operational semantics for core ECMAScript 3 functionality by Maffeis et al. \cite{Maffeis:2008}. An explanation of operational semantics can be seen in Section~\ref{sec:opsem}.
+Gardner et al. \cite{Gardner:2012} have demonstrated that a program logic based on separation logic can be used to reason about JavaScript, in particular the ECMAScript 3 standard. Their main motivation for using separation logic was that this particular kind of logic is useful when reasoning about heap-manipulating programs, which is precisely how JavaScript works, as it stores the entire program state within a heap. A concept of weak locality was employed to establish the soundness of the logic, as program commands are required to be local but JavaScript commands are not \cite{Gardner:2012}. The soundness proof was based on big step operational semantics, which was developed for most of the standard, but was simplified (e.g.~descriptors were not considered). This semantics supplements a previous effort of developing a small step operational semantics for core ECMAScript 3 functionalities by Maffeis et al. \cite{Maffeis:2008}.
 
 \subsection{JSCert and JSRef}\label{sec:jscert}
-JSCert is a Coq specification of JavaScript \cite{Bodin:2014}. JSCert rules are in the form of $t/S/C \Downarrow_s o$, where $t$ is a statement, $S$ is the object heap and environment record, $C$ is the execution context, and $o$ is the output, meaning that if we execute the statement $t$ starting from the object heap $S$ and execution context $C$, we will obtain the output $o$. The output consists of the final state of the heap and a completion triple indicating the type of the return, the type of return value, and the return label \cite{Bodin:2014}. JSCert can be used to reason only about the scenarios where the program terminates, and not those in which it diverges.
+JSCert is a mechanised specification of the ECMAScript 5 standard in the proof assistant Coq\cite{Bodin:2014}. It uses pretty-big-step semantics, covers all of the language constructs and a small part of the built-in libraries, and consists of approximately eight hundred derivation rules. These rules are of the form $t/S/C \Downarrow_s S'/o$, where $t$ is the statement being executed, $S$ is the current program state, $C$ is the current execution context, and $S'/o$ is the output, meaning that if we execute the statement $t$ starting from the state $S$ and execution context $C$, we will obtain the output $S'/o$. The output consists of the final state $S'$ and a completion triple $o$ containing the return type, the return value, and the return label \cite{Bodin:2014}. JSCert, given that it defined inductively, can be used to reason only about the scenarios where the program terminates, and not those in which it diverges. 
 
-JSRef, on the other hand, although also written in Coq, is a reference interpreter rather than a specification. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef functions are extracted automatically into OCaml code thanks to Coq, which enables JSRef functions to be run directly on Test262 to establish the correctness of both JSRef and JSCert with respect to the ECMAScript standard.
+% number of rules
+
+JSCert comes accompanied by JSRef, an executable reference interpreter for JavaScript, written in Coq and extracted to OCaml. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef is proven correct in Coq with respect to JSCert; it is also tested against the official ECMAScript Test262 test suite in order to establish the correctness of both JSRef and JSCert with respect to the  standard.
 
 \subsection{JSVerify}\label{sec:jsverify}
-For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Coupled with its dynamic nature, JavaScript code is often buggy \cite{Gardner:2012} and even vulnerable to security attacks \cite{Lee:2007}. 
+For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Given its highly dynamic nature, JavaScript code can often have bugs \cite{Gardner:2012} and even be vulnerable to security attacks \cite{Lee:2007}. 
 
-The ideas presented in sections~\ref{sec:jslogic} and~\ref{sec:jscert} culminated into a verification project called JSVerify, which is currently ongoing. Its aims are to use separation logic to reason about JavaScript programs and provide proofs of their correctness. This project ties in with JSVerify in that JSVerify will actually analyze code written in the intermediate language JSIL from this project, in order to determine the corresponding JavaScript program's correctness. This can be accomplished because there exists a proof of correctness of the translation from JavaScript to JSIL.
+The ideas presented in sections~\ref{sec:jslogic} and~\ref{sec:jscert} have led to a currently ongoing verification project called JSVerify. Its aims are to use separation logic to reason about JavaScript programs and provide proofs of their correctness. This project ties in with JSVerify in that JSVerify will actually analyse code written in the intermediate language JSIL from this project, in order to determine the correctness of the corresponding JavaScript program. This can be accomplished because there exists a proof of correctness of the translation from JavaScript to JSIL.
 
-\subsection{Intermediate Languages for JavaScript Verification}\label{sec:ir}
-Most real world programming languages are far too complex for reasonable analysis, and simpler forms of these languages are necessary for verification. Intermediate representations provide that simplicity. Historically, intermediate representations have been used in compilers, translating the source language into an intermediate form before translating into assembly code \cite{Necula2002}. As the need for language verification arose, a form of intermediate representation, called intermediate language, found its usefulness in helping analyze the source program in addition to being used in compilers.
+\subsection{Intermediate Languages for JavaScript}\label{sec:ir}
+Most real-world programming languages are far too complex for any reasonable analysis, and need to be transformed to a simpler form in order for verification to take place. These simpler forms are called {\em Intermediate representations}. Historically, intermediate representations have already been used in many compilers, as a compilation step between the initial source code and the resulting assembly code \cite{Necula2002}. As the need for language verification arose, intermediate representations, in this context also called intermediate languages, found their usefulness in this field as well.
 
-Currently, many intermediate languages exist, and one of the most prominent is that for C, called CIL. Unlike C, CIL has only one looping construct, it makes the return statement explicit for all functions, and it simplifies the type system \cite{Necula2002}.
+Currently, many intermediate languages exist; one of the most prominent is CIL, which targets the C programming language. Unlike C, CIL has only one looping construct, it makes the return statement explicit for all functions, and it simplifies the type system \cite{Necula2002}.
 
 \paragraph{JavaScript Intermediate Languages}
 \begin{description}
-\item[JSIR] One intermediate language is JSIR \cite{Livshits:2016:Misc}, which aims to make different analysis tools more unified and less platform-dependent. Much of its grammar is defined, and can be found in the Github as cited \cite{Livshits:2016:Misc}. However, up to this point, JSIR has not been implemented and there is no compilation provided from any higher-level programming language to JSIR.
+\item[JSIR] One intermediate language for JavaScript is JSIR \cite{Livshits:2016:Misc}, which aims to make different analysis tools more unified and less platform-dependent. Much of its grammar is defined, and can be found at \cite{Livshits:2016:Misc}. However, up to this point, there have been no implementations for JSIR and there is no compilation provided from any higher-level programming language to JSIR.
 
-\item[WALA] Another interesting intermediate language, initially developed by IBM, is WALA \cite{WALA}. Unlike most other intermediate languages which are developed and used in academia, WALA is a set of full-fledged Java libraries used in production code for static and dynamic analyses. Although the bytecode is written in Java, it also supports simple program analyses for JavaScript in the form of JS-WALA \cite{WALA2}.
+\item[WALA] Another interesting intermediate language, initially developed by IBM, is WALA \cite{WALA}. Unlike most other intermediate languages which are developed and used in academia, WALA is a set of full-fledged Java libraries used in production code for static and dynamic analysis of Java code. It also supports simple program analyses for JavaScript, in the form of JS-WALA \cite{WALA2}.
 
-\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript, except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and it focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features of S5 include accessors and covering the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
+\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript (ECMAScript 3), except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features covered by S5 include accessors and the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
 
-\item[JSIL] Like other intermediate languages, JSIL does not have many of the high-level language constructs. Instead, it has simple $\texttt{goto}$ commands with labels and actions that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
+\item[JSIL] is the intermediate language around which this thesis revolves. Like other intermediate languages, JSIL does not have many high-level language constructs. Instead, it is a simple $\texttt{goto}$ language with labels and commands that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} The full syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
 
-\begin{center}
-\begin{tabular}{p{9cm}} \hline
-\textbf{JavaScript Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
-\end{tabular}
+%As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
 
-\begin{tabular}{p{9cm}} \hline
-\textbf{JSIL Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup \mathcal{V}_{JSIL} $  \\ \hline
-\end{tabular}
-\end{center}
+%\begin{center}
+%\begin{tabular}{p{9cm}} \hline
+%\textbf{JavaScript Heap Model} \\
+%$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
+%\end{tabular}
+%
+%\begin{tabular}{p{9cm}} \hline
+%\textbf{JSIL Heap Model} \\
+%$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup \mathcal{V}_{JSIL} $  \\ \hline
+%\end{tabular}
+%\end{center}
 
-The syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
-
-\item[High-Level Languages] Lastly, there are many studies focusing on high level constructs of JavaScript rather than using intermediate representations for JavaScript verification. For example, Jensen et al. \cite{unevalizer2012} describes a way to transform JavaScript programs to eliminate the use of \texttt{eval} functions to improve static analysis of JavaScript source code. But as these methods only verify the source programs, and not the programming language itself, they are outside the scope of this project and will not be discussed in further detail.
+\item[High-Level Languages] Lastly, there are many studies that are focusing on the high-level constructs of JavaScript rather than using intermediate representations for JavaScript verification. For example, Jensen et al. \cite{unevalizer2012} describe a way to transform JavaScript programs to eliminate the use of \texttt{eval} functions to improve static analysis of JavaScript source code. But, as these methods only verify the source programs, and not the programming language itself, they are outside the scope of this project and will not be discussed in further detail.
 \end{description}
 
 \section{Operational Semantics and Specification in Action}\label{sec:opsemac}
 \subsection{While Loop}
-A simple $\mathtt{While}$ command in operational semantics was demonstrated for both small step and big step semantics in section~\ref{sec:opsem}. In JavaScript, however, the definition for $\mathtt{While}$ is much more complicated. The following subsections will describe the $\mathtt{While}$ command as defined in the JavaScript standard, in operational semantics, and finally in JSIL code.
+To illustrate how operational semantics can be applied to real-world languages, we come back to the $\mathtt{while}$ command, the simpler version of which we have formalised for both small step and big step semantics in Section~\ref{sec:opsem}. In JavaScript, however, the definition for $\mathtt{while}$ is much more complicated. The following subsections describe the $\mathtt{while}$ command as defined in the JavaScript standard and the pretty-big-step operational semantics used in the development of JSIL.
 
 \subsubsection{ECMAScript 5 Standard} 
-The while statement is given as the following in chapter 12.6.2 \cite{EcmaScript}. Its definition makes use of various JavaScript constructs such as references, predefined JavaScript values, and label sets. It also depends on other built-in functions such as \texttt{ToBoolean} and \texttt{GetValue}. Thus to completely understand how $\mathtt{While}$ functions, one must understand these other constructs as well.
-
-The production \textit{IterationStatement} : while \textit{( Expression ) Statement} is evaluated as follows:
+The while statement is given as follows in Chapter 12.6.2 \cite{EcmaScript}. Its definition makes use of various JavaScript constructs such as references, predefined JavaScript values, and label sets. It also depends on other built-in functions such as \texttt{ToBoolean} and \texttt{GetValue}. Thus, to completely understand how $\mathtt{while}$ functions, one must understand these other constructs as well, which is beyond the scope of this illustration. The production \textit{IterationStatement} : while \textit{( Expression ) Statement} is evaluated as follows:
 \begin{enumerate}
+\setlength{\itemsep}{0cm}
 \item Let \textit{V} = $\texttt{empty}$.
 \item Repeat
 \begin{enumerate}
+\setlength{\itemsep}{0cm}
 \item[a.] Let \textit{exprRef} be the result of evaluating \textit{Expression}.
-\item[b.] If ToBoolean(GetValue(\textit{exprRef})) is \textbf{false}, return ($\texttt{normal, \textit{V}, empty}$).
+\item[b.] If ToBoolean(GetValue(\textit{exprRef})) is \textbf{false}, return ($\texttt{normal, {V}, empty}$).
 \item[c.] Let \textit{stmt} be the result of evaluating \textit{Statement}.
 \item[d.]If \textit{stmt}.value is not $\texttt{empty}$, let \textit{V} = \textit{stmt}.value.
 \item[e.]If \textit{stmt}.type is not $\texttt{continue}$ $||$ \textit{stmt}.target is not in the current label set, then
 \begin{enumerate}
 \item[i.] If \textit{stmt}.type is $\texttt{break}$ and \textit{stmt}.target is in the current label set, then
 \begin{enumerate} 
-\item Return ($\texttt{normal, \textit{V}, empty}$).
+\item Return ($\texttt{normal, {V}, empty}$).
 \end{enumerate}
 \item[ii.] If \textit{stmt} is an abrupt completion, return \textit{stmt}.
 \end{enumerate}
 \end{enumerate}
 \end{enumerate}
+
+\noindent This description of the \texttt{while} command mostly follows the simple version shown in Section~\ref{sec:opsem}. Lines (2a)-(2c) essentially correspond to the checking of the loop condition and loop unrolling, while the remaining steps take care of the JavaScript-specific semantics of \texttt{while}. These include, for one, step (2d), which meets the requirement that the \texttt{while} loop returns the last {\em non-empty} value obtained from the executing the loop body, rather than simply returning the last one.
 
 %\subsubsection{JSCert example for while semantics}
 %??? unsure whether to include
@@ -372,57 +413,55 @@ The production \textit{IterationStatement} : while \textit{( Expression ) Statem
 %    all can throw errorws 
 
 \subsubsection{ES5 Strict Operational Semantics} 
-Based on the ECMAScript standard definition, operational semantics for the $\mathtt{While}$ command in JSIL is much more complicated since it needs to faithfully represent the standard. Each bullet in the standard's text is transcribed into a rule in the operational semantics, and the repeat statement is taken care of by loop unrolling of the semantics.
-
-In the style of pretty big step semantics, the relation takes the form of $L, l \vdash \langle h, s \rangle \Downarrow \langle h', o \rangle$. $L$ is the scope chain, $l$ is the location of \textit{this}, $h$ and $h'$ are the initial and final heaps, $s$ is the statement to be evaluated, and $o$ is the outcome. In the rules below, $s$ is defined to be $while(e){s}$, and $\Downarrow^\gamma$ represents the actual evaluation of expressions or statements. 
-
+Based on the ECMAScript standard definition, operational semantics for the $\mathtt{while}$ command in JSIL is much more complicated since it needs to faithfully represent the standard. Each bullet in the standard's text is transcribed into a rule in the operational semantics, and the repeat statement is taken care of by a recursive call. In the style of pretty big step semantics, the semantic relation in JSIL (simplified for this example) takes the form $\vdash \langle h, s \rangle \Downarrow \langle h', o \rangle$. Here, $h$ and $h'$ are the initial and final heaps, $s$ is the statement to be evaluated, and $o$ is the outcome. In the rules below, the statement $s$ is defined to be \jsinline|while(e){s}|, and we do not show the rules for dealing with \jsinline|break| and \jsinline|continue| statements inside the loop (step 2e above):
 \begin{mathpar}
-\inferrule[While]{L, l \vdash \langle h, \textnormal{while}_1(e) \{ s, \textnormal{empty} \} \rangle \Downarrow \langle h', o' \rangle}{L, l \vdash \langle h, \textnormal{while}(e) \{ s \} \rangle \Downarrow \langle h', o' \rangle}
+\inferrule[While (1)]{\vdash \langle h, \textnormal{while}_1(e) \{ s, \textnormal{empty} \} \rangle \Downarrow \langle h', o' \rangle}{\vdash \langle h, \textnormal{while}(e) \{ s \} \rangle \Downarrow \langle h', o' \rangle}
 \and
-\inferrule[While-1] {L, l \vdash \langle h, e \rangle \Downarrow^\gamma \langle h_1, o_1 \rangle \\\\ L, l \vdash \langle h_1, \textnormal{while}_2(o_1,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}{L, l \vdash \langle h, \textnormal{while}_1(e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
+\inferrule[While-1 (2a)] {\vdash \langle h, e \rangle \Downarrow \langle h_1, o_1 \rangle \\ \vdash \langle h_1, \textnormal{while}_2(o_1,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}{\vdash \langle h, \textnormal{while}_1(e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
 \and
-\inferrule[While-2(true)]{\neg \textnormal{False}(v) \\ L, l \vdash \langle h, s \rangle \Downarrow^\gamma \langle h_1, o_1 \rangle \\\\ L, l \vdash \langle h, \textnormal{while}_3(e) \{ s,o,o_1 \} \rangle \Downarrow \langle h_2, o_2 \rangle}{L, l \vdash \langle h, \textnormal{while}_2(v,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
+\inferrule[While-2(false) (2b)]{\textnormal{False}(v)}{\vdash \langle h, \textnormal{while}_2(v,e) \{ s, o \} \rangle \Downarrow \langle h, o \rangle}
 \and
-\inferrule[While-2(false)]{\textnormal{False}(v)}{L, l \vdash \langle h, \textnormal{while}_2(v,e) \{ s, o \} \rangle \Downarrow \langle h, o \rangle}
+\inferrule[While-2(true) (2c)]{\neg \textnormal{False}(v) \\ \vdash \langle h, s \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ \vdash \langle h, \textnormal{while}_3(e) \{ s,o,o_1 \} \rangle \Downarrow \langle h_2, o_2 \rangle}{ \vdash \langle h, \textnormal{while}_2(v,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
 \and
-\inferrule[While-3(value)]{L, l \vdash \langle h, \textnormal{while}_1(e) \{ s, v \} \rangle \Downarrow \langle h_1, o_1 \rangle}{L, l \vdash \langle h, \textnormal{while}_3(e) \{ s, o,v \} \rangle \Downarrow \langle h_1, o_1 \rangle}
+\inferrule[While-3(value) (2, 2d)]{\vdash \langle h, \textnormal{while}_1(e) \{ s, v \} \rangle \Downarrow \langle h_1, o_1 \rangle}{\vdash \langle h, \textnormal{while}_3(e) \{ s, o,v \} \rangle \Downarrow \langle h_1, o_1 \rangle}
 \and
-\inferrule[While-3(return)]{L, l \vdash \langle h, \textnormal{while}_3(e) \{ s,o, \textnormal{ret}\ v \} \rangle \Downarrow \langle h, \textnormal{ret}\ v \rangle}{}
-\and
-\inferrule[While-3(empty)]{L, l \vdash \langle h, \textnormal{while}_1(e) \{ s,o \} \rangle \Downarrow \langle h_1, o_1 \rangle}{L, l \vdash \langle h, \textnormal{while}_3(e) \{ s, o,\textnormal{empty} \} \rangle \Downarrow \langle h_1, o_1 \rangle}
+\inferrule[While-3(empty) (2d)]{\vdash \langle h, \textnormal{while}_1(e) \{ s,o \} \rangle \Downarrow \langle h_1, o_1 \rangle}{\vdash \langle h, \textnormal{while}_3(e) \{ s, o,\textnormal{empty} \} \rangle \Downarrow \langle h_1, o_1 \rangle}
 \end{mathpar}
 
-\subsubsection{JSIL Code}
-Compared to the JSIL operational semantics, there are a few constructs here not represented above, such as the \textit{fresh}() command, which creates a fresh JSIL variable to hold a return value. 
+\noindent The rules above are annotated with the line of the ECMAScript standard description to which they correspond, from which we can see that there exists almost a line-by-line eyeball correspondence, which gives us confidence that the standard has been formalised correctly. 
 
-The \texttt{::} symbol represents concatenation of commands, and the \texttt{goto} command  has two different forms---\texttt{goto} \textit{i} directs the flow of control directly to line \textit{i}, and \texttt{goto} [e] \textit{i, j} first evaluates e, and if the evaluation result is \texttt{true}, the flow of control will go to line \textit{i}, otherwise to line \textit{j}. The \texttt{+} and \texttt{-} notations in the \texttt{goto} commands represent whether the program flow should go down or go up a certain number of lines, respectively, and the \texttt{\#} notation represents the number of lines that a certain command occupies, so $+\#cl_s$ means to go down the program the number of lines in $cl_s$. The JSIL program terminates when it reaches a \texttt{skip} command.
-\begin{center}
-\begin{minipage}{10cm}
-\begin{lstlisting}[escapeinside={(*}{*)}]
-(*$\textbf{let}\ x_e = fresh();\ x_s = fresh();$*)
-    (*$cl_e = \mathcal{C}_m(e, x_e);\ cl'_e = \mathcal{W}_{\gamma} (x_e);$*)
-    (*$cl_s = \mathcal{C}_m(s, x_s);\ cl'_s = \mathcal{W}_{\gamma}(x_s);$*)
-    (*$e = (x_e = \textnormal{false})\ ||\ (x_e = \textnormal{undefined})\ ||\ (x_e = \textnormal{null})\ ||\ (x_e = "")$*)
-    (*$\textbf{in} $*)
-        (*$x := \textnormal{empty}$*)
-        (*$cl_e :: cl'_e$*)
-        (*$\texttt{goto}\ [e]\ [+\#cl_s +\#cl'_s +4], [+1]$*)
-        (*$cl_s :: cl'_s$*)
-        (*$\texttt{goto}\ [x_s\ != \textnormal{empty}]\ [+1], [+2]$*)
-        (*$x := X_s$*)
-        (*$\texttt{goto}\ [-\#cl_e -\#cl'_e -\#cl_s -\#cl'_s -3]$*)
-        (*$\texttt{skip}$*)
-\end{lstlisting}
-\end{minipage}
-\end{center}
+%\subsubsection{JSIL Code}
+%Compared to the JSIL operational semantics, there are a few constructs here not represented above, such as the \textit{fresh}() command, which creates a fresh JSIL variable to hold a return value. 
+%
+%The \texttt{::} symbol represents concatenation of commands, and the \texttt{goto} command  has two different forms---\texttt{goto} \textit{i} directs the flow of control directly to line \textit{i}, and \texttt{goto} [e] \textit{i, j} first evaluates e, and if the evaluation result is \texttt{true}, the flow of control will go to line \textit{i}, otherwise to line \textit{j}. The \texttt{+} and \texttt{-} notations in the \texttt{goto} commands represent whether the program flow should go down or go up a certain number of lines, respectively, and the \texttt{\#} notation represents the number of lines that a certain command occupies, so $+\#cl_s$ means to go down the program the number of lines in $cl_s$. The JSIL program terminates when it reaches a \texttt{skip} command.
+%\begin{center}
+%\begin{minipage}{10cm}
+%\begin{lstlisting}[escapeinside={(*}{*)}]
+%(*$\textbf{let}\ x_e = fresh();\ x_s = fresh();$*)
+%    (*$cl_e = \mathcal{C}_m(e, x_e);\ cl'_e = \mathcal{W}_{\gamma} (x_e);$*)
+%    (*$cl_s = \mathcal{C}_m(s, x_s);\ cl'_s = \mathcal{W}_{\gamma}(x_s);$*)
+%    (*$e = (x_e = \textnormal{false})\ ||\ (x_e = \textnormal{undefined})\ ||\ (x_e = \textnormal{null})\ ||\ (x_e = "")$*)
+%    (*$\textbf{in} $*)
+%        (*$x := \textnormal{empty}$*)
+%        (*$cl_e :: cl'_e$*)
+%        (*$\texttt{goto}\ [e]\ [+\#cl_s +\#cl'_s +4], [+1]$*)
+%        (*$cl_s :: cl'_s$*)
+%        (*$\texttt{goto}\ [x_s\ != \textnormal{empty}]\ [+1], [+2]$*)
+%        (*$x := X_s$*)
+%        (*$\texttt{goto}\ [-\#cl_e -\#cl'_e -\#cl_s -\#cl'_s -3]$*)
+%        (*$\texttt{skip}$*)
+%\end{lstlisting}
+%\end{minipage}
+%\end{center}
 
 \subsection{Internal JavaScript Function: Get}\label{sec:get}
-An example of a JavaScript internal function that the $\mathtt{While}$ command uses is [[Get]], because during execution of $\mathtt{While}$, variables must be dereferenced to obtain their values. Indeed, the \textit{GetValue} command mentioned in step 2.b of $\mathtt{While}$ makes use of [[Get]] in its definition. [[Get]] itself depends on another internal function [[GetProperty]], which returns the property descriptor of the named property of this object or undefined \cite{EcmaScript}. This section follows the structure of the previous section, first describing the JavaScript standard, then the JSIL operational semantics, and finally JSIL code.
+JavaScript has a number of {\em internal} functions, which are not available to the programmer and provide essential under-the-hood functionalities. One example of a JavaScript internal function that the $\mathtt{while}$ command implicitly uses is the [[Get]] function, because during the execution of $\mathtt{while}$, references that are the returned as results of expression evaluation must be dereferenced in order to obtain their values. Indeed, the \textit{GetValue} command, which is responsible for the dereferencing, is mentioned in step 2.b of $\mathtt{while}$ and makes use of [[Get]] in its definition. [[Get]] itself, in turn, depends on another internal function [[GetProperty]], which returns the property descriptor of the named property of this object or \jsinline|undefined| \cite{EcmaScript}. This section follows and expands on the structure of the previous section, first describing the JavaScript standard, then the JSIL operational semantics, and finally, the corresponding JSIL code.
 
-\subsubsection{ECMAScript 5 Standard}\label{sec:getstandard}
-When the [[Get]] internal method of \textit{O} is called with property name \textit{P}, the following steps are taken:
+\subsubsection{ECMAScript 5 Standard: Get(O, P)}\label{sec:getstandard}
+When the [[Get]] method of object \textit{O} is called with property name \textit{P}, the following steps are taken:
 \begin{enumerate}
-\item Let \textit{desc} be the result of calling the [[GetProperty]] internal method of \textit{O} with property name \textit{P}.
+\setlength{\itemsep}{0pt}
+\item Let \textit{desc} be the result of calling the [[GetProperty]] method of \textit{O} with property name \textit{P}.
 \item If \textit{desc} is \textbf{undefined}, return \textbf{undefined}.
 \item If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]].
 \item Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]].
@@ -430,40 +469,41 @@ When the [[Get]] internal method of \textit{O} is called with property name \tex
 \item Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments.
 \end{enumerate}
 
-\subsubsection{ES5 Strict Operational Semantics}
-The formalization of [[Get]] also closely follows the ECMAScript standard. Here \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. And lastly in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$.
+\noindent Here, we can notice the complexity behind even the simplest of operations in JavaScript. For instance, properties are not associated with values, but with structures called descriptors. These descriptors may be data descriptors, from which we can read the value directly, but can also be accessor descriptors, containing special methods, called getters, via which one obtains the value of the property. All of these concepts will be addressed in detail in Chapter \ref{sec:javascript}.
 
-\begin{mathpar}
-\inferrule[G-getProp]{L, v_t \vdash \langle h, \mathcal{I}^o_{gp}(x) \rangle \Downarrow \langle h, o \rangle \\\\ L, v_t \vdash \langle h, \mathcal{I}^o_g(o)_1 \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(x) \rangle \Downarrow \langle h_f, o_f \rangle}
+\subsubsection{ES5 Strict Operational Semantics}
+The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.\begin{mathpar}
+\inferrule[G-getProp (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}^o_{gp}(x) \rangle \Downarrow \langle h, o \rangle \\\\ L, v_t \vdash \langle h, \mathcal{I}^o_g(o)_1 \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(x) \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
-\inferrule[G-propUndef] {L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc undefined}_1) \rangle \Downarrow \langle h, \textnormal{desc undefined} \rangle}{}
+\inferrule[G-propUndef (Step 2)] {L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc undefined}_1) \rangle \Downarrow \langle h, \textnormal{desc undefined} \rangle}{}
 \and
-\inferrule[G-propDefData]{\mathcal{P}_{(dd)}(d) \\ v=d.[[V]]}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h, v \rangle}
+\inferrule[G-propDefData (Step 3)]{\mathcal{P}_{(dd)}(d) \\ v=d.[[V]]}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h, v \rangle}
 \and
-\inferrule[G-propDefAccGetUndef]{\mathcal{P}_{(ad)}(d) \\ d.[[G]]=\textnormal{undefined}}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h, \textnormal{undefined} \rangle}
+\inferrule[G-propDefAccGetUndef (Step 5)]{\mathcal{P}_{(ad)}(d) \\ d.[[G]]=\textnormal{undefined}}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h, \textnormal{undefined} \rangle}
 \and
-\inferrule[G-propDefAccGetDef]{\mathcal{P}_{(ad)}(d) \\ a_g = d.[[G]] \neq \textnormal{undefined} \\ L, v_t \vdash \langle h, a_g() \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h_f, o_f \rangle}
+\inferrule[G-propDefAccGetDef (Step 6)]{\mathcal{P}_{(ad)}(d) \\ a_g = d.[[G]] \neq \textnormal{undefined} \\ L, v_t \vdash \langle h, a_g() \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc}\ d)_1 \rangle \Downarrow \langle h_f, o_f \rangle}
 \end{mathpar}
 
 \subsubsection{JSIL Code}
-The JSIL translation faithfully follows the ECMAScript standard. The procedure \textit{o}\_\_\textit{get} takes two parameters, the object itself and a property name. The [[GetProperty]] internal function is first located, then called. Since the property name may not exist, [[GetProperty]] is called with an error label, \textit{elab}, to throw errors as necessary. Depending on whether [[GetProperty]] has returned undefined, \textit{o}\_\_\textit{get} either returns or determines the descriptor type of the result. Descriptors are modeled as a list of elements, with the zeroth element being a character that signals the type of the descriptor. For instance, data descriptors have `d' as the first element, accessor descriptors have `a', and general descriptors have `g'. For data descriptors, the first element is the \textit{Value} attribute, and for accessor descriptors, it is the \textit{Getter} attribute. The \texttt{nth} function indexes the n\textsuperscript{th} element in a list. If the descriptor is a data descriptor, its value is returned; if it is an accessor descriptor and its \textit{Getter} is undefined, undefined is returned. Otherwise, the program will find the scope of the descriptor's \textit{Getter}, and the location of the \textit{Getter}'s [[Call]] method, before actually calling the \textit{Getter} function and returning.
 
-\begin{center}
-\begin{minipage}{9cm}
-\begin{lstlisting}
+\begin{minipage}{0.55\textwidth}
+We will use this example to illustrate some basic concepts of JSIL. The JSIL translation of [[Get]], on the right, faithfully follows the ECMAScript standard. The corresponding JSIL procedure \jsilinline|o__get| takes two parameters, the location of the object \jsilinline|l| and a property name \jsilinline|prop| (line 1). The [[GetProperty]] internal function is first located in line 2, then called in line 3. Since any function call may return an error, [[GetProperty]] is called with an error label, \jsilinline|elab|, to catch errors if necessary. Depending on whether [[GetProperty]] has returned \jsilinline|$$undefined|, \jsilinline|o__get| either returns (line 4) or determines the descriptor type of the result (line 6) and the corresponding value or getter (line 7).
+\end{minipage} \qquad
+\begin{minipage}{0.45\textwidth}
+\begin{lstjsil}
 proc o__get (l, prop) {
-			gp := [l, ``@getProperty"];
-			xret := gp (l, prop) with elab;	
-			goto [xret = $$undefined] rlab def;
+				gp := [l, "@getProperty"];
+				xret := gp (l, prop) with elab;	
+				goto [xret = $$undefined] rlab def;
 			
-	def:	d := nth (xret, 0);
-			xret := nth (xret, 1);
-			goto [d = "d"] rlab acc;
+	def:	d := l-nth (xret, 0);
+				xret := l-nth (xret, 1);
+				goto [d = "d"] rlab acc;
 			
 	acc:	goto [xret = $$undefined] rlab get;
-	get:	xsc := [xret, ``@scope"];
-			fun := [xret, ``@call"];
-			xret := fun (xsc, l) with elab;
+	get:	xsc := [xret, "@scope"];
+				fun := [xret, "@call"];
+				xret := fun (xsc, l) with elab;
 			
 	rlab:	skip;
 	elab:	skip
@@ -473,9 +513,11 @@ with
     ret: xret, rlab;
     err: xret, elab;
 };
-\end{lstlisting}
+\end{lstjsil}
 \end{minipage}
-\end{center}
+
+ \noindent 
+In JSIL, descriptors are modelled as lists, with the 0\textsuperscript{th} element containing the descriptor type identifier, which is \jsinline|"d"| for data descriptors and \jsinline|"a"| for accessor descriptors. For data descriptors, the first element is the \jsinline|Value| attribute, and for accessor descriptors, it is the \jsinline|Get| attribute. The \jsilinline|l-nth| function returns the n\textsuperscript{th} element of a given list. If the descriptor is a data descriptor, its value is returned (line 8); if it is an accessor descriptor and its getter is \jsilinline|$$undefined|, \jsinline|$$undefined| is returned (line 10). Otherwise, the program will call the getter function and return the value obtained from that call (lines 11-13).
 
 \chapter{This Project and Concurrent Progress}
 %%TODO%%
