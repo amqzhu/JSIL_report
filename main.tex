@@ -1205,7 +1205,7 @@ JavaScript distinguishes between string primitives and String Objects. String pr
 
 Strings are represented as ... in JavaScript
 
-\section{String Library Functions}
+\section{String Library Functions}\label{sec:stringmethods}
 The JavaScript String Library includes three String Object constructor functions, and 20 String Prototype functions. A significant portion of the String Library methods depend on additional constructs, such as the JavaScript Regular Expressions Library and Unicode implementations, and therefore was outside the scope of this project. Thus, a selection of methods was focused upon and described below.
 
 \begin{enumerate}
@@ -1231,6 +1231,8 @@ This method also takes the starting and ending positions within a String value c
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Testing}
+Testing is an integral part of the development process, as test results either confirm the correctness of the implementation, or point out pitfalls to help improve implementation. Testing for this project was done concurrently with implementation, i.e., Array Library implementation and testing were completed before moving on to the String Library. Although testing was completed for all of the Library methods implemented in this project, this chapter will focus on explaining testing for the String Library methods specifically, after first giving an overview of the testing interface.
+
 \section{The Testing Interface}
 Once a user finishes implementing a feature and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. This site utilizes the ES6 test suite rather than the ES5 test suite for a number of reasons: %%TODO%%
 
@@ -1287,12 +1289,43 @@ If the user clicked the hyperlink on the job page from Figure 11.2, he or she wi
 
 The source code of each test can be viewed on a Github page as shown in Figure 11.5. Highlighted in black on top shows the repository name, which is \textbf{test262}, which belongs to \textbf{tc39}. TC39 refers to Ecma International, Technical Committee 39 - ECMAScript, who are the owner of the \textbf{test262} suite. Highlighted in red is the name of the particular test case, and highlighted in blue is the source code. For tests that produced unexpected behavior, reading the source code to figure out what exactly the test case targets greatly helps in debugging the JSIL program.
 
-\section{Array Library and Arguments Object}
-\subsection{Array Library}
-
-\subsection{Arguments Object}
+%\section{Array Library and Arguments Object}
+%\subsection{Array Library}
+%%TODO%%???
+%\subsection{Arguments Object}
 
 \section{String Library}
+As listed in Section~\ref{sec:stringmethods}, six String Library methods were implemented. Tests before implementing any of these methods were analyzed, and five tests have already passed for each method without implementation. Since the tests occur in all methods implemented, the \textbf{METHOD\_NAME} text in the bullet points can be substituted with the actual method names.
+
+\begin{description}
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A10.js] This test checks to see if the method's length property is not writable, i.e., its [[writable]] attribute is false. In the implementation, a set of initialization actions have already set this attribute to be false, so this test passed without the actual method implementation.
+
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A11.js] This test checks for the method's length property value. Similarly, this is already determined in the initialization step, and more specifically, the length values for charAt, concat, indexOf, and lastIndexOf are explicitly set to 1, and the length values for slice and substring are set to 2.
+
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A6.js] This test checks to see that the method does not have a prototype property.
+
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A7.js] This test checks to see that the method cannot be used as a constructor to create a new object. When all of these methods are created in the initialization step, their \textbf{construct} property is set to \textbf{empty}, so this test passed without actual method implementation.
+
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A8.js] This test checks to see if the method's length property is not enumerable, i.e., its [[enumerable]] attribute is false. The initialization step also sets this attribute to false, so this test passed before the actual method was implemented.
+\end{description}
+
+In addition, for each method there are two tests that have failed before any implementation, because the first is a new ES6 feature, and the second represents a change in program logic from ES5 to ES6.
+
+\begin{description}
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/name.js] In ES6, built-in function objects that are not anonymous functions all have a \textbf{name} property, whose [[value]] attribute is a String value. Its [[writable]] and [[enumerable]] attributes are false by default, and its [[configurable]] attribute is true by default.
+
+\item[test262/test/built-ins/String/prototype/METHOD\_NAME/S15.5.4.4\_A9.js] This test checks to see if the method's length property has the DontDelete attribute. In ES6, String methods' length property do not have the DontDelete attribute, and therefore can be deleted using the \textbf{delete} keyword. In ES5, however, since the length property in each method is not configurable, it cannot be deleted.
+\end{description}
+
+\begin{itemize}
+\item String.prototype.charAt(pos) \\
+In addition to the tests that have already passed and failed, there were 18 tests that were aborted for this method prior to any implementation, for a total of 25 tests. After completing implementation for charAt and rerunning the tests, there were still three ABORTED tests because they utilized the String.prototype.substring method to test charAt, but substring had not been implemented.
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/charAt/S15.5.4.4\_A4\_T1.js
+\item test262/test/built-ins/String/prototype/charAt/S15.5.4.4\_A4\_T2.js
+\item test262/test/built-ins/String/prototype/charAt/S15.5.4.4\_A4\_T3.js
+\end{itemize}
+After completing the substring method, these three tests passed as well. Excluding the nonrelevant tests, all 23 test cases for charAt have passed.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
@@ -1305,23 +1338,25 @@ Abort & 18 \\
 Timeout & 0 \\
 Total & 25 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 23 \\
+Fail & 0 \\
+Abort & 0 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 23 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After two rounds of implementations}
 \end{subtable}
 \caption{String.prototype.charAt(pos)}
 \end{table}
 
+\item String.prototype.concat( [ string1 [, string2 [, ...]]] ) \\
+The concat method was straightforward. There were 13 ABORTED tests prior to any implementation, and all 13 passed after the first round of coding. Excluding the two nonrelevant tests, all 18 test cases passed for concat.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
@@ -1330,87 +1365,145 @@ Total & 25 \\ \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
 Pass & 5 \\
 Fail & 2 \\
-Abort & 18 \\
+Abort & 13 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 20 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 18 \\
+Fail & 0 \\
+Abort & 0 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 18 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After Implementation}
 \end{subtable}
 \caption{String.prototype.concat( [ string1 [, string2 [, ...]]] )}
 \end{table}
 
-
+\item String.prototype.indexOf(searchString, position) \\
+In addition to the five PASSED tests and two FAILED tests, indexOf had an additional test in the PASSED category prior to any method implementation.
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/indexOf/S15.5.4.7\_A1\_T12.js \\
+This test checks to see whether an Array Object that included Strings as elements would be indexed correctly. As the Array Library had already been implemented, and it had the ability to hold any type of JavaScript Object in an Array, this test passed without the String method implementation.
+\end{itemize}
+After the first round of coding, an additional 21 test cases passed, but 7 tests were still in the ABORTED category, because they required additional methods from the Date and String Libraries that are outside the scope of this project. More specifically, one test required the Date.prototype.getTimezoneOffset method, and six tests required the String.fromCharCode method. Excluding the two nonrelevant tests, there were a total of 27 PASSED tests and 7 ABORTED tests for a total of 34 test cases.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
+Pass & 6 \\
 Fail & 2 \\
-Abort & 18 \\
+Abort & 28 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 36 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 27 \\
+Fail & 0 \\
+Abort & 7 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 34 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After Implementation}
 \end{subtable}
 \caption{String.prototype.indexOf(searchString, position)}
 \end{table}
 
+\item String.prototype.lastIndexOf(searchString, position) \\
+Similar to indexOf, lastIndexOf also had six passing tests before any method implementation, and the test case below also tested for whether an element in an Array Object can be correctly identified from the lastIndexOf operation.
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/lastIndexOf/S15.5.4.8\_A1\_T12.js
+\end{itemize}
+After the first round of coding, 10 additional tests passed, and the 4 tests below failed. 
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/lastIndexOf/S15.5.4.8\_A1\_T1.js \\
+This test creates an Object with the boolean value \textbf{true}, and tries to find the index of \textbf{true} within the Object instance, provided the Object's lastIndexOf method is the same as String's lastIndexOf method. Upon analyzing the test source code and the JSIL implementation, it was discovered that the JSIL logic was incorrectly implemented. The first version of the JSIL lastIndexOf could not handle cases where the searchString was the same length or larger than the String Object performing the method.
+\item test262/test/built-ins/String/prototype/lastIndexOf/S15.5.4.8\_A1\_T2.js \\
+This test creates a Boolean Object, and sets the Object's lastIndexOf method to be that of String's. Because the default value for a Boolean Object is \textbf{false}, when the lastIndexOf method is called on the Boolean Object, passing in inputs that essentially reduce to \textbf{false} should find a match at the beginning of the string. This case is similar to the previous one, and was fixed by handling searchString inputs of the same size as the String Object itself.
+\item test262/test/built-ins/String/prototype/lastIndexOf/S15.5.4.8\_A1\_T10.js \\
+This test checks to see if looking for a searchString from a position that is not a number, i.e., \textbf{NaN}, would produce the correct results. The initial JSIL implementation incorrectly disregarded the step to check whether the position parameter is not a number, whereas the correct implementation should convert \textbf{NaN} to positive infinity.
+\item test262/test/built-ins/String/prototype/lastIndexOf/S15.5.4.8\_A4\_T3.js \\
+This test creates a searchString and an empty Object as the index position. Upon inputting these parameters into a String value calling its lastIndexOf method, the empty Object should be converted to \textbf{NaN}, and the rest of the logic is as presented for the previous test case.
+\end{itemize}
+Two rounds of bug-fixing and re-testing resulted in their passing. In the end, excluding nonrelevant test cases, all 20 test cases passed.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
+Pass & 6 \\
 Fail & 2 \\
-Abort & 18 \\
+Abort & 14 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 22 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 20 \\
+Fail & 0 \\
+Abort & 0 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 20 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After two rounds of implementations}
 \end{subtable}
 \caption{String.prototype.lastIndexOf(searchString, position)}
 \end{table}
 
+\item String.prototype.slice(start, end) \\
+Before any method implementation, there were five PASSED tests, two FAILED tests, and 27 ABORTED tests. After the first round of coding, 14 additional tests passed, but 13 were still aborted. 
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T5.js \\
+This test sets the Function prototype slice method to the String prototype slice method, but since the Function Object constructor had not been implemented, it was impossible to run this test.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T14.js \\
+This test passes an empty Function Object into the slice method of a String value, and this empty Object should be converted into \textbf{NaN}. The initial JSIL implementation only took into account cases where the start parameter can be successfully converted to an integer value, thus it failed when trying to index on \textbf{NaN}. Changes to the code was made to set the start value to be the beginning of the String if the start input cannot be successfully converted to an integer.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T15.js \\
+This test creates a Number Object, sets its prototype.slice method to be that of String's prototype.slice, and calls the method with no inputs. Similar to the previous test case, the initial JSIL implementation failed because an empty argument cannot be transformed into an integer.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T6.js \\
+This test attempts to pass \textbf{Undefined} into the slice method as the start input, and was similarly fixed by setting a default start value.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A2\_T1.js \\
+This test creates a String Object, slices the entire String, and checks to see if the \textbf{typeof} value for this Object is the value "string". The test calls the slice method with no inputs, so the start value should be taken as the beginning of the String by default, and this test was similarly fixed by setting a default start.
+\end{itemize}
 
+The following test cases were aborted because of a mistake of variable name referencing in the JSIL implementation. JSIL has an internal indexing mechanism for strings, which only takes positive integers as input for indices, but the initial JSIL implementation incorrectly used the direct input value, rather than the calculated value, as the string index. In addition, when the start and end inputs vary by more than one index value, the start index is incremented to get the consecutive string characters until the end index is reached. In the first JSIL implementation, however, an incorrect start index was incremented.
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T1.js \\
+This test inputs the boolean values false and true into the slice method. When indexing the string in JSIL, the initial JSIL function used the boolean value, rather than an integer converted from this boolean. Hence JSIL was unable to provide the string character at the given start index.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T2.js \\
+This test uses a function object that returns the boolean value true as the start value given to the slice method, and thus JSIL was unable to correctly index the string.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T8.js \\
+This test used a negative integer as the start input, and JSIL requires nonnegative indices for strings.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A2\_T2.js \\
+This test uses \textbf{NaN} as the start input, which is not an integer and therefore could not be used as a string index in JSIL.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A3\_T3.js \\
+This test uses negative infinity as the start input, which is not an integer and therefore could not be used as a string index in JSIL.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T4.js \\
+This test uses \textbf{null} as the start input, which is not an integer and therefore could not be used as a string index in JSIL.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T7.js \\
+This test uses a string value as the start input, therefore it could not be used as a string index in JSIL.
+\item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T10.js \\
+This test uses a Function Object as the start input, therefore it could not be used as a string index in JSIL.
+\end{itemize}
+
+After fixing the above-mentioned issues, only one test remained in the ABORTED state, but since its passing requires the Function Object constructor, it is out of the scope of this project and is therefore left unimplemented. Otherwise, there remain 31 relevant test cases, all of which were in PASSED.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
@@ -1419,27 +1512,34 @@ Total & 25 \\ \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
 Pass & 5 \\
 Fail & 2 \\
-Abort & 18 \\
+Abort & 27 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 34 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 31 \\
+Fail & 0 \\
+Abort & 1 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 32 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After two rounds of implementations}
 \end{subtable}
 \caption{String.prototype.slice(start, end)}
 \end{table}
 
+\item String.prototype.substring(start, end) \\
+The substring method was relatively straightforward as well. There were 35 ABORTED tests before method implementation, and after the first round of coding, one test remained ABORTED. 
+\begin{itemize}
+\item test262/test/built-ins/String/prototype/substring/S15.5.4.15\_A1\_T5.js \\
+This test sets the Function prototype substring method to the String prototype substring method, but since the Function Object constructor had not been implemented, it was impossible to run this test.
+\end{itemize}
+Excluding the nonrelevant tests, there were a total of 40 test cases, of which 39 passed, and one aborted.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
@@ -1448,26 +1548,32 @@ Total & 25 \\ \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
 Pass & 5 \\
 Fail & 2 \\
-Abort & 18 \\
+Abort & 35 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 42 \\ \hline
 \end{tabular}
-\caption{BLALALA}
+\caption{Before Implementation}
 \end{subtable}%
 \begin{subtable}{0.5\textwidth}
 \centering
 \begin{tabular}{|p{3cm}|p{2cm}|} \hline
 \textbf{Test Category} & \textbf{Count} \\ \hline
-Pass & 5 \\
-Fail & 2 \\
-Abort & 18 \\
+Pass & 39 \\
+Fail & 0 \\
+Abort & 1 \\
 Timeout & 0 \\
-Total & 25 \\ \hline
+Total & 40 \\ \hline
 \end{tabular}
-\caption{LALALASKJDLE}
+\caption{After Implementation}
 \end{subtable}
 \caption{String.prototype.substring(start, end)}
 \end{table}
+
+\end{itemize}
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

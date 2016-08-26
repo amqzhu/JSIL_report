@@ -82,8 +82,5 @@
 \contentsline {section}{\numberline {10.2}String Library Functions}{43}{section.405}
 \contentsline {chapter}{\numberline {11}Testing}{45}{chapter.412}
 \contentsline {section}{\numberline {11.1}The Testing Interface}{45}{section.413}
-\contentsline {section}{\numberline {11.2}Array Library and Arguments Object}{49}{section.419}
-\contentsline {subsection}{\numberline {11.2.1}Array Library}{49}{subsection.420}
-\contentsline {subsection}{\numberline {11.2.2}Arguments Object}{49}{subsection.421}
-\contentsline {section}{\numberline {11.3}String Library}{49}{section.422}
-\contentsline {chapter}{\numberline {12}Conclusion}{51}{chapter.429}
+\contentsline {section}{\numberline {11.2}String Library}{48}{section.419}
+\contentsline {chapter}{\numberline {12}Conclusion}{55}{chapter.426}
