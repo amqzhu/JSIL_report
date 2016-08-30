@@ -122,6 +122,16 @@
 \lstnewenvironment{lstjsil}{\lstset{language=JSIL,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
 \def\jsilinline{\lstinline[language=JSIL, basicstyle=\small]}
 
+\tikzset{
+  box/.style = {rectangle, draw=black,align=center,font=\scriptsize},
+  sbox/.style = {rectangle,draw=black,align=left,font=\scriptsize,text width=1.7cm},
+  p/.style = {-latex},
+  dp/.style = {latex-latex},
+  sz/.style n args={2}{minimum width=#2, minimum height=#1},
+  m/.style = {midway,inner sep=0pt,fill=white},
+  ll/.style = {font=\scriptsize,anchor=south west}
+}
+
 \begin{document}
 
 % load title page
@@ -168,12 +178,13 @@ Also, JavaScript does not have static typing or require type declarations~\cite{
 
 $$\jsinline|(![]+[])[+!+[]]|$$
 
-\noindent which, remarkably, evaluates to the string \jsinline|"a"|; we will discuss how this particular evaluation is performed, as well as the above-mentioned intricacies of JavaScript in detail in Chapter~\ref{sec:javascript}.
+\noindent which, remarkably, evaluates to the string \jsinline|"a"|; discussion of how this particular evaluation is performed, as well as the above-mentioned intricacies of JavaScript will be presented in detail in Chapter~\ref{sec:javascript}.
 
 JavaScript was developed, and is still being improved and updated, by the ECMAScript committee. The committee is in charge of publishing the ECMAScript standard, addressing the language syntax, semantics, libraries, and complementary technologies that support the language. Since its inception, six versions of the standard have been developed, with the latest one having been released in June 2015 \cite{international2015ecmascript}. This project will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011, while discussing some of the differences between itself and its predecessor, ECMAScript 3, as well as its successor, ECMAScript 6.
 
 \section{The Importance of Verification}
 Computer scientists have created high-level programming languages such as JavaScript with the idea of stepping away from machine code and assembly and, instead, instructing machines to perform actions in a more human-like way. Designing a programming language is a complicated endeavour, and possibilities for mistakes exist even in the earliest stages. For instance, five years after its creation, Java, a real life programming language, was shown not to comply with type safety~\cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. One should contrast this with the fact that program correctness plays a crucial role in life-critical or security-critical settings, such as in the aviation or banking industries.
+
 Therefore, when a programmer writes a piece of code that is intended to perform a certain task, without proper tools they cannot be entirely sure that their program will perform the task as required without any side effects. In order to reduce the errors and inconsistencies in different implementations of the same language, a formal verification system is necessary so that one could prove that programming languages and programs written in those languages are indeed performing correctly, as expected, with no ambiguities.
 
 \subsection{JavaScript Verification}
@@ -186,29 +197,15 @@ Previous work on JavaScript verification that makes this project possible includ
 
 \pmax{What is the project?}
 
-Previous work has already been done on JSIL and the compiler, and this project seeks to expand JSIL to include descriptors, arguments object, and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. For example, the memory model for both JavaScript and JSIL representations has already been changed to incorporate JavaScript descriptors, $\mathcal{D}_{JS}$, and the new JavaScript heap model will look like below, rather than the one presented in section~\ref{sec:ir}.
+Previous work has already been done on JSIL and the JavaScript-to-JSIL compiler, and this project seeks to expand JSIL to include the arguments object and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. 
 
-\begin{center}
-\begin{tabular}{p{9cm}} \hline
-\textbf{JavaScript Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS} \cup \mathcal{D}_{JS})$  \\ \hline
-\end{tabular}
-
-\begin{tabular}{p{9cm}} \hline
-\textbf{JSIL Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharpoonup \mathcal{V}_{JSIL}  $  \\ \hline
-\end{tabular}
-\end{center}
-
-\subsection{Scope and Aims}
-This project aims to complete the Object.prototype and Array libraries in their JSIL implementation. The Object.prototype library encompasses seven built-in functions for a total of two pages in the ECMAScript standard, while the Array library includes 28 built-in functions for a total of 20 pages. All of the functions in these libraries will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis. 
-
-Another topic of interest is the arguments object, which is initially described in section 10.6 and mentioned throughout section 15. Implementing the arguments object entails altering the compiler that translates ES5 strict code into JSIL, as well as testing against Test262 to ensure the correctness of the compiler.
+\subsection{Project Scope}
+This project has completed the Object.prototype library, the Array library, and a subset of the String library methods in their JSIL implementation. The Object.prototype library encompasses seven built-in methods for two pages in the ECMAScript standard, the Array library includes 28 built-in methods for a total of 20 pages, and the subset of String library includes six built-in methods for four pages. Another topic of interest is the arguments object, which is described in detail in Chapter~\ref{sec:argobj}. All of the functions in these libraries as well as the arguments object, will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis.
 
 \subsection{Testing}
 %%TODO%%
 %need to figure out exact numbers for each test case category
-The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality, non-core functionality, and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
+The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
 
 The interactive testing framework is available online from inside the Imperial network, but soon it will be integrated into a publicly accessible web address and will become continuously integrated into the JSIL project. At that point, each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. Thus, JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
 
@@ -546,6 +543,17 @@ In JSIL, descriptors are modelled as lists, with the 0\textsuperscript{th} eleme
 \chapter{JavaScript}\label{sec:javascript}
 Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project.
 
+\section{Mystery Code Explained}
+An example snippet of JavaScript code was shown in the Introduction, which evaluated to the string value \jsinline|"a"|. This was possible because of the implicit type conversions within the language. 
+
+$$\jsinline|(![]+[])[+!+[]]|$$
+
+The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty object in JavaScript, and taking the negation of the empty object happens to coerce it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce objects into numbers, so \jsinline|+[]| would become \textbf{0}. In this case, however, \jsinline|+| acts as the string concatenation operator instead, because it connects the boolean value \textbf{false} and an empty object. The empty object is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, function as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
+\begin{center}
+\jsinline|"false"[1]|
+\end{center}
+\noindent which evaluates to the letter \jsinline|"a"|.
+
 \section{ES5 Strict}\label{sec:strict}
 Strict mode presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
 
@@ -652,18 +660,18 @@ Internal properties describe additional inherent information about Objects, and 
 \item[Class] The [[Class]] property is a String value that specifies the classification of the current Object. The value of [[Class]] for built-in JavaScript Objects are the following.
 \begin{multicols}{3}
 \begin{itemize}
-	\item "Arguments"
-	\item "Array"
-	\item "Boolean"
-	\item "Date"
-	\item "Error"
-	\item "Function"
-	\item "JSON"
-	\item "Math"
-	\item "Number"
-	\item "Object"
-	\item "RegExp"
-	\item "String"
+	\item ``Arguments"
+	\item ``Array"
+	\item ``Boolean"
+	\item ``Date"
+	\item ``Error"
+	\item ``Function"
+	\item ``JSON"
+	\item ``Math"
+	\item ``Number"
+	\item ``Object"
+	\item ``RegExp"
+	\item ``String"
 \end{itemize}
 \end{multicols}
 
@@ -706,11 +714,11 @@ The [[ParameterMap]] internal property is an Object property that belongs to Jav
 \end{description}
 
 \section{Prototype Inheritance}
-As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype, or an object's prototype value could be altered post-creation. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance.
+As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance. An example is given in the code snippet below.
 
-An example is ... %%TODO%%
-
-%%MAKE A CHART HERE%%
+\begin{lstjs}
+%%TODO%%
+\end{lstjs}
 
 \section{Initial Heap}
 When a JavaScript Object is stored in memory, each memory cell holds a certain piece of information related to this Object. And as a result, a type of representation must exist to keep track of which memory cells are holding what information. A JavaScript heap serves this function of mapping memory locations and property names to heap values and scope chains. %%CITE%%  
@@ -719,16 +727,67 @@ When a JavaScript program is executed, it must first create a global object that
 
 Continuing with the previous example ... %%TODO%%
 
-%%MAKE A CHART HERE%%
-\smartdiagramset{
-  planet size=3cm,
-  satellite size=3cm,
-  distance planet-satellite=4cm,
-  /tikz/connection planet satellite/.append style={<-},
-  /tikz/planet/.append style={rectangle,rounded corners=5mm}, 
-  /tikz/satellite/.append style={rectangle,rounded corners=5mm}
-}
-\smartdiagram[constellation diagram]{Global Object, Object constructor, Array constructor, Other constructors, global variables, Prototype: Object prototype}
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+  \def\d{0.4cm};
+  \def\w{1cm};
+  \node (sftvalue) at (\w,0.5mm) {};
+  %%%%%%%% global node
+  \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=6, fill=black!35] (global) 
+    {     
+      \nodepart{one}\scriptsize Object: \(l_{\mathsf{obj}}\)
+      \nodepart{two}{\hspace*{0.75cm}\(\vdots\)}
+      \nodepart{three}{\scriptsize Number: \(l_{\mathsf{num}}\)}
+      \nodepart{four}{\scriptsize $\mathtt{w : undefined}$}
+      \nodepart{five}{\scriptsize $\mathtt{z : undefined}$}
+      \nodepart{six}{\scriptsize@proto: \(l_{\mathsf{op}}\)}
+  };
+  \node[above left=0cm and 0cm of global,ll] {Global: \(l_{\mathsf{g}}\)};
+  %%%%%%%% end of global 
+  %%%%%%%% obj node
+  \node[sbox,sz={\d}{\w},above right= -1.2cm and 0.75cm of global, rectangle split,rectangle split parts=2,fill=black!25] (obj) 
+    {\hspace*{0.75cm}\(\vdots\)%
+      \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{op}}\)}};
+  \node[above left=0cm and 0cm of obj,ll] {Object: \(l_{\mathsf{obj}}\)};
+  %%%%%%%% end of obj 
+  %%%%%%%% number node
+  \node[sbox,sz={\d}{\w},below right= -0.3cm and 0.75cm of global,rectangle split,rectangle split parts=2,fill=black!25] (number) 
+    {\hspace*{0.75cm}\(\vdots\)%
+      \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{np}}\)}};
+    \node[above left=0cm and 0cm of number,ll] {Number: \(l_{\mathsf{num}}\)};
+  %%%%%%%% end of number 
+  %%%%%%%% number op node
+  \node[sbox,sz={\d}{\w},right= 0.75cm of obj, rectangle split,rectangle split parts=3,fill=black!10] (op) 
+    {\hspace*{0.75cm}\(\vdots\)%
+        \nodepart{second}{\scriptsize $\mathtt{y : "banana"}$}
+      \nodepart{third}{\scriptsize@proto: null}};
+  \node[above left=0cm and 0.15cm of op,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
+  %%%%%%%% end of op 
+  %%%%%%%% number op node
+  \node[sbox,sz={\d}{\w}m,right= 0.75cm of number, rectangle split,rectangle split parts=2,fill=black!10] (np) 
+    {\hspace*{0.75cm}\(\vdots\)%
+    \nodepart{second}{\scriptsize@proto: \(l_{\mathsf{op}}\)}};
+  \node[above left=0cm and 0.2cm of np,ll] {Number.prototype: \(l_{\mathsf{np}}\)};
+  %%%%%%%% end of op 
+  %%%%%%%% dots
+  \node at ($(obj)!0.45!(number)$) {\(\vdots\)};
+  \node at ($(op)!0.45!(np)$) {\(\vdots\)};
+
+  %%%%%%%%
+  %%%%%%%% connection 
+  \draw[p] ($(global.second) + (1.8*\w,0.75cm)$) to[out=0,in=180] (obj);
+  \draw[p] ($(global.three) + (1.8*\w,0)$) to[out=0,in=180] (number);
+  \draw[p] ($(global.six) + (1.8*\w,0)$) to[out=0,in=180] ($(number) - (1cm,0.9cm)$) to[out=0,in=180] ($(np) - (-0.9cm,0.9cm)$) to[out=0,in=0] (op);
+  \draw[p] ($(np.second) + (1.8*\w,0)$) to[out=0,in=0] (op);
+  \draw[p] ($(number.second) + (1.8*\w,0)$) to [out=0,in=180]  (np);
+  \draw[p] ($(obj.second) + (1.8*\w,0)$) to [out=0,in=180]  (op);
+  %%%%%%%% end connection
+\end{tikzpicture}
+\caption{ES5 Strict initial heap + first two commands of example}
+\label{fig:initheap}
+\end{center}
+\end{figure}
 
 \section{Function Objects}
 In general, functions in programming represent a cohesive block of code commands that perform a desired action. This block of code may or may not take arguments as inputs that affect its inner workings, and it may or may not produce a final result value. Functions can be blocks of code that stand alone in a program, or they may be included in class definitions, in which case they would be referred to as \textit{methods} rather than functions. The typical components of a function are the parameters and the body. The parameters are the names of the inputs to the function, and the body is the code block that specifies the actions. A separate scope exists within the function body, meaning variables that are declared and initialized within a function body are destroyed upon the completion of function execution. Although a function can access variables outside its body, unless it makes use of a global variable or produced an output, others cannot access the variables within a function.
@@ -1396,10 +1455,12 @@ This method also takes the starting and ending positions within a String value c
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Testing}
-Testing is an integral part of the development process, as test results either confirm the correctness of the implementation, or point out pitfalls to help improve implementation. Testing for this project was done concurrently with implementation, i.e., Array Library implementation and testing were completed before moving on to the String Library. Although testing was completed for all of the Library methods implemented in this project, this chapter will focus on explaining testing for the String Library methods specifically, after first giving an overview of the testing interface.
+Testing is an integral part of the development process, as test results either confirm the correctness of the implementation, or point out pitfalls to help improve implementation. This project utilized the ES6 test suite rather than the ES5 test suite for a number of reasons. First of all, ES5's test suite performed poorly at supporting strict tests. Whether a test should be run in strict or non strict mode only, or in both modes, was sometimes inconsistently labeled, and therefore resulted in the test being parsed incorrectly in strict mode. This problem has been fixed by the time of the ES6 test suite release. Secondly, the ES6 test suite organized tests by feature rather than by chapters in the specification, therefore it was easier to identify relevant test cases.
+
+Testing for this project was done concurrently with implementation, i.e., Array Library implementation and testing were completed before moving on to the String Library. Although testing was completed for all of the Library methods implemented in this project, this chapter will focus on explaining testing for the String Library methods specifically, after first giving an overview of the testing interface.
 
 \section{The Testing Interface}
-Once a user finishes implementing a feature and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. This site utilizes the ES6 test suite rather than the ES5 test suite for a number of reasons: %%TODO%%
+Once a user finishes implementing a feature and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. 
 
 \begin{figure}[h!]
   \caption{Main Testing Screen}
