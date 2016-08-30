@@ -161,19 +161,16 @@ TODO
 \chapter{Introduction}
 
 \section{What is JavaScript?}
-JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by giving the programmer control over the browser's Document Object Model,~i.e.~both the pages' style and their content. In addition, JavaScript is being increasingly used on the server side as well, primarily as a means of interacting with databases. It is a high-level, dynamic, untyped language, based on extensible objects and exhibiting a number of intricate, complex, and often unpredictable features. 
+JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by giving the programmer control over the browser's Document Object Model,~i.e.~both the pages' style and their content. In addition, JavaScript is increasingly used on the server side as well, primarily as a means of interacting with databases. It is a high-level, dynamic, untyped language, based on extensible objects and exhibiting a number of intricate, complex, and often unpredictable features. 
 
-For example, JavaScript supports prototypical inheritance rather than class inheritance, which is favoured by many object-oriented programming languages, such as Java or C++. It allows for first-class functions, i.e.~functions that can be passed as parameters to other functions, and also for partial function application. It features implicit, silent coercions between numbers, strings, booleans, and objects, which are the source of numerous programming errors that can at times be exceptionally difficult to debug.
-Also, JavaScript does not have static typing or require type declarations~\cite{EcmaScript}. As an illustration of the complexity of JavaScript, we direct the reader's attention to the following (valid) JavaScript expression:
+For example, JavaScript supports prototypical inheritance rather than class inheritance, which is favoured by many object-oriented programming languages, such as Java and C++. It allows for first-class functions, i.e.~functions that can be passed as parameters to other functions, and also for partial function application. It features implicit, silent coercions between numbers, strings, booleans, and objects, which are the source of numerous programming errors that can at times be exceptionally difficult to debug.
+Also, JavaScript does not have static typing or require type declarations~\cite{EcmaScript}. As an illustration of the complexity of JavaScript, the following is a seemingly strange, but valid, JavaScript expression:
 
 $$\jsinline|(![]+[])[+!+[]]|$$
 
 \noindent which, remarkably, evaluates to the string \jsinline|"a"|; we will discuss how this particular evaluation is performed, as well as the above-mentioned intricacies of JavaScript in detail in Chapter~\ref{sec:javascript}.
 
-JavaScript is being developed by the ECMAScript committee, which is in charge of publishing the ECMAScript standard, addressing the language syntax, semantics, libraries, and complementary technologies that support the language. Since its inception, six versions of the standard have been developed, with the latest one having been released in June 2015 \cite{international2015ecmascript}. For this project, we will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011, while discussing some of the differences between itself and its predecessor, ECMAScript 3, as well as its successor, ECMAScript 6.
-
-% This edition incorporated extensive changes 
-% Significant changes have occurred in the 5\textsuperscript{th} edition, including the addition of accessor properties and a strict mode \cite{EcmaScript}, both of which will be addressed in this project.
+JavaScript was developed, and is still being improved and updated, by the ECMAScript committee. The committee is in charge of publishing the ECMAScript standard, addressing the language syntax, semantics, libraries, and complementary technologies that support the language. Since its inception, six versions of the standard have been developed, with the latest one having been released in June 2015 \cite{international2015ecmascript}. This project will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011, while discussing some of the differences between itself and its predecessor, ECMAScript 3, as well as its successor, ECMAScript 6.
 
 \section{The Importance of Verification}
 Computer scientists have created high-level programming languages such as JavaScript with the idea of stepping away from machine code and assembly and, instead, instructing machines to perform actions in a more human-like way. Designing a programming language is a complicated endeavour, and possibilities for mistakes exist even in the earliest stages. For instance, five years after its creation, Java, a real life programming language, was shown not to comply with type safety~\cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. One should contrast this with the fact that program correctness plays a crucial role in life-critical or security-critical settings, such as in the aviation or banking industries.
@@ -188,6 +185,32 @@ Previous work on JavaScript verification that makes this project possible includ
 \section{Thesis Project}
 
 \pmax{What is the project?}
+
+Previous work has already been done on JSIL and the compiler, and this project seeks to expand JSIL to include descriptors, arguments object, and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. For example, the memory model for both JavaScript and JSIL representations has already been changed to incorporate JavaScript descriptors, $\mathcal{D}_{JS}$, and the new JavaScript heap model will look like below, rather than the one presented in section~\ref{sec:ir}.
+
+\begin{center}
+\begin{tabular}{p{9cm}} \hline
+\textbf{JavaScript Heap Model} \\
+$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS} \cup \mathcal{D}_{JS})$  \\ \hline
+\end{tabular}
+
+\begin{tabular}{p{9cm}} \hline
+\textbf{JSIL Heap Model} \\
+$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharpoonup \mathcal{V}_{JSIL}  $  \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Scope and Aims}
+This project aims to complete the Object.prototype and Array libraries in their JSIL implementation. The Object.prototype library encompasses seven built-in functions for a total of two pages in the ECMAScript standard, while the Array library includes 28 built-in functions for a total of 20 pages. All of the functions in these libraries will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis. 
+
+Another topic of interest is the arguments object, which is initially described in section 10.6 and mentioned throughout section 15. Implementing the arguments object entails altering the compiler that translates ES5 strict code into JSIL, as well as testing against Test262 to ensure the correctness of the compiler.
+
+\subsection{Testing}
+%%TODO%%
+%need to figure out exact numbers for each test case category
+The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality, non-core functionality, and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
+
+The interactive testing framework is available online from inside the Imperial network, but soon it will be integrated into a publicly accessible web address and will become continuously integrated into the JSIL project. At that point, each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. Thus, JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
 
 \section{Report Outline}
 Following the introduction, in Chapter \ref{cha:bckgnd} we proceed to give an overview of the background and related work for this thesis.
@@ -519,98 +542,24 @@ with
  \noindent 
 In JSIL, descriptors are modelled as lists, with the 0\textsuperscript{th} element containing the descriptor type identifier, which is \jsinline|"d"| for data descriptors and \jsinline|"a"| for accessor descriptors. For data descriptors, the first element is the \jsinline|Value| attribute, and for accessor descriptors, it is the \jsinline|Get| attribute. The \jsilinline|l-nth| function returns the n\textsuperscript{th} element of a given list. If the descriptor is a data descriptor, its value is returned (line 8); if it is an accessor descriptor and its getter is \jsilinline|$$undefined|, \jsinline|$$undefined| is returned (line 10). Otherwise, the program will call the getter function and return the value obtained from that call (lines 11-13).
 
-\chapter{This Project and Concurrent Progress}
-%%TODO%%
-%%%%%%%%%%%%%%%%CHAPTER NEEDS TO BE UPDATED%%%%%%%%%%%%%%%%%%
-Previous work has already been done on JSIL and the compiler, and this project seeks to expand JSIL to include descriptors, arguments object, and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. For example, the memory model for both JavaScript and JSIL representations has already been changed to incorporate JavaScript descriptors, $\mathcal{D}_{JS}$, and the new JavaScript heap model will look like below, rather than the one presented in section~\ref{sec:ir}.
-
-\begin{center}
-\begin{tabular}{p{9cm}} \hline
-\textbf{JavaScript Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS} \cup \mathcal{D}_{JS})$  \\ \hline
-\end{tabular}
-
-\begin{tabular}{p{9cm}} \hline
-\textbf{JSIL Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharpoonup \mathcal{V}_{JSIL}  $  \\ \hline
-\end{tabular}
-\end{center}
-
-\section{ES5 Strict and Core ES5 Strict}\label{sec:strict}
-Strict mode was a concept introduced in the fifth version of the ECMAScript standard \cite{EcmaScript}, and it presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
-
-Strict mode influences the implementation of the language in multiple ways. One example would be in resolving the naming reference of variables. An abstract operation, IsStrictReference(V) (V is a Reference), returns the strict reference component of V \cite{EcmaScript}, and it is used in internal functions such as [[getValue]] and [[putValue]], like the [[Get]] internal function discussed in section~\ref{sec:get}.
-
-The initial phase of this project seeks to complete the implementation of core strict mode, with core defined as the native language constructs and library functions that tap into these constructs. All other library functions that could be defined using what is already in core are not included in this initial stage but will be incorporated later on in the project.
-
-\section{Contrast JSIL Without and With Descriptors}
-Work by my supervisors to improve JSIL has been concurrently underway since I started this project, and most notably is the recent inclusion of descriptors into the memory model.
-
-The following code snippets demonstrate the difference that descriptors can make in JSIL. On the left is JSIL code for [[Get]] without descriptors, and which will be referred to as \textit{LHS-without}, and on the right, JSIL with descriptors as presented before, and will be referred to as \textit{RHS-with}. Many internal functions make use of descriptors, thus without which the JSIL representation of JavaScript would simply be incorrect.
-
-\begin{minipage}{.45\textwidth}
-\begin{lstlisting}
-proc o__get(l, prop) {
-          gp := [l, "@getProperty"];
-    rlab: xret := gp (l, prop);
-}
-with
-{
-    ret: xret, rlab;
-}
-\end{lstlisting}
-\end{minipage}%
-\hfill
-\begin{minipage}{.50\textwidth}
-\begin{lstlisting}
-proc o__get (l, prop) {
-			gp := [l, "@getProperty"];
-			xret := gp (l, prop) with elab;	
-			goto [xret = $$undefined] rlab def;
-			
-	def:	d := nth (xret, 0);
-			xret := nth (xret, 1);
-			goto [d = "d"] rlab acc;
-			
-	acc:	goto [xret = $$undefined] rlab get;
-	get:	xsc := [xret, "@scope"];
-			fun := [xret, "@call"];
-			xret := fun (xsc, l) with elab;
-			
-	rlab:	skip;
-	elab:	skip
-}
-with
-{
-    ret: xret, rlab;
-    err: xret, elab;
-};
-\end{lstlisting}
-\end{minipage}
-
-Recall section~\ref{sec:getstandard} presented the ECMAScript standard for the [[Get]] internal function. The JSIL implementation without descriptors is much shorter because all the steps in the standard that deal with descriptors are inapplicable. Starting from step 3 which states "If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]]", \textit{LHS-without} simply cannot address the concept of descriptors, whereas \textit{RHS-with} implements step 3 in the \textit{def} code block. The three subsequent steps, "Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]]", "If \textit{getter} is \textbf{undefined}, return \textbf{undefined}", and "Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments" also went unaddressed in \textit{LHS-without}, but were implemented as the \textit{acc} and \textit{get} code blocks in \textit{RHS-with}.
-
-\section{Scope and Aims}
-This project aims to complete the Object.prototype and Array libraries in their JSIL implementation. The Object.prototype library encompasses seven built-in functions for a total of two pages in the ECMAScript standard, while the Array library includes 28 built-in functions for a total of 20 pages. All of the functions in these libraries will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis. 
-
-Another topic of interest is the arguments object, which is initially described in section 10.6 and mentioned throughout section 15. Implementing the arguments object entails altering the compiler that translates ES5 strict code into JSIL, as well as testing against Test262 to ensure the correctness of the compiler.
-
-\section{Testing}
-%%TODO%%
-%need to figure out exact numbers for each test case category
-The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality, non-core functionality, and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
-
-The interactive testing framework is available online from inside the Imperial network, but soon it will be integrated into a publicly accessible web address and will become continuously integrated into the JSIL project. At that point, each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. Thus, JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
+Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project.
+
+\section{ES5 Strict}\label{sec:strict}
+Strict mode presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
+
+Strict mode influences the implementation of the language in multiple ways. One example would be in resolving the naming reference of variables. An abstract operation, IsStrictReference($V$), with $V$ being a Reference, returns the strict reference component of $V$\cite{EcmaScript}, and it is used in internal functions such as [[getValue]] and [[putValue]], which are similar to the [[Get]] internal function discussed in section~\ref{sec:get}.
+
+The initial phase of this project sought to complete the implementation of core strict mode, with core defined as the native language constructs and library functions that tap into these constructs. All other library functions that could be defined using what is already in core are not included in this initial stage but will be incorporated later on in the project.
+
 \section{Definition of Objects}
 JavaScript is a language that relies heavily and primarily on Objects, which are collections of \textbf{properties}, each with zero or more \textbf{attributes} that define the property \cite{EcmaScript}. Properties can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and additional boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned. Objects can be created via literal notation or via Object constructors that create and initialize the Objects, and then establishes the prototype chain for the Object \cite{EcmaScript}. Within an object, there are two types of properties - own properties and inherited properties. Own properties are those defined within the current object, and inherited properties are those defined in the object's prototype chain.
 
 Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after creation. For example, a Person class is defined in Java below. This class has two properties - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another property, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, any Object of Person class cannot possibly have a \textit{gender} property.
 
 \begin{adjustwidth}{4cm}{4cm}
-\begin{lstlisting}
+\begin{lstjs}
 public class Person {
     private String name;
     private int age;
@@ -626,12 +575,12 @@ public class Person {
         bob.gender = "male";
     }
 }
-\end{lstlisting}
+\end{lstjs}
 \end{adjustwidth}
 
 Below defines a Person class in JavaScript, intentionally using similar syntax as the Java code above for comparison. The \textit{alice} Object is created on line 8 with a name String as "Alice", and an age of 35 years old. When \textit{alice} celebrates her birthday, her age can be altered using dot notation similar to that of \textit{bob}. When we want to specify the gender of \textit{alice} however, using code on line 10, JavaScript would throw no error and simply change the \textit{alice} Object as required.
 \begin{adjustwidth}{4cm}{4cm}
-\begin{lstlisting}
+\begin{lstjs}
 class Person {
 	constructor(n, a) {
 		this.name = n;
@@ -642,7 +591,7 @@ class Person {
 var alice = new Person("Alice", 35);
 alice.age = 36;
 alice.gender = "female";
-\end{lstlisting}
+\end{lstjs}
 \end{adjustwidth}
 
 It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer accidentally makes changes to an Object in this manner, no error message will alert him or her of this, and hence a verification tool would come in extremely handy.
@@ -663,11 +612,6 @@ Both categories of named JavaScript properties have attributes that serve to des
 	\item String
 	\item Number
 	\item Object
-	\item Reference Specification
-	\item List Specification
-	\item Completion Specification
-	\item Lexical Environment Specification
-	\item Environment Record Specification
 \end{itemize}
 \end{multicols}
 
@@ -841,6 +785,53 @@ A top level JSIL program follows the syntax of proc m($\overline{x}$)$\{\overlin
 Components of this syntax have evolved since the start of the project, and the differences are as follows:
 %%TODO%%
 
+\section{Contrast JSIL Without and With Descriptors}
+Work by my supervisors to improve JSIL has been concurrently underway since I started this project, and most notably is the recent inclusion of descriptors into the memory model.
+
+The following code snippets demonstrate the difference that descriptors can make in JSIL. On the left is JSIL code for [[Get]] without descriptors, and which will be referred to as \textit{LHS-without}, and on the right, JSIL with descriptors as presented before, and will be referred to as \textit{RHS-with}. Many internal functions make use of descriptors, thus without which the JSIL representation of JavaScript would simply be incorrect.
+
+\begin{minipage}{.45\textwidth}
+\begin{lstjsil}
+proc o__get(l, prop) {
+          gp := [l, "@getProperty"];
+    rlab: xret := gp (l, prop);
+}
+with
+{
+    ret: xret, rlab;
+}
+\end{lstjsil}
+\end{minipage}%
+\hfill
+\begin{minipage}{.50\textwidth}
+\begin{lstjsil}
+proc o__get (l, prop) {
+			gp := [l, "@getProperty"];
+			xret := gp (l, prop) with elab;	
+			goto [xret = $$undefined] rlab def;
+			
+	def:	d := nth (xret, 0);
+			xret := nth (xret, 1);
+			goto [d = "d"] rlab acc;
+			
+	acc:	goto [xret = $$undefined] rlab get;
+	get:	xsc := [xret, "@scope"];
+			fun := [xret, "@call"];
+			xret := fun (xsc, l) with elab;
+			
+	rlab:	skip;
+	elab:	skip
+}
+with
+{
+    ret: xret, rlab;
+    err: xret, elab;
+};
+\end{lstjsil}
+\end{minipage}
+
+Recall section~\ref{sec:getstandard} presented the ECMAScript standard for the [[Get]] internal function. The JSIL implementation without descriptors is much shorter because all the steps in the standard that deal with descriptors are inapplicable. Starting from step 3 which states "If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]]", \textit{LHS-without} simply cannot address the concept of descriptors, whereas \textit{RHS-with} implements step 3 in the \textit{def} code block. The three subsequent steps, "Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]]", "If \textit{getter} is \textbf{undefined}, return \textbf{undefined}", and "Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments" also went unaddressed in \textit{LHS-without}, but were implemented as the \textit{acc} and \textit{get} code blocks in \textit{RHS-with}.
+
 \section{Heap Model}
 The JSIL Heap Model is designed to correspond as closely as possible to the JavaScript Heap Model (beta indistinguishability relation)
 
@@ -885,6 +876,50 @@ This method first determines whether V is of Object type, since it cannot have a
 This method converts the argument, V, into a String value, before calling the [[GetOwnProperty]] internal method to determine if the current Object prototype has a property named V. If so, V can be represented by a descriptor, which by definition has a field "enumerable". The method returns the value of this field.
 \end{enumerate}
 
+\section{IsPrototypeOf in Detail}
+\subsection{ECMAScript Standard}
+\begin{enumerate}
+\item If $V$ is not an object, return \textbf{false}.
+\item Let $O$ be the result of calling ToObject passing the \textbf{this} value as the argument.
+\item Repeat
+\begin{enumerate}
+\item[a.] Let $V$ be the value of the [[Prototype]] internal property of $V$.
+\item[b.] if $V$ is \textbf{null}, return \textbf{false}
+\item[c.] If $O$ and $V$ refer to the same object, return \textbf{true}.
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Pretty Big Step}
+
+\subsection{JSIL Code}
+\begin{adjustwidth}{2cm}{2cm}
+\begin{lstjsil}
+proc OP_isPrototypeOf(xsc, vthis, v) {
+			goto [typeOf(v) = $$object_type] obj fret;
+			
+	obj:	xret := "i__toObject" (vthis) with elab;
+	
+	rep:	v := [v, "@proto"];
+			goto [v = $$null] fret nnull;
+		
+	nnull:  goto [v = xret] tret rep;
+	
+	tret: 	xret := $$t;
+			goto rlab;
+	
+	fret: 	xret := $$f;
+	
+	rlab:	skip;
+	elab:	skip
+}
+with
+{
+	ret:	xret, rlab;
+	err:	xret, elab;
+};
+\end{lstjsil}
+\end{adjustwidth}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Arrays in JavaScript}
 Array Objects are a type of built-in Object in the JavaScript language, and they have predefined methods and special properties. 
@@ -922,26 +957,20 @@ In the event that [[DefineOwnProperty]] has not yet produced a return value, the
 
 \section{Array Creation}\label{sec:arraycreate}
 An Array Object can be created in one of three ways - using an Array literal, using the Array Object constructor, and using the constructor as a function. Array literal notation utilizes square brackets to enclose the elements, and is used in the following manner:
-
 \begin{center}
-\begin{minipage}{10cm}
-\begin{lstlisting}
-var arr = ['a', 'b', 1, 2, true, false];
-\end{lstlisting}
-\end{minipage}
+\jsinline|var arr = ['a', 'b', 1, 2, true, false]|
 \end{center}
+
 
 The array indices do not have to be specified because they start at zero by default, and increases by 1 for all subsequent elements. The Array Object constructor can take one of the following forms:
 
-\begin{center}
-\begin{minipage}{10cm}
-\begin{lstlisting}
+\begin{adjustwidth}{5cm}{4cm}
+\begin{lstjs}
 var arr1 = new Array([item0 [, item1 [, ...]]]);
 
 var arr2 = new Array(len);
-\end{lstlisting}
-\end{minipage}
-\end{center}
+\end{lstjs}
+\end{adjustwidth}
 
 The first version of the constructor can be used with zero, one, or many arguments. If no argument is provided, it will create an empty Array Object and initialize the Object with default properties such as "class" and "length". If more than one argument is provided, the Array Object will add each argument as an element in the order they are given. All the elements are treated as data properties, with the value attribute as the items provided, and the boolean value \textbf{true} for all the other attributes. The length property's value will be set to the number of arguments given \cite{EcmaScript}.
 
@@ -957,9 +986,8 @@ Both constructors will set the following internal properties of the Array Object
 The Array Object constructor itself is a JavaScript Object, and its prototype property is set to the Function Object prototype, which will not be discussed in further detail here.
 
 \section{A Working Example}
-\begin{center}
-\begin{minipage}{10cm}
-\begin{lstlisting}
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstjs}
 var arr = new Array('a','b');
 arr[2] = 'c';
 arr[5] = 'f';
@@ -967,9 +995,8 @@ var len = arr.length;
 Object.preventExtensions(arr);
 arr[6] = 'g';
 len = arr.length;
-\end{lstlisting}
-\end{minipage}
-\end{center}
+\end{lstjs}
+\end{adjustwidth}
 
 Here, a new Array Object named arr with elements "a" and "b" is created on line 1, a new element "c" is added as the third element on line 2, and a new element "f" is added as the sixth element on line 3. Line 4 gets the value of the length property of Array arr and assigns it to a variable named len. At this point, the value of len is 6, even though only four elements have been added to Array arr, and the fourth and fifth elements of Array arr are currently undefined but could be altered at a future stage.
 
@@ -1114,7 +1141,7 @@ This method is used to filter out all elements in an Array that satisfy certain 
 \subsection{Pretty Big Step Operational Semantics}
 \subsection{JSIL Code}
 \begin{adjustwidth}{2cm}{2cm}
-\begin{lstlisting}
+\begin{lstjsil}
 proc AP_filter() {
 			arguments := args;
 			vthis  := nth (arguments, 1);
@@ -1180,7 +1207,7 @@ with
 	ret: 	xret, rlab;
 	err: 	xret, elab;
 };
-\end{lstlisting}
+\end{lstjsil}
 \end{adjustwidth}
 
 \section{Sort In Detail}\label{sec:sort}
@@ -1273,7 +1300,7 @@ Then, instead of only defining a new "callee" property in the Arguments Object, 
 \subsection{JSIL Implementation}
 Since this project works exclusively in strict mode, the JSIL implemented corresponds to the strict mode algorithm, and is hence relatively simple.
 \begin{adjustwidth}{2cm}{2cm}
-\begin{lstlisting}
+\begin{lstjsil}
 proc create_arguments_object (argList) { 
 
 			len := length (argList);
@@ -1308,22 +1335,22 @@ with
 	ret:	xret, rlab;
 	err:	xret, elab;
 }
-\end{lstlisting}
+\end{lstjsil}
 \end{adjustwidth}
 
 \section{A Working Example}
 A function, \textit{myFunc} is defined as below. \textit{myFunc} takes three formal parameters, named $x$, $y$, and $z$, and it returns the sum of the three parameters.
-\begin{adjustwidth}{2cm}{2cm}
-\begin{lstlisting}
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstjs}
 var myFunc = function(x, y, z) {
 	return x + y + z;
 }
-\end{lstlisting}
+\end{lstjs}
 \end{adjustwidth}
 
 In JavaScript, however, \textit{myFunc} can be called with three arguments, less than three arguments, or more than three arguments, with each scenario outlined below.
-\begin{adjustwidth}{2cm}{2cm}
-\begin{lstlisting}
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstjs}
 \\ Scenario A
 var a = myFunc(1, 2, 3);
 
@@ -1332,7 +1359,7 @@ var b = myFunc(1, 2);
 
 \\ Scenario C
 var c = myFunc(1, 2, 3, 4, 5);
-\end{lstlisting}
+\end{lstjs}
 \end{adjustwidth}
 In non-strict code, the Arguments Object would have the following new properties with "name": value - "4": 5, "3": 4, "2": 3, "1": 2, and "0": 1. \textit{mappedNames} list would contain ["z", "y", "x"]. The \textit{map} Object would have the following properties with "name": getter: setter - "2": getz: setz, "1": gety: sety, and "0": getx: setx. In strict code, \textit{mappedNames} and \textit{map} would be empty.
 
