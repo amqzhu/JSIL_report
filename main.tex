@@ -182,7 +182,7 @@ $$\jsinline|(![]+[])[+!+[]]|$$
 
 JavaScript was developed, and is still being improved and updated, by the ECMAScript committee. The committee is in charge of publishing the ECMAScript standard, addressing the language syntax, semantics, libraries, and complementary technologies that support the language. Since its inception, six versions of the standard have been developed, with the latest one having been released in June 2015 \cite{international2015ecmascript}. This project will primarily target the 5\textsuperscript{th} edition of the ECMAScript standard, which was published in 2011, while discussing some of the differences between itself and its predecessor, ECMAScript 3, as well as its successor, ECMAScript 6.
 
-\section{The Importance of Verification}
+\section{The Importance of Verification}\label{sec:jsspec}
 Computer scientists have created high-level programming languages such as JavaScript with the idea of stepping away from machine code and assembly and, instead, instructing machines to perform actions in a more human-like way. Designing a programming language is a complicated endeavour, and possibilities for mistakes exist even in the earliest stages. For instance, five years after its creation, Java, a real life programming language, was shown not to comply with type safety~\cite{drossopoulou1998towards}. It is of little help for correctness that, just like natural languages, programming languages evolve and become increasingly complicated. Moreover, programming language specifications are often written in plain prose that sometimes lacks detail or is simply ambiguous, which can result in diverging interpretations by different readers. One should contrast this with the fact that program correctness plays a crucial role in life-critical or security-critical settings, such as in the aviation or banking industries.
 
 Therefore, when a programmer writes a piece of code that is intended to perform a certain task, without proper tools they cannot be entirely sure that their program will perform the task as required without any side effects. In order to reduce the errors and inconsistencies in different implementations of the same language, a formal verification system is necessary so that one could prove that programming languages and programs written in those languages are indeed performing correctly, as expected, with no ambiguities.
@@ -192,6 +192,21 @@ Therefore, when a programmer writes a piece of code that is intended to perform 
 \pmax{JavaScript, Internet, widespread, data security, leaks, this and that}
 
 Previous work on JavaScript verification that makes this project possible includes formal reasoning about JavaScript using program logics \cite{Gardner:2012}; JSCert and JSRef, which are a mechanized specification of the ECMAScript standard and a certified reference interpreter, both written in the Coq proof assistant \cite{Bodin:2014}; and the JSIL intermediate language, which relies on JSCert and is at the core of this project. All of these works will be discussed in more detail in sections~\ref{sec:jslogic} to~\ref{sec:jsverify}.
+
+\subsection{JS Logic}\label{sec:jslogic}
+Gardner et al. \cite{Gardner:2012} have demonstrated that a program logic based on separation logic can be used to reason about JavaScript, in particular the ECMAScript 3 standard. Their main motivation for using separation logic was that this particular kind of logic is useful when reasoning about heap-manipulating programs, which is precisely how JavaScript works, as it stores the entire program state within a heap. A concept of weak locality was employed to establish the soundness of the logic, as program commands are required to be local but JavaScript commands are not \cite{Gardner:2012}. The soundness proof was based on big step operational semantics, which was developed for most of the standard, but was simplified (e.g.~descriptors were not considered). This semantics supplements a previous effort of developing a small step operational semantics for core ECMAScript 3 functionalities by Maffeis et al. \cite{Maffeis:2008}.
+
+\subsection{JSCert and JSRef}\label{sec:jscert}
+JSCert is a mechanised specification of the ECMAScript 5 standard in the proof assistant Coq\cite{Bodin:2014}. It uses pretty-big-step semantics, covers all of the language constructs and a small part of the built-in libraries, and consists of approximately eight hundred derivation rules. These rules are of the form $t/S/C \Downarrow_s S'/o$, where $t$ is the statement being executed, $S$ is the current program state, $C$ is the current execution context, and $S'/o$ is the output, meaning that if we execute the statement $t$ starting from the state $S$ and execution context $C$, we will obtain the output $S'/o$. The output consists of the final state $S'$ and a completion triple $o$ containing the return type, the return value, and the return label \cite{Bodin:2014}. JSCert, given that it defined inductively, can be used to reason only about the scenarios where the program terminates, and not those in which it diverges. 
+
+% number of rules
+
+JSCert comes accompanied by JSRef, an executable reference interpreter for JavaScript, written in Coq and extracted to OCaml. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef is proven correct in Coq with respect to JSCert; it is also tested against the official ECMAScript Test262 test suite in order to establish the correctness of both JSRef and JSCert with respect to the  standard.
+
+\subsection{JSVerify}\label{sec:jsverify}
+For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Given its highly dynamic nature, JavaScript code can often have bugs \cite{Gardner:2012} and even be vulnerable to security attacks \cite{Lee:2007}. 
+
+The ideas presented in sections~\ref{sec:jslogic} and~\ref{sec:jscert} have led to a currently ongoing verification project called JSVerify. Its aims are to use separation logic to reason about JavaScript programs and provide proofs of their correctness. This project ties in with JSVerify in that JSVerify will actually analyse code written in the intermediate language JSIL from this project, in order to determine the correctness of the corresponding JavaScript program. This can be accomplished because there exists a proof of correctness of the translation from JavaScript to JSIL.
 
 \section{Thesis Project}
 
@@ -259,6 +274,38 @@ This section presents four sample studies, with the first being a purely theoret
 \item[Bodin et al. 2014] In this work, the ECMAScript 5 standard was mechanised using pretty-big-step semantics (JSCert) and a reference interpreter (JSRef) was implemented using the Coq theorem prover. JSRef was proven correct with respect to JSCert, then extracted to OCaml using Coq's built-in extraction mechanism, and tested against Test262 \cite{Bodin:2014}. This correctness result ensures that both JSCert and JSRef are correct with respect to the JavaScript standard. The work done in this thesis stems from this work, and both JSCert and JSRef will be discussed in more detail in section~\ref{sec:jscert}.
 
 \item[Park et al. 2015] Similar to the study presented in Section~\ref{sec:chist}, this formal semantics of JavaScript, called KJS, is also based on $\mathbb{K}$ \cite{k-primer-2013-v32}. KJS was tested against Test262, and its language constructs closely resemble the ECMAScript standard. In addition, it was able to discover coverage deficiencies in Test262 itself. This framework, however, does not allow reasoning on the meta-properties of JavaScript \cite{Park:2015}.
+\end{description}
+
+\subsection{Intermediate Languages for JavaScript}\label{sec:ir}
+Most real-world programming languages are far too complex for any reasonable analysis, and need to be transformed to a simpler form in order for verification to take place. These simpler forms are called {\em Intermediate representations}. Historically, intermediate representations have already been used in many compilers, as a compilation step between the initial source code and the resulting assembly code \cite{Necula2002}. As the need for language verification arose, intermediate representations, in this context also called intermediate languages, found their usefulness in this field as well.
+
+Currently, many intermediate languages exist; one of the most prominent is CIL, which targets the C programming language. Unlike C, CIL has only one looping construct, it makes the return statement explicit for all functions, and it simplifies the type system \cite{Necula2002}.
+
+\paragraph{JavaScript Intermediate Languages}
+\begin{description}
+\item[JSIR] One intermediate language for JavaScript is JSIR \cite{Livshits:2016:Misc}, which aims to make different analysis tools more unified and less platform-dependent. Much of its grammar is defined, and can be found at \cite{Livshits:2016:Misc}. However, up to this point, there have been no implementations for JSIR and there is no compilation provided from any higher-level programming language to JSIR.
+
+\item[WALA] Another interesting intermediate language, initially developed by IBM, is WALA \cite{WALA}. Unlike most other intermediate languages which are developed and used in academia, WALA is a set of full-fledged Java libraries used in production code for static and dynamic analysis of Java code. It also supports simple program analyses for JavaScript, in the form of JS-WALA \cite{WALA2}.
+
+\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript (ECMAScript 3), except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features covered by S5 include accessors and the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
+
+\item[JSIL] is the intermediate language around which this thesis revolves. Like other intermediate languages, JSIL does not have many high-level language constructs. Instead, it is a simple $\texttt{goto}$ language with labels and commands that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} The full syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
+
+%As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
+
+%\begin{center}
+%\begin{tabular}{p{9cm}} \hline
+%\textbf{JavaScript Heap Model} \\
+%$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
+%\end{tabular}
+%
+%\begin{tabular}{p{9cm}} \hline
+%\textbf{JSIL Heap Model} \\
+%$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup \mathcal{V}_{JSIL} $  \\ \hline
+%\end{tabular}
+%\end{center}
+
+\item[High-Level Languages] Lastly, there are many studies that are focusing on the high-level constructs of JavaScript rather than using intermediate representations for JavaScript verification. For example, Jensen et al. \cite{unevalizer2012} describe a way to transform JavaScript programs to eliminate the use of \texttt{eval} functions to improve static analysis of JavaScript source code. But, as these methods only verify the source programs, and not the programming language itself, they are outside the scope of this project and will not be discussed in further detail.
 \end{description}
 
 \section{Operational Semantics}\label{sec:opsem}
@@ -337,55 +384,6 @@ In $\mathbf{E}_1$ + $\mathbf{E}_2$, to avoid the big step redundancy, one expres
 \and
 \inferrule[PB-+\textsubscript{2}] { }{\texttt{n}_1 +_2 \texttt{n}_2 \Downarrow \underline{\texttt{n}_1} + \underline{\texttt{n}_2}}
 \end{mathpar}
-
-\section{JavaScript Specification and Verification}\label{sec:jsspec}
-
-\subsection{JS Logic}\label{sec:jslogic}
-Gardner et al. \cite{Gardner:2012} have demonstrated that a program logic based on separation logic can be used to reason about JavaScript, in particular the ECMAScript 3 standard. Their main motivation for using separation logic was that this particular kind of logic is useful when reasoning about heap-manipulating programs, which is precisely how JavaScript works, as it stores the entire program state within a heap. A concept of weak locality was employed to establish the soundness of the logic, as program commands are required to be local but JavaScript commands are not \cite{Gardner:2012}. The soundness proof was based on big step operational semantics, which was developed for most of the standard, but was simplified (e.g.~descriptors were not considered). This semantics supplements a previous effort of developing a small step operational semantics for core ECMAScript 3 functionalities by Maffeis et al. \cite{Maffeis:2008}.
-
-\subsection{JSCert and JSRef}\label{sec:jscert}
-JSCert is a mechanised specification of the ECMAScript 5 standard in the proof assistant Coq\cite{Bodin:2014}. It uses pretty-big-step semantics, covers all of the language constructs and a small part of the built-in libraries, and consists of approximately eight hundred derivation rules. These rules are of the form $t/S/C \Downarrow_s S'/o$, where $t$ is the statement being executed, $S$ is the current program state, $C$ is the current execution context, and $S'/o$ is the output, meaning that if we execute the statement $t$ starting from the state $S$ and execution context $C$, we will obtain the output $S'/o$. The output consists of the final state $S'$ and a completion triple $o$ containing the return type, the return value, and the return label \cite{Bodin:2014}. JSCert, given that it defined inductively, can be used to reason only about the scenarios where the program terminates, and not those in which it diverges. 
-
-% number of rules
-
-JSCert comes accompanied by JSRef, an executable reference interpreter for JavaScript, written in Coq and extracted to OCaml. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef is proven correct in Coq with respect to JSCert; it is also tested against the official ECMAScript Test262 test suite in order to establish the correctness of both JSRef and JSCert with respect to the  standard.
-
-\subsection{JSVerify}\label{sec:jsverify}
-For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Given its highly dynamic nature, JavaScript code can often have bugs \cite{Gardner:2012} and even be vulnerable to security attacks \cite{Lee:2007}. 
-
-The ideas presented in sections~\ref{sec:jslogic} and~\ref{sec:jscert} have led to a currently ongoing verification project called JSVerify. Its aims are to use separation logic to reason about JavaScript programs and provide proofs of their correctness. This project ties in with JSVerify in that JSVerify will actually analyse code written in the intermediate language JSIL from this project, in order to determine the correctness of the corresponding JavaScript program. This can be accomplished because there exists a proof of correctness of the translation from JavaScript to JSIL.
-
-\subsection{Intermediate Languages for JavaScript}\label{sec:ir}
-Most real-world programming languages are far too complex for any reasonable analysis, and need to be transformed to a simpler form in order for verification to take place. These simpler forms are called {\em Intermediate representations}. Historically, intermediate representations have already been used in many compilers, as a compilation step between the initial source code and the resulting assembly code \cite{Necula2002}. As the need for language verification arose, intermediate representations, in this context also called intermediate languages, found their usefulness in this field as well.
-
-Currently, many intermediate languages exist; one of the most prominent is CIL, which targets the C programming language. Unlike C, CIL has only one looping construct, it makes the return statement explicit for all functions, and it simplifies the type system \cite{Necula2002}.
-
-\paragraph{JavaScript Intermediate Languages}
-\begin{description}
-\item[JSIR] One intermediate language for JavaScript is JSIR \cite{Livshits:2016:Misc}, which aims to make different analysis tools more unified and less platform-dependent. Much of its grammar is defined, and can be found at \cite{Livshits:2016:Misc}. However, up to this point, there have been no implementations for JSIR and there is no compilation provided from any higher-level programming language to JSIR.
-
-\item[WALA] Another interesting intermediate language, initially developed by IBM, is WALA \cite{WALA}. Unlike most other intermediate languages which are developed and used in academia, WALA is a set of full-fledged Java libraries used in production code for static and dynamic analysis of Java code. It also supports simple program analyses for JavaScript, in the form of JS-WALA \cite{WALA2}.
-
-\item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript (ECMAScript 3), except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features covered by S5 include accessors and the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
-
-\item[JSIL] is the intermediate language around which this thesis revolves. Like other intermediate languages, JSIL does not have many high-level language constructs. Instead, it is a simple $\texttt{goto}$ language with labels and commands that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} The full syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
-
-%As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
-
-%\begin{center}
-%\begin{tabular}{p{9cm}} \hline
-%\textbf{JavaScript Heap Model} \\
-%$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
-%\end{tabular}
-%
-%\begin{tabular}{p{9cm}} \hline
-%\textbf{JSIL Heap Model} \\
-%$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup \mathcal{V}_{JSIL} $  \\ \hline
-%\end{tabular}
-%\end{center}
-
-\item[High-Level Languages] Lastly, there are many studies that are focusing on the high-level constructs of JavaScript rather than using intermediate representations for JavaScript verification. For example, Jensen et al. \cite{unevalizer2012} describe a way to transform JavaScript programs to eliminate the use of \texttt{eval} functions to improve static analysis of JavaScript source code. But, as these methods only verify the source programs, and not the programming language itself, they are outside the scope of this project and will not be discussed in further detail.
-\end{description}
 
 \section{Operational Semantics and Specification in Action}\label{sec:opsemac}
 \subsection{While Loop}
@@ -536,23 +534,22 @@ with
 \end{lstjsil}
 \end{minipage}
 
- \noindent 
-In JSIL, descriptors are modelled as lists, with the 0\textsuperscript{th} element containing the descriptor type identifier, which is \jsinline|"d"| for data descriptors and \jsinline|"a"| for accessor descriptors. For data descriptors, the first element is the \jsinline|Value| attribute, and for accessor descriptors, it is the \jsinline|Get| attribute. The \jsilinline|l-nth| function returns the n\textsuperscript{th} element of a given list. If the descriptor is a data descriptor, its value is returned (line 8); if it is an accessor descriptor and its getter is \jsilinline|$$undefined|, \jsinline|$$undefined| is returned (line 10). Otherwise, the program will call the getter function and return the value obtained from that call (lines 11-13).
+\noindent  In JSIL, descriptors are modelled as lists, with the 0\textsuperscript{th} element containing the descriptor type identifier, which is \jsinline|"d"| for data descriptors and \jsinline|"a"| for accessor descriptors. For data descriptors, the first element is the \jsinline|Value| attribute, and for accessor descriptors, it is the \jsinline|Get| attribute. The \jsilinline|l-nth| function returns the n\textsuperscript{th} element of a given list. If the descriptor is a data descriptor, its value is returned (line 8); if it is an accessor descriptor and its getter is \jsilinline|$$undefined|, \jsinline|$$undefined| is returned (line 10). Otherwise, the program will call the getter function and return the value obtained from that call (lines 11-13).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
-Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project.
+Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
 
 \section{Mystery Code Explained}
 An example snippet of JavaScript code was shown in the Introduction, which evaluated to the string value \jsinline|"a"|. This was possible because of the implicit type conversions within the language. 
 
 $$\jsinline|(![]+[])[+!+[]]|$$
 
-The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty object in JavaScript, and taking the negation of the empty object happens to coerce it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce objects into numbers, so \jsinline|+[]| would become \textbf{0}. In this case, however, \jsinline|+| acts as the string concatenation operator instead, because it connects the boolean value \textbf{false} and an empty object. The empty object is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, function as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
+The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty object in JavaScript, and taking the negation of the empty object coerces it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce objects into numbers, so \jsinline|+[]| would become \textbf{0}. In this case, however, \jsinline|+| acts as the string concatenation operator instead, connecting the boolean value \textbf{false} and an empty object. The empty object is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, functions as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
 \begin{center}
 \jsinline|"false"[1]|
 \end{center}
-\noindent which evaluates to the letter \jsinline|"a"|.
+\noindent which evaluates to the letter \jsinline|"a"|, because the zero-indexed indexing mechanism picks out the second character in the string.
 
 \section{ES5 Strict}\label{sec:strict}
 Strict mode presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
@@ -714,18 +711,109 @@ The [[ParameterMap]] internal property is an Object property that belongs to Jav
 \end{description}
 
 \section{Prototype Inheritance}
-As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created, the new object's prototype property is implicitly set to the value of the Object constructor's prototype. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the new object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance. An example is given in the code snippet below.
+As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created using a constructor call, the new object's prototype property is implicitly set to the value of the Object constructor's prototype, and when an object is constructed using object literal notation, the new object's prototype property is set to the default Object.prototype object. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the newly created object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. 
 
+When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance. An example is given in the code snippet below.
+\begin{adjustwidth}{4cm}{4cm}
 \begin{lstjs}
-%%TODO%%
+var obj = {"physical": true};
+
+function animal() {
+	this.living = true;
+}
+animal.prototype = Object.create(obj);
+var a = new animal();
+
+function rock(hardness) {
+	this.hardness = hardness;
+}
+rock.prototype = Object.create(obj);
+var r = new rock(10);
+r.physical; // returns true
+
+function person(pname, age) {
+	this.pname = pname;
+	this.age = age;
+}
+person.prototype = Object.create(a);
+var alice = new person("Alice", 36);
+
 \end{lstjs}
+\end{adjustwidth}
+
+The initial value of Object.prototype is the built-in Object prototype object \cite{EcmaScript}, whose prototype property is null, since it is always at the end of the prototype chain. In the code snippet above, an Object was created with a named property of \textbf{physical}, which has a value of \textbf{true}. Then, a custom object template of \textbf{animal} type was created with a named property of \textbf{living}, which has a value of \textbf{true}. The prototype value of this \textbf{animal} object type is then explicitly set to the Object instance created. Before using the Object.create() method to set \textbf{animal}'s prototype value, its original value was the Function prototype, since it was defined using the \textbf{function} keyword. 
+
+In the following lines, a custom object type of \textbf{rock} was defined with a named property of \textbf{hardness}, the value of which is taken as an input parameter, then the prototype of this object type is also set to the Object created on line 1 in the snippet. Then, a variable instance of the object \textbf{rock} is created and named \textbf{r}, with the \textbf{hardness} property set to the value \textbf{10}. At this point, the \textbf{animal} and \textbf{rock} object types both share the same prototype object, \textbf{obj}, and even though neither of them has the own property \textbf{physical}, when querying their instance variables for the property \textbf{physical}, the boolean value \textbf{true} would be the result, such as in line 13. 
+
+Next, to show that the prototype chain can be extended via multiple objects, a custom object type of \textbf{person} was created, with two parameters, \textbf{pname} and \textbf{age} taken as input for the \textbf{person}'s name and age properties. The prototype value of the new object type is set to be the instance variable \textbf{a} of type \textbf{animal} created previously using Object.create(), and an instance variable \textbf{alice} is created. This new variable has own properties \textbf{pname} and \textbf{age}, and inherits the \textbf{living} property from \textbf{a}, in addition to the \textbf{physical} property from \textbf{obj}.
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+  \def\d{0.4cm};
+  \def\w{1cm};
+  \node (sftvalue) at (\w,0.5mm) {};
+  %%%%%%%% person node
+  \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=4, fill=black!35] (person) 
+    {     
+      \nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+      \nodepart{two}{\scriptsize $\mathtt{name : "Alice"}$}
+      \nodepart{three}{\scriptsize $\mathtt{age : 36}$}
+      \nodepart{four}{\scriptsize prototype: \(l_{\mathsf{animal}}\)}
+  };
+  \node[above left=0cm and 0cm of person,ll] {alice: \(l_{\mathsf{alice}}\)};
+  %%%%%%%% end of global 
+  %%%%%%%% animal node
+  \node[sbox,sz={\d}{\w},above right= -0.5cm and 1cm of person, rectangle split,rectangle split parts=3,fill=black!25] (animal) 
+    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+    \nodepart{two}{\scriptsize $\mathtt{living : true}$}
+      \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{obj}}\)}};
+  \node[above left=0cm and 0cm of animal,ll] {a: \(l_{\mathsf{a}}\)};
+  %%%%%%%% end of obj
+  %%%%%%%% rock node
+  \node[sbox,sz={\d}{\w},below right= -0.5cm and 1cm of person,rectangle split,rectangle split parts=3,fill=black!25] (rock) 
+    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+    \nodepart{two}{\scriptsize $\mathtt{hardness : 10}$}
+      \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{obj}}\)}};
+    \node[above left=0cm and 0cm of rock,ll] {r: \(l_{\mathsf{r}}\)};
+  %%%%%%%% end of number 
+  %%%%%%%% obj node
+  \node[sbox,sz={\d}{\w},right = 1.25cm of animal, rectangle split,rectangle split parts=3,fill=black!25] (obj) 
+    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+    \nodepart{two}{\scriptsize $\mathtt{physical : true}$}
+      \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{op}}\)}};
+  \node[above left=0cm and 0cm of obj,ll] {Object: \(l_{\mathsf{obj}}\)};
+  %%%%%%%% end of obj
+  %%%%%%%% objproto node
+  \node[sbox,sz={\d}{\w},right= 1cm of obj, rectangle split,rectangle split parts=2,fill=black!15] (objproto) 
+    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+      \nodepart{two}{\scriptsize prototype: null}};
+  \node[above left=0cm and 0.15cm of objproto,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
+  %%%%%%%% end of objproto
+  %%%%%%%% connection 
+  \draw[p] ($(person.four) + (1.8*\w,0)$) to[out=0,in=180] (animal);
+  \draw[p] ($(animal.third) + (1.8*\w,0)$) to [out=0,in=180]  (obj);
+  \draw[p] ($(rock.third) + (1.9*\w,0)$) to [out=0,in=180]  (obj);
+  \draw[p] ($(obj.third) + (1.8*\w,0)$) to [out=0,in=180]  (objproto);
+  %%%%%%%% end connection
+\end{tikzpicture}
+\caption{Prototype Chain}
+\label{fig:initheap}
+\end{center}
+\end{figure}
+
+As Figure 3.1 shows, within each object instance, there is a property field named \textbf{prototype}, which holds the location of the Object that serves as its prototype.
+
+The Object.create(O [, Properties]) method mentioned previously is JavaScript's way to create objects with a specific prototype. The method takes one required parameter, \textbf{O}, and optional parameters \textbf{Properties}. \textbf{O} must be of Object or Null types. When this method is called, a new object is created using the object constructor, and the prototype internal property of this new object is set to the input \textbf{O} given. If optional properties are given, those properties are set for the new object accordingly.
 
 \section{Initial Heap}
 When a JavaScript Object is stored in memory, each memory cell holds a certain piece of information related to this Object. And as a result, a type of representation must exist to keep track of which memory cells are holding what information. A JavaScript heap serves this function of mapping memory locations and property names to heap values and scope chains. %%CITE%%  
 
-When a JavaScript program is executed, it must first create a global object that contains all of the global variables declared in the program using the \textbf{var} keyword, and the constructors for all the built-in Object types in JavaScript. Global variables are assigned Undefined as their value if they are not initialized right away. A constructor of an Object is the special function that, along with the \textbf{new} keyword, declares and initializes an Object. The constructor must reserve space in memory to hold the Object, and it creates the internal properties required by the Object and sets them to be their default values. Because constructors are also Objects, they too have the prototype property that points to the prototype object of their specific type, for example, the prototype of the Object constructor holds the Object prototype object, whereas the prototype of the Array constructor holds the Array prototype object. The global object also has a Prototype property like all other Objects, and this property's value is the built-in Object prototype object. 
-
-Continuing with the previous example ... %%TODO%%
+When a JavaScript program is executed, it must first create a global object that contains all of the global variables declared in the program using the \textbf{var} keyword, and the constructors for all the built-in Object types in JavaScript, including Array and String. Global variables are assigned \textbf{Undefined} as their value if they are not initialized right away. A constructor of an Object is the special function that, along with the \textbf{new} keyword, declares and initializes an Object. The constructor must reserve space in memory to hold the Object, and it creates the internal properties required by the Object and sets them to be their default values. Because constructors are also Objects, they too have the prototype property that points to the prototype object of their specific type, for example, the prototype of the Object constructor holds the Object prototype object, whereas the prototype of the Array constructor holds the Array prototype object. The global object also has a Prototype property like all other Objects, and this property's value is the built-in Object prototype object. For example, the code snippet below would create the initial heap presented in Figure 3.2.
+\begin{center}
+\jsinline|var a, r;|
+\end{center}
+As more code in the program is run, more Objects and other variable instances would be created and added to the JavaScript heap.
 
 \begin{figure}[!h]
 \begin{center}
@@ -738,9 +826,9 @@ Continuing with the previous example ... %%TODO%%
     {     
       \nodepart{one}\scriptsize Object: \(l_{\mathsf{obj}}\)
       \nodepart{two}{\hspace*{0.75cm}\(\vdots\)}
-      \nodepart{three}{\scriptsize Number: \(l_{\mathsf{num}}\)}
-      \nodepart{four}{\scriptsize $\mathtt{w : undefined}$}
-      \nodepart{five}{\scriptsize $\mathtt{z : undefined}$}
+      \nodepart{three}{\scriptsize String: \(l_{\mathsf{string}}\)}
+      \nodepart{four}{\scriptsize $\mathtt{a : undefined}$}
+      \nodepart{five}{\scriptsize $\mathtt{r : undefined}$}
       \nodepart{six}{\scriptsize@proto: \(l_{\mathsf{op}}\)}
   };
   \node[above left=0cm and 0cm of global,ll] {Global: \(l_{\mathsf{g}}\)};
@@ -754,21 +842,20 @@ Continuing with the previous example ... %%TODO%%
   %%%%%%%% number node
   \node[sbox,sz={\d}{\w},below right= -0.3cm and 0.75cm of global,rectangle split,rectangle split parts=2,fill=black!25] (number) 
     {\hspace*{0.75cm}\(\vdots\)%
-      \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{np}}\)}};
-    \node[above left=0cm and 0cm of number,ll] {Number: \(l_{\mathsf{num}}\)};
+      \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{sp}}\)}};
+    \node[above left=0cm and 0cm of number,ll] {String: \(l_{\mathsf{string}}\)};
   %%%%%%%% end of number 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w},right= 0.75cm of obj, rectangle split,rectangle split parts=3,fill=black!10] (op) 
     {\hspace*{0.75cm}\(\vdots\)%
-        \nodepart{second}{\scriptsize $\mathtt{y : "banana"}$}
-      \nodepart{third}{\scriptsize@proto: null}};
+      \nodepart{second}{\scriptsize@proto: null}};
   \node[above left=0cm and 0.15cm of op,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
   %%%%%%%% end of op 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w}m,right= 0.75cm of number, rectangle split,rectangle split parts=2,fill=black!10] (np) 
     {\hspace*{0.75cm}\(\vdots\)%
     \nodepart{second}{\scriptsize@proto: \(l_{\mathsf{op}}\)}};
-  \node[above left=0cm and 0.2cm of np,ll] {Number.prototype: \(l_{\mathsf{np}}\)};
+  \node[above left=0cm and 0.2cm of np,ll] {String.prototype: \(l_{\mathsf{sp}}\)};
   %%%%%%%% end of op 
   %%%%%%%% dots
   \node at ($(obj)!0.45!(number)$) {\(\vdots\)};
@@ -784,7 +871,7 @@ Continuing with the previous example ... %%TODO%%
   \draw[p] ($(obj.second) + (1.8*\w,0)$) to [out=0,in=180]  (op);
   %%%%%%%% end connection
 \end{tikzpicture}
-\caption{ES5 Strict initial heap + first two commands of example}
+\caption{ES5 Strict initial heap}
 \label{fig:initheap}
 \end{center}
 \end{figure}
