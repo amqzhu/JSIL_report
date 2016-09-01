@@ -921,7 +921,7 @@ If formal parameters are provided as arguments, the constructor will convert the
 
 \subsection{Calling a Function Object}
 In order to call a Function Object, the Function Object must have a valid [[Call]] internal property, described in section~\ref{sec:opip}. When the Function is invoked, the [[Call]] internal method will establish a new but temporary execution context that includes the [[FormalParameters]] internal property, the actual arguments passed into the function call, and the calling Function Object. It then executes what is inside the [[Code]] internal property as appropriate, and produces an intermediate result, before restoring the original execution context before the function call. Depending on the type of the result, [[Call]] will either thrown an error, return a value, or return Undefined. 
-
+\az{TODO}
 \subsubsection{Function Call}
 \subsubsection{Method Call}
 \subsubsection{Constructor Call}
@@ -1262,101 +1262,156 @@ Line 5 changes the [[Extensible]] internal property of Array arr to \textbf{fals
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Array Library}
-Below is an outline of all of the functions in the ECMAScript 5 Array Library. Each function's name will be listed then followed by a brief explanation of the intended usage of the function.
+The intricacies of JavaScript Arrays have already been explained in the last chapter, and this chapter will focus on the Array Library methods. Below is an outline of all of the functions in the ECMAScript 5 Array Library. Each function's name will be listed then followed by a brief explanation of the intended usage of the function. Then, a sample line of code using the method will be given, as well as the result of running the sample code following \jsinline|>> |, when applicable.
 
 \section{Array Object Constructor Functions}
 The following functions belong to the Array Object constructor, and the first two have been described in detail in~\ref{sec:arraycreate}.
 \begin{enumerate}
-\item new Array( [item0 [, item1 [, ...]]] )
-\item new Array(len)
+\item new Array( [item0 [, item1 [, ...]]] )\\
+\jsinline|var arrA = new Array('a', 'b', 'c', 1, 2, 3, true, false);|
+\item new Array(len)\\
+\jsinline|var arrB = new Array(10);|
 \item Array( [item0 [, item1 [, ...]]] ) \newline
-This is using the Array constructor as a function, i.e., without using the \textbf{new} keyword, but it functions the same way as the constructor when used with \textbf{new}.
+This is using the Array constructor as a function, i.e., without using the \textbf{new} keyword, but it functions the same way as the constructor when used with \textbf{new}.\\
+\jsinline|var arrC = Array('a', 'b', 'c', 1, 2, 3, true, false);|
 \item Array.prototype \newline
-This property's initial value is Array Prototype Object, and this property's value cannot be altered, it cannot be used in for-in enumeration, and its attributes cannot be changed. The [[prototype]] internal property is the default Object Prototype.
+This property's initial value is Array Prototype Object, and this property's value cannot be altered, it cannot be used in for-in enumeration, and its attributes cannot be changed. The [[prototype]] internal property is the default Object Prototype.\\
+\jsinline|arrA.__proto__;|\\
+\jsinline|>> []|\\
+\jsinline|arrC.__proto__.__proto__;| \\
+\jsinline|>> Object{} // The Object.prototype object|
 \item Array.isArray( arg ) \newline
-This method checks to see if the [[class]] internal property of arg is equal to the String "Array".
+This method checks to see if the [[class]] internal property of arg is equal to the String "Array". \\
+\jsinline|Array.isArray(arrA);| \\
+\jsinline|>> true|
 \end{enumerate}
 
 \section{Array Object Prototype Functions}
 The following functions belong to the Array Object prototype: 
 \begin{enumerate}
 \item Array.prototype.constructor \newline
-This is the constructor previously explained.
+This is the constructor previously explained.\\
+\jsinline|arrA.constructor| \\
+\jsinline|>> function Array() // The Array constructor function|
 
 \item Array.prototype.toString() \newline
-This method utilizes the Array.prototype.join(separator) function below, to produce a String representation of all the elements inside the Array.
+This method utilizes the Array.prototype.join(separator) function below, to produce a String representation of all the elements inside the Array.\\
+\jsinline|arrA.toString();|\\
+\jsinline|>> "a,b,c,1,2,3,true,false"|
 
 \item Array.prototype.toLocaleString() \newline
-This method also returns a String representation of all the elements inside the Array, as Array.prototype.toString(). The main differences however, are the locale specific conversion of each element into Strings using the element's own toLocaleString method and the use of a locale specific and implementation-defined separator between the element strings. This difference becomes especially relevant when the Array Object holds Date Objects, since the date concept is represented differently in different countries.
+This method also returns a String representation of all the elements inside the Array, as Array.prototype.toString(). The main differences however, are the locale specific conversion of each element into Strings using the element's own toLocaleString method and the use of a locale specific and implementation-defined separator between the element strings. This difference becomes especially relevant when the Array Object holds Date Objects, since the date concept is represented differently in different countries.\\
+\jsinline|arrA.toLocaleString();|\\
+\jsinline|>> "a,b,c,1,2,3,true,false"|
 
 \item Array.prototype.concat( [ item1 [, item2 [, ...]]] ) \newline
-This method creates a new Array Object that holds all the elements of the original Array Object in the original order, then appends the optional arguments at the end and returns the new Array.
+This method creates a new Array Object that holds all the elements of the original Array Object in the original order, then appends the optional arguments at the end and returns the new Array while the original Array remains unchanged.\\
+\jsinline|arrA.concat('d', 4, null);|\\
+\jsinline|>> ["a", "b", "c", 1, 2, 3, true, false, "d", 4, null]|
 
 \item Array.prototype.join(separator) \newline
-This method converts all the elements into Strings and concatenates all the Strings together using the separator. If no separator is provided, the default separator is the comma.
+This method converts all the elements into Strings and concatenates all the Strings together using the separator. If no separator is provided, the default separator is the comma.\\
+\jsinline|arrA.join("---");|\\
+\jsinline|>> "a---b---c---1---2---3---true---false"|
 
 \item Array.prototype.pop() \newline
-This method removes the last element of the Array and returns it. The original Array Object is modified, and its length property deceases in value by one.
+This method removes the last element of the Array and returns it. The original Array Object is modified, and its length property deceases in value by one.\\
+\jsinline|arrA.pop();|\\
+\jsinline|>> false|
 
 \item Array.prototype.push( [ item1 [, item2 [, ...]]] ) \newline
-This method modifies the original Array by appending the optional arguments at the end in the order given, and calculates the new length property value of the Array.
+This method modifies the original Array by appending the optional arguments at the end in the order given, and calculates the new length property value of the Array.\\
+\jsinline|arrA.push('d', 4, null);|\\
+\jsinline|>> 10|
 
 \item Array.prototype.reverse() \newline
-This method reverses the original order of the Array. No new Array Object is created and the original Array is modified from this method. The algorithm used is swapping the elements at each end until meeting in the middle.
+This method reverses the original order of the Array. No new Array Object is created and the original Array is modified from this method. The algorithm used is swapping the elements at each end until meeting in the middle.\\
+\jsinline|arrA.reverse();|\\
+\jsinline|>> [null, 4, "d", true, 3, 2, 1, "c", "b", "a"]|
 
 \item Array.prototype.shift() \newline
-This method is the opposite of the Array.prototype.pop() method, in that it removes the first element of the Array, returns it, and decreases the length by one. This method, however, requires all subsequent elements in the Array to be shifted up by one, since Arrays need to start at index zero. Each element is shifted by getting the current element value and associating it with the previous index value until reaching the last index, which is then deleted from the Array.
+This method is the opposite of the Array.prototype.pop() method, in that it removes the first element of the Array, returns it, and decreases the length by one. This method, however, requires all subsequent elements in the Array to be shifted up by one, since Arrays need to start at index zero. Each element is shifted by getting the current element value and associating it with the previous index value until reaching the last index, which is then deleted from the Array.\\
+\jsinline|arrA.shift();|\\
+\jsinline|>> null // The first element in the Array is the 'null' value|
 
 \item Array.prototype.slice(start, end) \newline
-This method creates a new Array Object, and adds into it the original Array elements beginning at index \textbf{start} until the element before \textbf{end}. If the end argument is undefined, it will default to through the end of the Array Object, and if the start index is larger than the end index, the new Array will have no elements. Both arguments provided can be negative, and if so, the length of the original Array will be added to the argument. This method does not alter the original Array.
+This method creates a new Array Object, and adds into it the original Array elements beginning at index \textbf{start} until the element before \textbf{end}. If the end argument is undefined, it will default to through the end of the Array Object, and if the start index is larger than the end index, the new Array will have no elements. Both arguments provided can be negative, and if so, the length of the original Array will be added to the argument. This method does not alter the original Array.\\
+\jsinline|arrA.slice(3, 8);|\\
+\jsinline|>> [3, 2, 1, "c", "b"]|
 
 \item Array.prototype.sort(comparefn) \newline
 This method will be explained in detail in~\ref{sec:sort}.
 
 \item Array.prototype.splice(start, deleteCount, [ item1 [, item2 [, ...]]] ) \newline
-This method, similar to Array.prototype.slice(start, end), will create a new Array Object with \textbf{deleteCount} number of elements beginning at index \textbf{start}. The major differences, however, are that splice actually deletes those elements from the original Array whereas slice does not, and that splice takes optional arguments that could be added in the place of the deleted elements in the order they are given. The \textbf{start} argument can be negative, and if so, the length of the original Array will be added. If the \textbf{deleteCount} argument is negative, it will default to zero, and if it is too large, it will delete all the Array elements after index start. 
+This method, similar to Array.prototype.slice(start, end), will create a new Array Object with \textbf{deleteCount} number of elements beginning at index \textbf{start}. The major differences, however, are that splice actually deletes those elements from the original Array whereas slice does not, and that splice takes optional arguments that could be added in the place of the deleted elements in the order they are given. The \textbf{start} argument can be negative, and if so, the length of the original Array will be added. If the \textbf{deleteCount} argument is negative, it will default to zero, and if it is too large, it will delete all the Array elements after index start. \\
+\jsinline|arrA.splice(1, 3, 0, 0, 0);|\\
+\jsinline|>> ["d", true, 3]| \\
+\jsinline|// arrA is now [4, 0, 0, 0, 2, 1, "c", "b", "a"]|
 
 \item Array.prototype.unshift( [ item1 [, item2 [, ...]]] ) \newline
-This method is the opposite of the Array.prototype.push( [ item1 [, item2 [, ...]]] ) method, in that it adds Array elements at the start of the Array rather than at the end. The original elements' indexes will be shifted backwards by the number of arguments, then the elements will be added in the front of the Array in the order they are given in the arguments list, 
+This method is the opposite of the Array.prototype.push( [ item1 [, item2 [, ...]]] ) method, in that it adds Array elements at the start of the Array rather than at the end. The original elements' indexes will be shifted backwards by the number of arguments, then the elements will be added in the front of the Array in the order they are given in the arguments list, \\
+\jsinline|arrA.unshift('z','y');|\\
+\jsinline|>> 11| \\
+\jsinline|// arrA is now ["z", "y", 4, 0, 0, 0, 2, 1, "c", "b", "a"]|
 
 \item Array.prototype.indexOf(searchElement [, fromIndex] ) \newline
 This method compares the \textbf{searchElement} argument to each of the elements in the Array in ascending order, either from the zero index, or the \textbf{fromIndex} if it is given as an argument. If searchElement is found, the index of the first instance is returned, otherwise -1 is returned. If \textbf{fromIndex} is provided and is greater than or equal to the length of the Array, the Array will not be searched; if it is negative, the length of the Array will be added to it to get the actual fromIndex, and if it is still negative, the entire Array will be searched.
 
-This method makes use of the internal Strict Equality Comparison Algorithm to determine whether searchElement and an Array element are the same.
+This method makes use of the internal Strict Equality Comparison Algorithm to determine whether searchElement and an Array element are the same.\\
+\jsinline|arrA.indexOf(0, 2);|\\
+\jsinline|>> 3|
 
 \item Array.prototype.lastIndexOf(searchElement [, fromIndex] ) \newline
-This method is similar to Array.prototype.indexOf(searchElement [, fromIndex] ), except it starts the search from the end of the Array, rather than the beginning. If \textbf{fromIndex} is provided and greater than or equal to the length of the Array, the whole Array will be searched; if it is negative, length of the Array will be added to it to get the actual fromIndex, and if it is still negative, the entire Array will not be searched.
+This method is similar to Array.prototype.indexOf(searchElement [, fromIndex] ), except it starts the search from the end of the Array, rather than the beginning. If \textbf{fromIndex} is provided and greater than or equal to the length of the Array, the whole Array will be searched; if it is negative, length of the Array will be added to it to get the actual fromIndex, and if it is still negative, the entire Array will not be searched.\\
+\jsinline|arrA.lastIndexOf(0, 6);|\\
+\jsinline|>> 5|
 
 \item Array.prototype.every(callbackfn [, thisArg] ) \newline
-This method requires a callback function to be provided as an argument, and an optional argument to be used for the \textbf{this} value of the callback function. The method calls the callback function for each of the elements in the Array in ascending order, and will return either when the callback function returns \textbf{false} or when the entire Array is traversed. 
+This method requires a callback function to be provided as an argument, and an optional argument to be used for the \textbf{this} value of the callback function. The method calls the callback function for each of the elements in the Array in ascending order, and will return either when the callback function returns \textbf{false} or when the entire Array is traversed.
 
 The callback function must take three arguments, namely the value and index of each Array element, and the Array Object that calls it. Its return value must be coercible to a boolean value, to be passed back to the Array method.
 
-This method is used to determine whether every single element in an Array satisfies certain criteria laid out in the callback function.
+This method is used to determine whether every single element in an Array satisfies certain criteria laid out in the callback function.\\
+\jsinline|var largerThanOne = function(element, index, array) {return element > 1;}|\\
+\jsinline|arrA.every(largerThanOne);|\\
+\jsinline|>> false|
 
 \item Array.prototype.some(callbackfn [, thisArg] ) \newline
-This method is similar to Array.prototype.every(callbackfn [, thisArg] ), but rather than returning upon a \textbf{false} return value from the callback function, it will return upon a \textbf{true} return value, or when the entire Array is traversed. This method is used to determine whether at least one element in the Array satisfies certain criteria laid out in the callback function.
+This method is similar to Array.prototype.every(callbackfn [, thisArg] ), but rather than returning upon a \textbf{false} return value from the callback function, it will return upon a \textbf{true} return value, or when the entire Array is traversed. This method is used to determine whether at least one element in the Array satisfies certain criteria laid out in the callback function.\\
+\jsinline|arrA.some(largerThanOne);|\\
+\jsinline|>> true|
 
 \item Array.prototype.forEach(callbackfn [, thisArg] ) \newline
 This method requires a callback function to be provided as an argument, and an optional argument to be used for the \textbf{this} value of the callback function. The method calls the callback function for each of the elements in the Array in ascending order, and will return only when the entire Array is traversed.
 
 The callback function must take the same three arguments as outlined previously, but its return value does not need to be coercible to a boolean value.
 
-This method is used to apply a callback function to each of the elements in the Array, but it should only be used when no return value is required from this operation.
+This method is used to apply a callback function to each of the elements in the Array, but it should only be used when no return value is required from this operation.\\
+\jsinline|var forEachLoop = function(element, index, array) {if (element > 1) console.log(element);}|\\
+\jsinline|arrA.forEach(forEachLoop);|\\
+\jsinline|>> 4 2|
 
 \item Array.prototype.map(callbackfn [, thisArg] ) \newline
-This method is similar to Array.prototype.forEach(callbackfn [, thisArg] ) in that it traverses the entire Array and calls the callback function on each element in the Array. The main difference is that this method creates a new Array Object, and stores in it the return values of the callback function. This method will return the new Array when it completes, so it should be used when a return Array is required from this operation.
+This method is similar to Array.prototype.forEach(callbackfn [, thisArg] ) in that it traverses the entire Array and calls the callback function on each element in the Array. The main difference is that this method creates a new Array Object, and stores in it the return values of the callback function. This method will return the new Array when it completes, so it should be used when a return Array is required from this operation.\\
+\jsinline|var mapLoop = function(element, index, array) {if (element > 1) return 10; else return 0;}|\\
+\jsinline|arrA.map(mapLoop);|\\
+\jsinline|>> [0, 0, 10, 0, 0, 0, 10, 0, 0, 0, 0]|
 
 \item Array.prototype.filter(callbackfn [, thisArg] ) \newline
 This method will be explained in detail in~\ref{sec:filter}.
 
 \item Array.prototype.reduce(callbackfn [, thisArg] ) \newline
-This method requires a callback function to be provided as an argument, and an optional argument to be used for the initial value of the callback function. The method calls the callback function for each of the elements in the Array in ascending order, and will return a single value when the entire Array is traversed. 
+This method requires a callback function to be provided as an argument, and an optional argument to be used for the initial value of the callback function. The method calls the callback function for each of the elements in the Array in ascending order, and will return a single value when the entire Array is traversed.
 
-The callback function must take four arguments, namely the value from the previous call to callbackfn (or the initial value if provided as an argument), the value and index of each current Array element, and the Array Object that calls it. 
+The callback function must take four arguments, namely the value from the previous call to callbackfn (or the initial value if provided as an argument), the value and index of each current Array element, and the Array Object that calls it. \\
+\jsinline|var reduceFunc = function(previous, current, index, array) {return previous+current;}|\\
+\jsinline|arrA.reduce(reduceFunc);|\\
+\jsinline|>> "zy400021cba"|
 
 \item Array.prototype.reduceRight(callbackfn [, thisArg] ) \newline
-This method is similar to Array.prototype.reduce(callbackfn [, thisArg] ), but rather than traversing through the Array in ascending order, it traverses in descending order.
+This method is similar to Array.prototype.reduce(callbackfn [, thisArg] ), but rather than traversing through the Array in ascending order, it traverses in descending order.\\
+\jsinline|arrA.reduceRight(reduceFunc);|\\
+\jsinline|"abc120004yz"|
 \end{enumerate}
 
 \section{Filter In Detail}\label{sec:filter}
@@ -1620,35 +1675,68 @@ var c = myFunc(1, 2, 3, 4, 5);
 \end{adjustwidth}
 In non-strict code, the Arguments Object would have the following new properties with "name": value - "4": 5, "3": 4, "2": 3, "1": 2, and "0": 1. \textit{mappedNames} list would contain ["z", "y", "x"]. The \textit{map} Object would have the following properties with "name": getter: setter - "2": getz: setz, "1": gety: sety, and "0": getx: setx. In strict code, \textit{mappedNames} and \textit{map} would be empty.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%$$
 \chapter{String Library}
 \section{JavaScript Strings}
-JavaScript distinguishes between string primitives and String Objects. String primitives are simply a sequence of characters enclosed in either single quotation marks or double quotation marks, whereas String Objects are created with the String Object constructor and the \textbf{new} keyword. When a String Object method is called on a primitive string value, JavaScript automatically converts the primitive into an Object in order to execute the method.
+JavaScript distinguishes between string primitives and String Objects. String primitives are a sequence of characters enclosed in either single quotation marks or double quotation marks, or the return value of a function call to String() without using it as a constructor. On the other hand, String Objects are created with the String Object constructor and the \textbf{new} keyword. To be exact, an additional layer, called the string type, exist between string primitives and string values. String type is simply the set of all possible string values \cite{EcmaScript}. The code snippet below shows the different ways to create string primitives versus String Objects.
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstjs}
+var strA = "This is a string primitive";
+var strB = String("This is also a string primitive");
+var strC = new String("This is a string object");
+\end{lstjs}
+\end{adjustwidth}
 
-Strings are represented as ... in JavaScript
+In JavaScript, string primitives are represented as a sequence of 16-bit unsigned integer values, called code unit values, that correspond to UTF-16 code units \cite{EcmaScript}. Each value, called an element, has a zero-indexed position within this sequence, similar to the indices in Arrays. Each string type value also has a length property, which equals the number elements in the sequence.
+
+When a String Object method is called on a primitive string value, JavaScript automatically converts the primitive into an Object in order to execute the method. But since primitives are only values, they cannot hold named properties, and assigning properties to them will fail. In addition, to get a string primitive from a String Object, one can utilize the String.prototype.toString() or String.prototype.valueOf() methods, both of which accomplish the same action.
 
 \section{String Library Functions}\label{sec:stringmethods}
-The JavaScript String Library includes three String Object constructor functions, and 20 String Prototype functions. A significant portion of the String Library methods depend on additional constructs, such as the JavaScript Regular Expressions Library and Unicode implementations, and therefore was outside the scope of this project. Thus, a selection of methods was focused upon and described below.
+The JavaScript String Library includes three String Object constructor functions, and 20 String Prototype functions. A significant portion of the String Library methods depend on additional constructs, such as the JavaScript Regular Expressions Library and Unicode implementations, and therefore was outside the scope of this project. Thus, a selection of methods was focused upon and described below. Similar to the Object.prototype and Array Library chapters, the description of the library methods will be followed by a sample code snippet, and any returned results following \jsinline|>> | when applicable.
 
 \begin{enumerate}
 \item String.prototype.charAt(pos) \newline
-This method takes in an input that could be coerced into an integer, and returns a string value that is the character at this position in the original String Object. If no character exists at the position, the empty string is returned. \\
+This method takes in an input that could be coerced into an integer, and returns a string value that is the character at this position in the original String Object. If no character exists at the position, the empty string is returned. If the pos value provided is of Number type, then this method functions in exactly the same way as String.prototype.substring(pos, pos+1). The substring() method will be discussed later. \\
 This method works the same way as using bracket notation. A String Object can be treated as an Array Object consisting of characters, and using bracket notation on a specific position, or index, returns a String value with the corresponding character.
 
+\jsinline|var str = new String("JavaScript");| \\
+\jsinline|str.charAt(5);| \\
+\jsinline|>> "c"|
+
 \item String.prototype.concat( [ string1 [, string2 [, ...]]] ) \newline
-This method takes in zero or more inputs, and appends the characters in each input to the characters list in the original String Object in the order given. Each of the inputs is converted to a String, and the result is a string value, not a String Object.
+This method takes in zero or more inputs, and appends the characters in each input to the characters list in the original String Object in the order given. Each of the inputs is converted to a String, and the result is a string value, not a String Object. The original string is unaltered from the concatenation operation.
+
+\jsinline|str.concat(" is ", "dynamic!");| \\
+\jsinline|>> "JavaScript is dynamic!"|
 
 \item String.prototype.indexOf(searchString, position) \newline
-This method searches for the entire searchString value within the String Object after it is converted into a string value, starting from the given position input, and returns the index within the String for which the searchString starts. If no position input is given, then the entire String is searched for searchString, and if there are multiple matches, the first instance of the match is returned. 
+This method searches for the entire searchString value within the String Object after it is converted into a string value, starting from the given position input, and returns the index within the String for which the searchString starts. If no position input is given, then the entire String is searched for searchString. If there are multiple matches, the first instance of the match is returned, and if there is no match, \textbf{-1} is returned.
+
+\jsinline|str.indexOf("a");| \\
+\jsinline|>> 1|
 
 \item String.prototype.lastIndexOf(searchString, position) \newline
 This method is similar to String.prototype.indexOf(searchString, position), except it starts looking for searchString at the end of the String and returns the first match of searchString from the end of String.
 
+\jsinline|str.lastIndexOf("a");| \\
+\jsinline|>> 3|
+
 \item String.prototype.slice(start, end) \newline
 This method takes the starting and ending positions within a String value converted from the String Object, and returns a substring corresponding to the characters within the starting and ending positions. The starting position is inclusive but the ending position is exclusive. If end is not defined, then it is assumed to be the end of the String. If either the starting or ending positions is negative, then the length of the String is added, essentially working as if counting from the end of the String. The returned substring is a string value, not a String Object.
 
+\jsinline|str.slice(3, 8);| \\
+\jsinline|>> "aScri"| \\
+\jsinline|str.slice(3, -1);| \\
+\jsinline|>> "aScrip"|
+
 \item String.prototype.substring(start, end) \newline
-This method also takes the starting and ending positions within a String value converted from the String Object, and returns the corresponding substring, as in String.prototype.slice(start, end). The main difference is the treatment of the start and end inputs. In this method, if either input is negative, it is replaced with zero, and if either is larger than the length of the String Object, it is replaced with the length. If start is greater than end, the two values are swapped during method execution.
+This method also takes the starting and ending positions within a String value converted from the String Object, and returns the corresponding substring, as in String.prototype.slice(start, end). The main difference is the treatment of the start and end inputs. In this method, if either input is negative, it is replaced with zero, and if either is larger than the length of the String Object, it is replaced with the length. If start is greater than end, the two values are swapped during method execution. As seen in the code snippet examples, because of the different treatment of start and end values, especially if the end value is not greater than or equal to the start value, the behaviors of String.prototype.slice() and String.prototype.substring() are quite different. Otherwise, the two can seem indistinguishable.
+
+\jsinline|str.substring(3, 8);| \\
+\jsinline|>> "aScri"| \\
+\jsinline|str.substring(3, -1);| \\
+\jsinline|>> "Jav"|
+
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2001,7 +2089,7 @@ Total & 40 \\ \hline
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Conclusion}
+\chapter*{Conclusion}
 
 
 %% bibliography
