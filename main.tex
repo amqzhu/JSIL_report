@@ -710,7 +710,7 @@ The [[Call]] internal property is an internal method that takes two arguments, t
 The [[ParameterMap]] internal property is an Object property that belongs to JavaScript Objects that are Arguments Objects. The ParameterMap maps the named properties of an Arguments Object to the formal parameters of the function that invoked the Arguments Object. The exact workings of the Arguments Object will be described in Chapter~ref{sec:argumentsobject}.
 \end{description}
 
-\section{Prototype Inheritance}
+\section{Prototype Inheritance}\label{sec:protoinh}
 As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created using a constructor call, the new object's prototype property is implicitly set to the value of the Object constructor's prototype, and when an object is constructed using object literal notation, the new object's prototype property is set to the default Object.prototype object. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the newly created object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. 
 
 When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance. An example is given in the code snippet below.
@@ -1069,33 +1069,64 @@ A JSIL variable store, on the other hand, maps a JSIL variable, $\mathcal{X}_{JS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Object.Prototype Library}
+As mentioned previously in section~\ref{sec:protoinh} regarding prototype inheritance, the Object.prototype object is the default value for the [[Prototype]] internal property of all Objects, and in turn, Object.prototype's [[Prototype]] internal property has a value of \textbf{null}, meaning it is the end of the prototype chain. The [[Class]] of Object.prototype is still an \textbf{"object"}, and by default, its [[Extensible]] internal property is set to \textbf{true}, so additional named properties can be added by the user.
+
 \section{Object Prototype Functions}
-The following functions belong to the Object prototype: 
+The following functions belong to the Object prototype. After describing the functionality of each method, a sample line of code using the method is given, as well as the result of running the sample code following \jsinline|>> |, when applicable.
+
 \begin{enumerate}
 \item Object.prototype.constructor \newline
 This is the standard Object constructor. The Object constructor can be used as a constructor with the \textbf{new} keyword, or it could be invoked as a function call without using \textbf{new}. Both usages correspond to the same set of internal operations. The constructor can be called with no arguments, or one argument representing a value, and the syntax is "new Object( [value] )".
-The prototype property is set to the Object prototype object, the class is set to "Object", and extensible is set to True.
+
+\jsinline|var objProto = new Object();|
 
 \item Object.prototype.toString() \newline
 This method returns a String value that indicates the value of the [[Class]] internal property of the Object, unless it is Undefined or Null, in which case the String value would give the proper indication.
 
+\jsinline|objProto.__proto__.toString();| \\
+\jsinline|">> [object Object]"|
+
 \item Object.prototype.toLocaleString() \newline
-This method determines if the Object has a property called "toString" using the [[Get]] internal method, calls the corresponding function if available, and returns the result. It results in an error if there is no callable "toString" property.
+This method determines if the Object has a property called "toString" using the [[Get]] internal method, calls the corresponding function if available, and returns the result. It results in an error if there is no callable "toString" property. This method therefore, does not differ from the Object.prototype.toString() method because all Objects are assumed to be similar across different locales. For other types of Objects, such as Dates especially, because different countries represent dates differently, the toLocaleString() methods for these objects differ from the toString() method.
+
+\jsinline|objProto.__proto__.toLocaleString();| \\
+\jsinline|>> "[object Object]"|
 
 \item Object.prototype.valueOf() \newline
-This method converts the calling Object prototype into an Object and returns this Object. It could also return a different value based on the specific implementation.
+This method converts the calling Object prototype into an Object and returns this Object. It could also return a different value based on the specific implementation. As the example below shows, the return value is the Object itself, therefore all of the Object's methods are returned as properties. The details of each property, such as the length value, is omitted.
+\begin{adjustwidth}{0cm}{2.5cm}
+\jsinline|objProto.__proto__.valueOf();| \\
+\jsinline|>> Object{"constructor": function Object(), "toString": function toString(), "toLocaleString": function toLocaleString(), "valueOf": function valueOf(), "hasOwnProperty": function hasOwnProperty(), "isPrototypeOf": function isPrototypeOf(), "propertyIsEnumerable": function propertyIsEnumerable}|
+\end{adjustwidth}
 
 \item Object.prototype.hasOwnProperty(V) \newline
 This method converts the argument, V, into a String value, before calling the [[GetOwnProperty]] internal method to determine if the current Object prototype has an own property named V.
 
+\jsinline|objProto.__proto__.hasOwnProperty("toString");|\\
+\jsinline|>> true|
+
 \item Object.prototype.isPrototypeOf(V) \newline
-This method first determines whether V is of Object type, since it cannot have a prototype if it is not an Object itself. It then determines whether the prototype internal property of V corresponds to the Object calling this method. If so, the method returns True.
+This method first determines whether V is of Object type, since it cannot have a prototype if it is not an Object itself. It then determines whether the prototype internal property of V corresponds to the Object calling this method. If so, the method returns True. Because the Object.prototype object is at the head of all prototype chains by default, it is the prototype of any kind of JavaScript Object by default.
+
+\jsinline|var a = new Object();| \\
+\jsinline|var b = new Boolean();| \\
+\jsinline|objProto.__proto__.isPrototypeOf(a);| \\
+\jsinline|>> true| \\
+\jsinline|objProto.__proto__.isPrototypeOf(b);| \\
+\jsinline|>> true|
 
 \item Object.prototype.propertyIsEnumerable(V) \newline
 This method converts the argument, V, into a String value, before calling the [[GetOwnProperty]] internal method to determine if the current Object prototype has a property named V. If so, V can be represented by a descriptor, which by definition has a field "enumerable". The method returns the value of this field.
+
+\jsinline|objProto.__proto__.prop = "someLetters";| \\
+\jsinline|objProto.__proto__.propertyIsEnumerable(prop);| \\
+\jsinline|>> false|
+
 \end{enumerate}
 
 \section{IsPrototypeOf in Detail}
+The Object.prototype.isPrototypeOf(V) method is chosen to be presented in detail because of the importance of the prototype chain for objects. 
+
 \subsection{ECMAScript Standard}
 \begin{enumerate}
 \item If $V$ is not an object, return \textbf{false}.
@@ -1109,9 +1140,14 @@ This method converts the argument, V, into a String value, before calling the [[
 \end{enumerate}
 
 \subsection{Pretty Big Step}
+\az{TODO}
 
 \subsection{JSIL Code}
-\begin{adjustwidth}{2cm}{2cm}
+
+\begin{minipage}{0.50\textwidth}
+Line 1 defines the JSIL procedure, taking in three inputs - the first is necessary to the procedure definition, but not used in the function; the second is the \textbf{this} object on which the method is operating; and the third is the actual argument value provided in the method call. Step 1 from the ECMAScript standard is reflected in lines 2 and 14. Line 2 checks to see if the argument V is of Object type, and if not, the flow of control proceeds to line 14 with the label \textbf{fret}, sets the return value \textbf{xret} to \textbf{false}, and returns from the method. If the input is of Object type, the program proceeds to Step 2 in the standard, calling the ToObject method on the \textbf{this} Object on line 4. 
+\end{minipage} \qquad
+\begin{minipage}{0.50\textwidth}
 \begin{lstjsil}
 proc OP_isPrototypeOf(xsc, vthis, v) {
 			goto [typeOf(v) = $$object_type] obj fret;
@@ -1137,11 +1173,13 @@ with
 	err:	xret, elab;
 };
 \end{lstjsil}
-\end{adjustwidth}
+\end{minipage}
+
+It is necessary to call the method with an error label, because the method call may fail, and in which case the error must be caught for the program to exit correctly. The label on line 6, \textbf{rep} is the start of the loop in Step 3 of the standard. Line 6 then proceeds to Step 3a, assigning the object to be the object stored in its prototype internal property. Line 7 faithfully represents Step 3b, and will take the flow of control to line 14 to return \textbf{false} if the prototype is \textbf{null}. Line 9 then checks to see if the original object is the same as its prototype property, carrying out the if clause Step 3c. If so, flow of control moves to line 11 and returns \textbf{true} from the program.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Arrays in JavaScript}
-Array Objects are a type of built-in Object in the JavaScript language, and they have predefined methods and special properties. 
+Many modern programming languages have the array construct, which can be seen as a container for many items to be stored together. In languages such as Java and C++, arrays can only hold elements of the same type, and the fixed array size must be declared during initialization, whereas in other languages such as Python, they can hold elements of different types, and the size can be readily altered. In JavaScript, arrays are not simply a collection of potentially different types elements, but rather a special type of built-in Object, and they have predefined methods and special properties. 
 
 \section{Indices and Length}
 An Array in JavaScript is a special type of Object, referred to as Array Objects. Array Objects differ from normal Objects in the treatment of property names. Given a property name P, ToUint32(P) converts P into an unsigned 32-bit integer, and ToString(ToUint32(P)) converts this integer back to a string value. If the unsigned integer does not equal 2\textsuperscript{32-1}, which is the largest value an unsigned 32-bit integer can be, and if this converted string value is equal to the original string, P, then this property name is considered to be an index in the Array Object \cite{EcmaScript}. Thus, P has to be a string value containing non-negative integer values, otherwise performing the two operations would not result in the same string value. 
