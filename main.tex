@@ -97,7 +97,7 @@
 }[keywords,comments,strings]
 
 \lstnewenvironment{lstjs}{\lstset{language=JavaScript,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
-\def\jsinline{\lstinline[language=JavaScript, basicstyle=\small]}
+\def\jsinline{\lstinline[language=JavaScript, basicstyle=\small]}%\end{lstlisting}
 
 \lstdefinelanguage{JSIL}{
   morekeywords=[1]{proc, ret, err, with, goto, {l-nth}},
@@ -120,7 +120,7 @@
 }[keywords,comments,strings]
 
 \lstnewenvironment{lstjsil}{\lstset{language=JSIL,basicstyle=\fontsize{8}{8}\ttfamily,escapeinside={~}{~}}}{}
-\def\jsilinline{\lstinline[language=JSIL, basicstyle=\small]}
+\def\jsilinline{\lstinline[language=JSIL, basicstyle=\small]}%\end{lstlisting}
 
 \tikzset{
   box/.style = {rectangle, draw=black,align=center,font=\scriptsize},
@@ -145,13 +145,19 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-TODO
+JavaScript plays an increasingly important role in programming on the web, and a reliable JavaScript verification tool that could help programmers write correct and secure code remains much to be desired. As JavaScript is an object-oriented dynamic language, analysis of the behavior of JavaScript programs poses great difficulty, and is more easily accomplished using simpler intermediate languages that replicate the actions performed in JavaScript. JSIL, an intermediate language for JavaScript, has been developed for exactly this purpose.
+
+This project extends the implementation of JSIL to include various built-in methods in the Object, Array, and String libraries, as well as the arguments object construct. The language in the 5\textsuperscript{th} edition of the JavaScript specification has been faithfully followed during JSIL implementation to ensure its correctness. When the specification is vague and up to interpretation, operational semantics is utilized to ensure clarity of method actions. All JSIL code written is concurrently tested using an automatic testing framework, which lends itself to manual analysis. The testing framework pulls test cases from the official ECMAScript test suite, and all methods implemented have passed all the tests within the scope of this project.
 \end{abstract}
 
 \cleardoublepage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgments}
-TODO
+I sincerely thank my supervisor, Professor Philippa Gardner, for her guidance and encouragement throughout my entire project. Her insights were invaluable, and this project could not have taken a better direction.
+
+I would also like to thank Jos\'e Fragoso Santos for setting up my programming environment and explaining logical concepts. In addition, I would like to thank Thomas Wood for creating and maintaining the testing framework. 
+
+Lastly, my most heartfelt thanks goes to Petar Maksimovi\'c, who supervised my learning of JSIL and spent countless hours troubleshooting and reviewing my work. 
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
 
@@ -447,7 +453,7 @@ Based on the ECMAScript standard definition, operational semantics for the $\mat
 \end{mathpar}
 
 \noindent The rules above are annotated with the line of the ECMAScript standard description to which they correspond, from which we can see that there exists almost a line-by-line eyeball correspondence, which gives us confidence that the standard has been formalised correctly. 
-
+\az{While loop in JSIL?}
 %\subsubsection{JSIL Code}
 %Compared to the JSIL operational semantics, there are a few constructs here not represented above, such as the \textit{fresh}() command, which creates a fresh JSIL variable to hold a return value. 
 %
