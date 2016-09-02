@@ -55,6 +55,8 @@
 \fi
 }
 
+\newcommand{\polish}[2]{{\color{red}#1}~{\color{blue}[#2]}}
+
 \definecolor{ltblue}{rgb}{0,0.4,0.4}
 \definecolor{dkblue}{rgb}{0,0.2,0.7}
 \definecolor{dkgreen}{rgb}{0,0.4,0}
@@ -203,6 +205,10 @@ JSCert is a mechanised specification of the ECMAScript 5 standard in the proof a
 
 JSCert comes accompanied by JSRef, an executable reference interpreter for JavaScript, written in Coq and extracted to OCaml. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef is proven correct in Coq with respect to JSCert; it is also tested against the official ECMAScript Test262 test suite in order to establish the correctness of both JSRef and JSCert with respect to the  standard.
 
+
+\subsection{JSIL}\label{sec:jsil}
+\pmax{High-level, just like others, so that we have a reference later}
+
 \subsection{JSVerify}\label{sec:jsverify}
 For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Given its highly dynamic nature, JavaScript code can often have bugs \cite{Gardner:2012} and even be vulnerable to security attacks \cite{Lee:2007}. 
 
@@ -324,6 +330,7 @@ $$
 
 \subsection{Small Step Semantics}
 Small step operational semantics is also called structural operational semantics, and it evaluates expressions one step at a time \cite{Lecture2}. Due to its fine granularity, small step semantics is often used to model type systems and concurrency \cite{chargueraud-13-pretty}, as well as mechanised programming language definitions. The relation between two states is represented by the $\rightarrow$ symbol, and an example of this semantics is given below. In S-LEFT, an expression is evaluated from left to right: $\mathbf{E}_1$ is evaluated before $\mathbf{E}_2$. If the left hand side is already a literal, then the expression on the right hand side, $\mathbf{E}$, will be evaluated using the S-RIGHT rule. Once all expressions have been evaluated, actual addition will occur using the S-ADD rule. Note that the underlined literals in S-ADD denote  actual natural numbers, while those that are not underlined are only symbols of our language.
+
 \begin{mathpar}
 \inferrule[S-LEFT]{\mathbf{E}_1 \rightarrow \mathbf{E}'_1}{\mathbf{E}_1 + \mathbf{E}_2 \rightarrow \mathbf{E}'_1 + \mathbf{E}_2}
 \and
@@ -368,6 +375,7 @@ $$
 $$
 
  The $\mathtt{while}$ command for big step semantics requires two different rules \cite{LectureBS}, one for when the boolean condition is $\mathtt{true}$, another for $\mathtt{false}$. In BS-WHILE-FALSE, the boolean condition \textit{B} evaluates to $\mathtt{false}$, so the command \textit{C} is never executed, and the program state \textit{s} stays the same after evaluation. In BS-WHILE-TRUE, \textit{B} evaluates to $\mathtt{true}$, so the while loop is unrolled once, command $C$ is executed, which alters the state from $s$ to $s'$, and the while loop is called recursively with the state $s'$:
+ 
 $$
 \inferrule[BS-WHILE-FALSE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{false} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s} \rangle} \hspace*{1cm}
 \inferrule[BS-WHILE-TRUE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{true} \rangle \quad \langle \texttt{C, s} \rangle \Downarrow \langle \texttt{s'} \rangle \quad \langle \texttt{while B do C, s'} \rangle \Downarrow \langle \texttt{s''} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s''} \rangle}.
@@ -490,7 +498,9 @@ When the [[Get]] method of object \textit{O} is called with property name \texti
 \noindent Here, we can notice the complexity behind even the simplest of operations in JavaScript. For instance, properties are not associated with values, but with structures called descriptors. These descriptors may be data descriptors, from which we can read the value directly, but can also be accessor descriptors, containing special methods, called getters, via which one obtains the value of the property. All of these concepts will be addressed in detail in Chapter \ref{sec:javascript}.
 
 \subsubsection{ES5 Strict Operational Semantics}
-The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.\begin{mathpar}
+The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.
+
+\begin{mathpar}
 \inferrule[G-getProp (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}^o_{gp}(x) \rangle \Downarrow \langle h, o \rangle \\\\ L, v_t \vdash \langle h, \mathcal{I}^o_g(o)_1 \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(x) \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
 \inferrule[G-propUndef (Step 2)] {L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc undefined}_1) \rangle \Downarrow \langle h, \textnormal{desc undefined} \rangle}{}
@@ -538,7 +548,7 @@ with
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
-Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
+Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. \polish{Strict mode - better behavioural properties, etc.}{brief} \polish{Accessors - what do they do?}{brief} This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
 
 \section{Mystery Code Explained}
 An example snippet of JavaScript code was shown in the Introduction, which evaluated to the string value \jsinline|"a"|. This was possible because of the implicit type conversions within the language. 
@@ -822,7 +832,7 @@ $\omega \in \mathcal{V}_{JS}^{h} ::= n \myor b \myor m \myor \mathtt{undefined} 
 
 \begin{tabular}{p{10cm}} \hline
 \textbf{JavaScript Scope Chains} \\
-$\L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\ \hline
+$L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\ \hline
 \end{tabular}
 \vspace{0.3cm}
 
