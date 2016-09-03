@@ -55,8 +55,6 @@
 \fi
 }
 
-\newcommand{\polish}[2]{{\color{red}#1}~{\color{blue}[#2]}}
-
 \definecolor{ltblue}{rgb}{0,0.4,0.4}
 \definecolor{dkblue}{rgb}{0,0.2,0.7}
 \definecolor{dkgreen}{rgb}{0,0.4,0}
@@ -157,7 +155,7 @@ This project extends the implementation of JSIL to include various built-in meth
 \section*{Acknowledgments}
 I sincerely thank my supervisor, Professor Philippa Gardner, for her guidance and encouragement throughout my entire project. Her insights were invaluable, and this project could not have taken a better direction.
 
-I would also like to thank Jos\'e Fragoso Santos for setting up my programming environment and explaining logical concepts. In addition, I would like to thank Thomas Wood for creating and maintaining the testing framework. 
+I would also like to thank Jos\'e Fragoso Santos for setting up my programming environment and explaining logical concepts. I would like to thank Thomas Wood for creating and maintaining the testing framework. And I would like to thank Iv\'an Matellanes for some quick bug-fixing.
 
 Lastly, my most heartfelt thanks goes to Petar Maksimovi\'c, who supervised my learning of JSIL and spent countless hours troubleshooting and reviewing my work. 
 
@@ -211,10 +209,6 @@ JSCert is a mechanised specification of the ECMAScript 5 standard in the proof a
 
 JSCert comes accompanied by JSRef, an executable reference interpreter for JavaScript, written in Coq and extracted to OCaml. JSRef contains records of functions that evaluate various parts of JavaScript source code, and recursively returns the result of program execution \cite{Bodin:2014}. JSRef is proven correct in Coq with respect to JSCert; it is also tested against the official ECMAScript Test262 test suite in order to establish the correctness of both JSRef and JSCert with respect to the  standard.
 
-
-\subsection{JSIL}\label{sec:jsil}
-\pmax{High-level, just like others, so that we have a reference later}
-
 \subsection{JSVerify}\label{sec:jsverify}
 For languages such as C and Java, efforts to verify program correctness have well been underway, as described in Section~\ref{sec:hist}, yielding many integrated development environments (IDEs) that perform dynamic and static analyses of code and help programmers debug their programs. Current JavaScript IDEs provide little more than simple syntax highlighting and do not adequately address program correctness. Given its highly dynamic nature, JavaScript code can often have bugs \cite{Gardner:2012} and even be vulnerable to security attacks \cite{Lee:2007}. 
 
@@ -230,8 +224,8 @@ Previous work has already been done on JSIL and the JavaScript-to-JSIL compiler,
 This project has completed the Object.prototype library, the Array library, and a subset of the String library methods in their JSIL implementation. The Object.prototype library encompasses seven built-in methods for two pages in the ECMAScript standard, the Array library includes 28 built-in methods for a total of 20 pages, and the subset of String library includes six built-in methods for four pages. Another topic of interest is the arguments object, which is described in detail in Chapter~\ref{sec:argobj}. All of the functions in these libraries as well as the arguments object, will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis.
 
 \subsection{Testing}
-\az{need to figure out the exact numbers of TCs}
-%need to figure out exact numbers for each test case category
+\az{need to figure out the exact numbers of TCs: Total, Passed, Failed, Aborted, Timeout for each of Object.prototype, Array, and String, plus ES5 vs ES6 tests}
+
 The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
 
 The interactive testing framework is available online from inside the Imperial network, but soon it will be integrated into a publicly accessible web address and will become continuously integrated into the JSIL project. At that point, each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. Thus, JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
@@ -336,7 +330,6 @@ $$
 
 \subsection{Small Step Semantics}
 Small step operational semantics is also called structural operational semantics, and it evaluates expressions one step at a time \cite{Lecture2}. Due to its fine granularity, small step semantics is often used to model type systems and concurrency \cite{chargueraud-13-pretty}, as well as mechanised programming language definitions. The relation between two states is represented by the $\rightarrow$ symbol, and an example of this semantics is given below. In S-LEFT, an expression is evaluated from left to right: $\mathbf{E}_1$ is evaluated before $\mathbf{E}_2$. If the left hand side is already a literal, then the expression on the right hand side, $\mathbf{E}$, will be evaluated using the S-RIGHT rule. Once all expressions have been evaluated, actual addition will occur using the S-ADD rule. Note that the underlined literals in S-ADD denote  actual natural numbers, while those that are not underlined are only symbols of our language.
-
 \begin{mathpar}
 \inferrule[S-LEFT]{\mathbf{E}_1 \rightarrow \mathbf{E}'_1}{\mathbf{E}_1 + \mathbf{E}_2 \rightarrow \mathbf{E}'_1 + \mathbf{E}_2}
 \and
@@ -381,7 +374,6 @@ $$
 $$
 
  The $\mathtt{while}$ command for big step semantics requires two different rules \cite{LectureBS}, one for when the boolean condition is $\mathtt{true}$, another for $\mathtt{false}$. In BS-WHILE-FALSE, the boolean condition \textit{B} evaluates to $\mathtt{false}$, so the command \textit{C} is never executed, and the program state \textit{s} stays the same after evaluation. In BS-WHILE-TRUE, \textit{B} evaluates to $\mathtt{true}$, so the while loop is unrolled once, command $C$ is executed, which alters the state from $s$ to $s'$, and the while loop is called recursively with the state $s'$:
- 
 $$
 \inferrule[BS-WHILE-FALSE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{false} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s} \rangle} \hspace*{1cm}
 \inferrule[BS-WHILE-TRUE]{\langle \texttt{B, s} \rangle \Downarrow \langle \texttt{true} \rangle \quad \langle \texttt{C, s} \rangle \Downarrow \langle \texttt{s'} \rangle \quad \langle \texttt{while B do C, s'} \rangle \Downarrow \langle \texttt{s''} \rangle}{\langle \texttt{while B do C, s} \rangle \Downarrow \langle \texttt{s''} \rangle}.
@@ -504,9 +496,7 @@ When the [[Get]] method of object \textit{O} is called with property name \texti
 \noindent Here, we can notice the complexity behind even the simplest of operations in JavaScript. For instance, properties are not associated with values, but with structures called descriptors. These descriptors may be data descriptors, from which we can read the value directly, but can also be accessor descriptors, containing special methods, called getters, via which one obtains the value of the property. All of these concepts will be addressed in detail in Chapter \ref{sec:javascript}.
 
 \subsubsection{ES5 Strict Operational Semantics}
-The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.
-
-\begin{mathpar}
+The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.\begin{mathpar}
 \inferrule[G-getProp (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}^o_{gp}(x) \rangle \Downarrow \langle h, o \rangle \\\\ L, v_t \vdash \langle h, \mathcal{I}^o_g(o)_1 \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(x) \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
 \inferrule[G-propUndef (Step 2)] {L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc undefined}_1) \rangle \Downarrow \langle h, \textnormal{desc undefined} \rangle}{}
@@ -554,14 +544,14 @@ with
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
-Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. \polish{Strict mode - better behavioural properties, etc.}{brief} \polish{Accessors - what do they do?}{brief} This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
+Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. Strict mode has different semantics from non-strict JavaScript, with more explicit error reporting and better behaviors in general. Accessor properties are namely getters and setters, which are functions that retrieve or store the property value for objects. This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
 
 \section{Mystery Code Explained}
 An example snippet of JavaScript code was shown in the Introduction, which evaluated to the string value \jsinline|"a"|. This was possible because of the implicit type conversions within the language. 
 
 $$\jsinline|(![]+[])[+!+[]]|$$
 
-The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty object in JavaScript, and taking the negation of the empty object coerces it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce objects into numbers, so \jsinline|+[]| would become \textbf{0}. In this case, however, \jsinline|+| acts as the string concatenation operator instead, connecting the boolean value \textbf{false} and an empty object. The empty object is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, functions as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
+The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty array in JavaScript, and taking the negation of the empty array coerces it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce any type of objects into numbers, so \jsinline|+[]| would become \textbf{0}, since arrays are objects. In this case, however, \jsinline|+| acts as the string concatenation operator instead, connecting the boolean value \textbf{false} and an empty array. The empty array is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, functions as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
 \begin{center}
 \jsinline|"false"[1]|
 \end{center}
@@ -838,7 +828,7 @@ $\omega \in \mathcal{V}_{JS}^{h} ::= n \myor b \myor m \myor \mathtt{undefined} 
 
 \begin{tabular}{p{10cm}} \hline
 \textbf{JavaScript Scope Chains} \\
-$L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\ \hline
+$\L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\ \hline
 \end{tabular}
 \vspace{0.3cm}
 
@@ -937,14 +927,76 @@ If formal parameters are provided as arguments, the constructor will convert the
 
 \subsection{Calling a Function Object}
 In order to call a Function Object, the Function Object must have a valid [[Call]] internal property, described in section~\ref{sec:opip}. When the Function is invoked, the [[Call]] internal method will establish a new but temporary execution context that includes the [[FormalParameters]] internal property, the actual arguments passed into the function call, and the calling Function Object. It then executes what is inside the [[Code]] internal property as appropriate, and produces an intermediate result, before restoring the original execution context before the function call. Depending on the type of the result, [[Call]] will either thrown an error, return a value, or return Undefined. 
-\az{TODO}
-\subsubsection{Function Call}
-\subsubsection{Method Call}
-\subsubsection{Constructor Call}
+
+Function Objects can be called in one of three ways. The following code snippet produces the heap structure shown in Figure 3.3.
+\begin{adjustwidth}{4cm}{4cm}
+\begin{lstjs}
+Object.prototype.year = 2016;
+var birthYear = 1990;
+function calcAge() {
+	this.age = year - this.birthYear;
+}
+calcAge.prototype.birthYear = 1980;
+\end{lstjs}
+\end{adjustwidth}
+
+\begin{figure}[!h]
+\begin{center}
+\begin{tikzpicture}
+  \def\d{0.4cm};
+  \def\w{1cm};
+  \node (sftvalue) at (\w,0.5mm) {};
+  %%%%%%%% global node
+  \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=3, fill=black!35] (global) 
+    {     
+      \nodepart{one}{\scriptsize prototype: \(l_{\mathsf{objproto}}\)}
+      \nodepart{two}{\scriptsize birthYear: 1990}
+      \nodepart{three}{\scriptsize calcAge}
+  };
+  \node[above left=0cm and 0cm of global,ll] {Global: \(l_{\mathsf{g}}\)};
+  %%%%%%%% end of global 
+  %%%%%%%% number node
+  \node[sbox,sz={\d}{\w},below right= -0.3cm and 1cm of global,rectangle split,rectangle split parts=2,fill=black!25] (number) 
+    {\hspace*{0.75cm}\(\vdots\)%
+      \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{fp}}\)}};
+    \node[above left=0cm and 0cm of number,ll] {Function Object calcAge: \(l_{\mathsf{fo}}\)};
+  %%%%%%%% end of number 
+  %%%%%%%% number op node
+  \node[sbox,sz={\d}{\w},above right= -0.5cm and 2cm of global, rectangle split,rectangle split parts=3,fill=black!15] (op) 
+    {\hspace*{0.75cm}\(\vdots\)%
+      \nodepart{second}{\scriptsize@proto: null}
+      \nodepart{third}{\scriptsize year: 2016}};
+  \node[above left=0cm and 0.15cm of op,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
+  %%%%%%%% end of op 
+  %%%%%%%% number op node
+  \node[sbox,sz={\d}{\w}m,right= 2cm of number, rectangle split,rectangle split parts=3,fill=black!5] (np) 
+    {\hspace*{0.75cm}\(\vdots\)%
+    \nodepart{second}{\scriptsize@proto: \(l_{\mathsf{op}}\)}
+    \nodepart{third}{\scriptsize birthYear: 1980}};
+  \node[above left=0cm and 0.2cm of np,ll] {Function.prototype: \(l_{\mathsf{fp}}\)};
+  %%%%%%%% end of op 
+  %%%%%%%% connection 
+  \draw[p] ($(global.second) + (1.8*\w,0.75cm)$) to[out=0,in=180] (op);
+  \draw[p] ($(global.three) + (1.8*\w,0)$) to[out=0,in=180] (number);
+  \draw[p] ($(np.second) + (1.8*\w,0)$) to[out=0,in=0] (op);
+  \draw[p] ($(number.second) + (1.8*\w,0)$) to [out=0,in=180]  (np);
+  %%%%%%%% end connection
+\end{tikzpicture}
+\caption{Heap of code snippet above}
+\label{fig:initheap}
+\end{center}
+\end{figure}
+
+\begin{description}
+\item[Function Call] In a function call in strict mode, the \jsinline|this| value would be bound to \textbf{undefined}, so when evaluating \jsinline|this.age| from the calcAge() function, the result would be \textbf{undefined}.
+\item[Method Call] When the function is used as a method call, \jsinline|this| is bound to the global object, so \jsinline|this.birthYear| would be evaluated to 1990, and \jsinline|this.age| would be 2016 - 1990, which equals 26.
+\item[Constructor Call] When the function is used in a constructor call, such as \jsinline|new calcAge()|, \jsinline|this| is bound to the object created by the constructor. This new object would have the function prototype object as its prototype, therefore \jsinline|this.birthYear| would evaluate to 1980, and \jsinline|this.age| would be 36, from 2016 - 1980.
+\end{description}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JSIL}\label{sec:jsil}
-As mentioned in section~\ref{sec:ir}, JSIL is a simple goto language whose commands operate on the JSIL heap. JSIL also differs from standard goto languages in that it is dynamic -- its objects are extensible, similar to JavaScript and easily lends itself to JavaScript analysis. JSIL is a top-level language, meaning each procedure that is executed has its own variable store. As any programming language, and especially one during its developmental phase, JSIL has evolved since the beginning of this project. 
+As mentioned in section~\ref{sec:ir}, JSIL is a simple goto language whose commands operate on the JSIL heap. As control flow in goto languages are simple, and that there are no nested procedures in JSIL, the simplicity allows for easier logical analysis compared to JavaScript. But JSIL also differs from standard goto languages in that it is dynamic --- its objects are extensible, similar to JavaScript and easily lends itself to JavaScript analysis. JSIL is a top-level language, meaning each procedure that is executed has its own variable store. As any programming language, and especially one during its developmental phase, JSIL has evolved since the beginning of this project. 
 
 \section{Initial JSIL Syntax}
 When JSIL was first developed, it was built as a simplified version of the inner workings of JavaScript. Although the JSIL memory model was designed to be as close to that of JavaScript's from the beginning, there were still aspects that required extension. Most notably, it lacked representation for JavaScript descriptors, described in section~\ref{sec:descriptors}.
@@ -1058,7 +1110,7 @@ with
 Recall section~\ref{sec:getstandard} presented the ECMAScript standard for the [[Get]] internal function. The JSIL implementation without descriptors is much shorter because all the steps in the standard that deal with descriptors are not applicable. Starting from step 3 which states "If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]]", \textit{LHS-without} simply cannot address the concept of descriptors, whereas \textit{RHS-with} implements step 3 in the \textit{def} code block. The three subsequent steps, "Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]]", "If \textit{getter} is \textbf{undefined}, return \textbf{undefined}", and "Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments" also went unaddressed in \textit{LHS-without}, but were implemented as the \textit{acc} and \textit{get} code blocks in \textit{RHS-with}.
 
 \section{Semantics}
-In order to facilitate analysis of JavaScript and JSIL programs, heap models were created for both languages. Recall the JavaScript heap described in section~\ref{sec:jsheap}, reproduced below for easy reference. The JSIL Heap Model was designed to correspond as closely as possible to the JavaScript Heap Model, as it also maps locations, $\mathcal{L}$, and JavaScript variables, represented as strings $\mathcal{S}tr$, to JSIL values, $\mathcal{V}_{JSIL}$. The JSIL memory model, however, does not contain scope chains, making JSIL programs easier to analyze logically.
+In order to facilitate analysis of JavaScript and JSIL programs, heap models were created for both languages. Recall the JavaScript heap described in section~\ref{sec:jsheap}, reproduced below for easy reference. The JSIL Heap Model was designed to correspond as closely as possible to the JavaScript Heap Model, as it also maps locations, $\mathcal{L}$, and JavaScript variables, represented as strings $\mathcal{S}tr$, to JSIL values, $\mathcal{V}_{JSIL}$. The reason for this close correspondence stems from the concept of $\beta$ indistinguishability --- if a JavaScript program and a JSIL program are executed in indistinguishable heaps, and that one program's execution terminates if and only if the other terminates, then the outcome of the heaps would be indistinguishable. Because of this, one can ascertain that a JSIL program is faithfully replicating the actions of a JavaScript program, therefore logical analysis on JSIL can replace that on JavaScript. The JSIL memory model, however, does not contain scope chains, making JSIL programs easier to analyze logically.
 
 \begin{center}
 \begin{tabular}{p{8cm}} \hline
@@ -1194,7 +1246,7 @@ with
 It is necessary to call the method with an error label, because the method call may fail, and in which case the error must be caught for the program to exit correctly. The label on line 6, \textbf{rep} is the start of the loop in Step 3 of the standard. Line 6 then proceeds to Step 3a, assigning the object to be the object stored in its prototype internal property. Line 7 faithfully represents Step 3b, and will take the flow of control to line 14 to return \textbf{false} if the prototype is \textbf{null}. Line 9 then checks to see if the original object is the same as its prototype property, carrying out the if clause Step 3c. If so, flow of control moves to line 11 and returns \textbf{true} from the program.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Arrays in JavaScript}
+\chapter{JavaScript Arrays and the Array Library}
 Many modern programming languages have the array construct, which can be seen as a container for many items to be stored together. In languages such as Java and C++, arrays can only hold elements of the same type, and the fixed array size must be declared during initialization, whereas in other languages such as Python, they can hold elements of different types, and the size can be readily altered. In JavaScript, arrays are not simply a collection of potentially different types elements, but rather a special type of built-in Object, and they have predefined methods and special properties. 
 
 \section{Indices and Length}
@@ -1258,7 +1310,7 @@ Both constructors will set the following internal properties of the Array Object
 
 The Array Object constructor itself is a JavaScript Object, and its prototype property is set to the Function Object prototype, which will not be discussed in further detail here.
 
-\section{A Working Example}
+\section*{A Working Example}
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstjs}
 var arr = new Array('a','b');
@@ -1275,12 +1327,10 @@ Here, a new Array Object named arr with elements "a" and "b" is created on line 
 
 Line 5 changes the [[Extensible]] internal property of Array arr to \textbf{false}, so no new elements can be added to arr. As a result, if line 6 tries to add a seventh element to Array arr, the length value of arr stays at 6.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Array Library}
+\section{Array Library}
 The intricacies of JavaScript Arrays have already been explained in the last chapter, and this chapter will focus on the Array Library methods. Below is an outline of all of the functions in the ECMAScript 5 Array Library. Each function's name will be listed then followed by a brief explanation of the intended usage of the function. Then, a sample line of code using the method will be given, as well as the result of running the sample code following \jsinline|>> |, when applicable.
 
-\section{Array Object Constructor Functions}
+\subsection{Array Object Constructor Functions}
 The following functions belong to the Array Object constructor, and the first two have been described in detail in~\ref{sec:arraycreate}.
 \begin{enumerate}
 \item new Array( [item0 [, item1 [, ...]]] )\\
@@ -1302,7 +1352,7 @@ This method checks to see if the [[class]] internal property of arg is equal to 
 \jsinline|>> true|
 \end{enumerate}
 
-\section{Array Object Prototype Functions}
+\subsection{Array Object Prototype Functions}
 The following functions belong to the Array Object prototype: 
 \begin{enumerate}
 \item Array.prototype.constructor \newline
@@ -1430,7 +1480,7 @@ This method is similar to Array.prototype.reduce(callbackfn [, thisArg] ), but r
 \jsinline|"abc120004yz"|
 \end{enumerate}
 
-\section{Filter In Detail}\label{sec:filter}
+\section{Filter Method In Detail}\label{sec:filter}
 This method requires a callback function to be provided as an argument, and an optional argument to be used for the \textbf{this} value of the callback function. The method creates a new Array Object, calls the callback function for each of the elements in the original Array in ascending order and stores the element for which the callback function has returned \textbf{true} in the new Array, and lastly returns after the entire original Array is traversed. 
 
 The callback function must take three arguments, namely the value and index of each Array element, and the Array Object that calls it. Its return value must be coercible to a boolean value, to be passed back to the Array method.
@@ -1666,7 +1716,7 @@ with
 \end{lstjsil}
 \end{adjustwidth}
 
-\section{A Working Example}
+\section*{A Working Example}
 A function, \textit{myFunc} is defined as below. \textit{myFunc} takes three formal parameters, named $x$, $y$, and $z$, and it returns the sum of the three parameters.
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstjs}
@@ -2099,15 +2149,30 @@ Total & 40 \\ \hline
 
 \end{itemize}
 
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter*{Conclusion}
+\chapter{Conclusion}
+\section{Project Summary}
+This report has described the importance of JavaScript in modern day web computing and provided a sample of previous verification projects for not only JavaScript, but also a variety of other programming languages. This project stemmed from previous work done on JSCert and JSRef, a mechanized specification of the ECMAScript standard and its reference interpreter. Separation logic has been used to reason about JavaScript programs, modeling program execution based on a heap structure. This project has also relied on the use of operational semantics to clarify and mechanize the ECMAScript specification written in English. Indeed, JSCert itself uses pretty big step operational semantics to cover the language constructs in JavaScript. 
 
+The report went on to describe various JavaScript constructs, such as strict mode, Objects and properties, prototype inheritance, and the JavaScript heap, before moving on to describe JSIL as a language. The benefits of utilizing JSIL as an intermediate language include its simplified control flow based on a goto syntax, the elimination of nested procedures, while still preserving extensible objects and dynamic properties, make logical analysis of JSIL programs easier yet still correct with respect to the corresponding JavaScript programs.
 
+The main contributions of this project are the implementations for the Object.prototype, Array, and part of the String libraries in JSIL. A total of 35 library methods were implemented, enabling the passage of more than 2,300 test cases in the ECMAScript Test262 test suite. The details of each library method --- its syntax, purpose, expected result, and sample usage --- were listed in each library's corresponding chapter, and the testing process was described in detail for the String library methods. For selected methods in the Object.prototype and Array libraries, the ECMAScript standard specification, pretty big step operational semantics, as well as JSIL implementation were described in detail. 
+
+The completion of this project marked the end of implementing the core language constructs, as well as the most critical built-in libraries, of JavaScript in JSIL. The only portions of the JSIL reference implementation that remain to be completed are the Function constructor and parts of the String library.
+
+\section{Future Work}
+Continuing with the direction of this project, there is additional work to be done to implement the rest of the JavaScript libraries in JSIL, including but not limited to the Number, rest of String, Date, and RegExp libraries. But although these libraries are worth implementing, they are not crucial to the progress of the verification tool based on the JSIL language.
+
+\begin{description}
+\item[Number] The Number library includes four methods spanning four pages in the ECMAScript specification that remain to be completed. 
+\item[String] The String library includes nine methods unrelated to the RegExp library and two methods related to it spanning seven pages of the specification that remain to be completed.
+\item[Date] The Date library has not been worked on, and it includes 15 Date-related constructs and 52 methods within 16 pages in the specification.
+\item[RegExp] The RegExp library has not been worked on, and it includes 19 RegExp-related constructs and six methods for a total of 18 pages in the specification.
+\end{description}
+
+On the other hand, future work regarding the verification goal include completing a prototype of a semiautomatic verification tool, called JaVerT. This tool makes use of JSIL's reference implementation of JavaScript language constructs and libraries, and aims to verify the axiomatic specification of JSIL's internal and library implementations. The end goal of the verification project is to eventually be able to verify large JavaScript programs automatically, and colossal efforts toward that direction have been made continually by other members of the research group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% bibliography
 \bibliographystyle{plain}
 \bibliography{refs}
