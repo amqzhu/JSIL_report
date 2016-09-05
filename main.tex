@@ -124,7 +124,7 @@
 
 \tikzset{
   box/.style = {rectangle, draw=black,align=center,font=\scriptsize},
-  sbox/.style = {rectangle,draw=black,align=left,font=\scriptsize,text width=1.7cm},
+  sbox/.style = {rectangle,draw=black,align=center,font=\scriptsize,text width=2.3cm},
   p/.style = {-latex},
   dp/.style = {latex-latex},
   sz/.style n args={2}{minimum width=#2, minimum height=#1},
@@ -175,6 +175,7 @@ Lastly, my most heartfelt thanks goes to Petar Maksimovi\'c, who supervised my l
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction}
+\label{cha:intro}
 
 \section{What is JavaScript?}
 JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by giving the programmer control over the browser's Document Object Model,~i.e.~both the pages' style and their content. In addition, JavaScript is increasingly used on the server side as well, primarily as a means of interacting with databases. It is a high-level, dynamic, untyped language, based on extensible objects and exhibiting a number of intricate, complex, and often unpredictable features. 
@@ -443,9 +444,9 @@ Based on the ECMAScript standard definition, operational semantics for the $\mat
 \and
 \inferrule[While-1 (2a)] {\vdash \langle h, e \rangle \Downarrow \langle h_1, o_1 \rangle \\ \vdash \langle h_1, \textnormal{while}_2(o_1,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}{\vdash \langle h, \textnormal{while}_1(e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
 \and
-\inferrule[While-2(false) (2b)]{\textnormal{False}(v)}{\vdash \langle h, \textnormal{while}_2(v,e) \{ s, o \} \rangle \Downarrow \langle h, o \rangle}
+\inferrule[While-2(false) (2b)]{\textnormal{\jsinline|false|}(v)}{\vdash \langle h, \textnormal{while}_2(v,e) \{ s, o \} \rangle \Downarrow \langle h, o \rangle}
 \and
-\inferrule[While-2(true) (2c)]{\neg \textnormal{False}(v) \\ \vdash \langle h, s \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ \vdash \langle h, \textnormal{while}_3(e) \{ s,o,o_1 \} \rangle \Downarrow \langle h_2, o_2 \rangle}{ \vdash \langle h, \textnormal{while}_2(v,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
+\inferrule[While-2(true) (2c)]{\neg \textnormal{\jsinline|false|}(v) \\ \vdash \langle h, s \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ \vdash \langle h, \textnormal{while}_3(e) \{ s,o,o_1 \} \rangle \Downarrow \langle h_2, o_2 \rangle}{ \vdash \langle h, \textnormal{while}_2(v,e) \{ s,o \} \rangle \Downarrow \langle h_2, o_2 \rangle}
 \and
 \inferrule[While-3(value) (2, 2d)]{\vdash \langle h, \textnormal{while}_1(e) \{ s, v \} \rangle \Downarrow \langle h_1, o_1 \rangle}{\vdash \langle h, \textnormal{while}_3(e) \{ s, o,v \} \rangle \Downarrow \langle h_1, o_1 \rangle}
 \and
@@ -544,30 +545,35 @@ with
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JavaScript}\label{sec:javascript}
-Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties\cite{EcmaScript} , both of which will be addressed in this project. Strict mode has different semantics from non-strict JavaScript, with more explicit error reporting and better behaviors in general. Accessor properties are namely getters and setters, which are functions that retrieve or store the property value for objects. This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
+Extensive changes have occurred in the 5\textsuperscript{th} edition of the ECMAScript standard, including the addition of a strict mode and accessor properties \cite{EcmaScript}, both of which will be addressed in this project. Strict mode introduces several syntactic restrictions and is generally better-behaved than non-strict JavaScript; it features more explicit error reporting, mandatory variable declarations, etc. Accessor properties refer to getters and setters, which are essentially 
+functions that are used to retrieve and store value of properties in objects. This chapter serves as an in-depth introduction to the internal workings of JavaScript as a programming language.
 
 \section{Mystery Code Explained}
-An example snippet of JavaScript code was shown in the Introduction, which evaluated to the string value \jsinline|"a"|. This was possible because of the implicit type conversions within the language. 
+Let us evaluate in detail the example snippet of JavaScript code that we presented  in Section \ref{cha:intro}:
+$$\jsinline|(![]+[])[+!+[]]|.$$
 
-$$\jsinline|(![]+[])[+!+[]]|$$
+This expression denotes property access, similar to the syntax for accessing array elements in C or Java. We are, in fact, attempting to access the property \jsinline|(+!+[])| of \jsinline|(![]+[])|. Let us first understand the latter. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|; these are \emph{array constructors}, and what they return is an empty JavaScript array. Interestingly, these two arrays will actually get coerced into different types. The JavaScript addition operator \jsinline|+| has two behaviours: it could coerce its arguments into numbers and then perform addition or it could coerce them into strings and perform string concatenation. The left addition operand, \jsinline|![]|, is evaluated first, where the exclamation mark represents logical negation. What happens is the coercion of an empty array into booleans, yielding \jsinline|true| (according to the semantics, any object coerces to \jsinline|true|) and then the negation yields \jsinline|false|. Next, we evaluate the right addition operand,~\jsinline|[]|, which is coerced to an empty string. Then, for the addition \jsinline|false + ""|, \jsinline|false| is coerced into the string \jsinline|"false"| and string concatenation is performed, finally yielding \jsinline|"false"|.
 
-The parentheses, \jsinline|( ... )|, serve to group the first set of symbols separately from the rest. Within the parentheses, there are two groups of empty square brackets \jsinline|[]|, although they get coerced into different types. The exclamation mark that represents \textit{not}, binds more closely than the \jsinline|+| symbol, thus, \jsinline|![]| is taken as a unit before the rest is evaluated. \jsinline|[]| represents an empty array in JavaScript, and taking the negation of the empty array coerces it into the boolean value \textbf{false}. Normally, the plus operator, \jsinline|+|, is used to coerce any type of objects into numbers, so \jsinline|+[]| would become \textbf{0}, since arrays are objects. In this case, however, \jsinline|+| acts as the string concatenation operator instead, connecting the boolean value \textbf{false} and an empty array. The empty array is coerced into an empty string, and the expression becomes the string value \jsinline|"false"|. The second group of symbols are within a group of square brackets, in this case, functions as the indexing operator on the string \jsinline|"false"|. As discussed, \jsinline|+[]| indeed gets coerced to the integer value \textbf{0} here, but as the negation symbol \jsinline|![]| precedes it, it is treated as the boolean value \textbf{false}, and \jsinline|!0| becomes the boolean value \textbf{true}. Lastly, \jsinline|+true| once again coerces the expression into an integer, which has the value \textbf{1}. The entire expression then becomes
+Next, we evaluate the property that we are accessing, namely \jsinline|(+!+[])|. First, we evaluate \jsinline|+[]|, which coerces the empty array to the number value \jsinline|0|. Then, \jsinline|!0| coerces \jsinline|0| to the boolean \jsinline|false| and negates it to become the boolean \jsinline{true}. Lastly, \jsinline|+true| once again coerces the expression into a number, which has the value \textbf{1}. The entire expression then becomes
 \begin{center}
 \jsinline|"false"[1]|
 \end{center}
-\noindent which evaluates to the letter \jsinline|"a"|, because the zero-indexed indexing mechanism picks out the second character in the string.
+\noindent which evaluates to the letter \jsinline|"a"|, because the zero-indexed indexing mechanism picks out the second character in the string. This simple example which produces an intuitively unpredictable output allows us to better understand the behind-the-scenes complexity of JavaScript.
 
 \section{ES5 Strict}\label{sec:strict}
-Strict mode presents slightly different semantics compared to the non-strict version in the following significant ways: in strict mode, the only object environment record is the global object, variables cannot get assignment without first being declared, and errors will always be thrown when needed. The scope of strict mode is within the specific code unit that imposes strict mode, so a JavaScript program could possibly include both strict and non-strict code components \cite{EcmaScript}.
+Strict mode presents different, better-behaved, semantics compared to the non-strict version. For example, in strict mode, the only object environment record is the global object (\jsinline|with| statements are not allowed), variables cannot be assigned to without first being declared, and errors will always be thrown when necessary instead of the program failing silently. Since the scope of strict mode is contained within a specific code unit that imposes strict mode, a JavaScript program could potentially include both strict and non-strict code \cite{EcmaScript}.
 
-Strict mode influences the implementation of the language in multiple ways. One example would be in resolving the naming reference of variables. An abstract operation, IsStrictReference($V$), with $V$ being a Reference, returns the strict reference component of $V$\cite{EcmaScript}, and it is used in internal functions such as [[getValue]] and [[putValue]], which are similar to the [[Get]] internal function discussed in section~\ref{sec:get}.
+Strict mode influences the implementation of the language in multiple ways. For example, an abstract operation IsStrictReference($V$), tells us whether or not the reference $V$ was created in strict mode or not \cite{EcmaScript}, and it is used in vital internal functions such as [[getValue]] and [[putValue]], which are similar to the [[Get]] internal function discussed in Section~\ref{sec:get}.
 
-The initial phase of this project sought to complete the implementation of core strict mode, with core defined as the native language constructs and library functions that tap into these constructs. All other library functions that could be defined using what is already in core are not included in this initial stage but will be incorporated later on in the project.
+The ECMAScript standard consists of two major parts, namely the chapters describing the language constructs and those describing built-in libraries. Strict mode is not confined to a particular part of the standard, but is scattered throughout all of the chapters. The initial phase of this project sought to complete the implementation of core strict mode, with core defined as all of the language constructs, together with library functions that tap into these constructs. All other library functions that could be defined using what is already in core were not included in this initial stage but were intended to be incorporated later on in the project.
 
-\section{Definition of Objects}
-JavaScript is a language that relies heavily and primarily on Objects, which are collections of \textbf{properties}, each with zero or more \textbf{attributes} that define the property \cite{EcmaScript}. Properties can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and additional boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned. Objects can be created via literal notation or via Object constructors that create and initialize the Objects, and then establishes the prototype chain for the Object \cite{EcmaScript}. Within an object, there are two types of properties - own properties and inherited properties. Own properties are those defined within the current object, and inherited properties are those defined in the object's prototype chain.
+\section{JavaScript Objects}
+JavaScript is a language that is based primarily on \emph{objects}. Objects are collections of \emph{properties}. Each object has three types of properties: \emph{internal properties}, which are not exposed to the programmer; \emph{own properties}, which are defined within that object; and \emph{inherited properties}, which are defined within the object's prototype chain (cf. Section \ref{sec:protoinh}). Objects can be created by using the literal notation of the format \jsinline|{ prop1 : val1, ..., propn : valn }| or by using the Object built-in library constructor via the command \jsinline|new Object()| \cite{EcmaScript}.
 
-Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after creation. For example, a Person class is defined in Java below. This class has two properties - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another property, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, any Object of Person class cannot possibly have a \textit{gender} property.
+%each of which has \emph{attributes} that describe that property \cite{EcmaScript}. Each attribute has its name and value.
+%can hold the following types: Objects, primitive values, or functions, which are a type of special Objects. The JavaScript values and additional boolean values associated with each property are the attributes of the property. Each attribute has its own name and value. Essentially, properties can be seen as name-value pairs, with the names generally being primitive strings, and the values being one of the three types previously mentioned.
+
+Unlike Objects in most other programming languages such as C++ and Java, JavaScript Objects are dynamic, which means they can be altered after creation. For example, a Person class is defined in Java below. This class has two properties - a String variable for the person's name, and an integer variable for the person's age. A Person Object called \textit{bob} is created in the main method on line 11, initialized with a name String as "Bob", and an age of 30 years old. If \textit{bob} has a birthday, then his age can be changed by providing a different value to the \textit{bob.age} variable. But in case we wanted to add another property, gender, to specify that \textit{bob} is male, then the code on line 13 would produce an error saying \textit{bob.gender} cannot be resolved. Since \textit{gender} is not included in the class declaration, no Object of Person class cannot possibly have a \textit{gender} property.
 
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstjs}
@@ -589,7 +595,7 @@ public class Person {
 \end{lstjs}
 \end{adjustwidth}
 
-Below defines a Person class in JavaScript, intentionally using similar syntax as the Java code above for comparison. The \textit{alice} Object is created on line 8 with a name String as "Alice", and an age of 35 years old. When \textit{alice} celebrates her birthday, her age can be altered using dot notation similar to that of \textit{bob}. When we want to specify the gender of \textit{alice} however, using code on line 10, JavaScript would throw no error and simply change the \textit{alice} Object as required.
+In the code below, we define a Person class in JavaScript (ES6), intentionally using similar syntax as the Java code above for comparison. The \jsinline|alice| object is created on line 8 with the name "Alice", and an age of 35. When \jsinline|alice| celebrates her birthday, her age can be altered using dot notation similar to that used for \jsinline|bob|. When we want to specify the gender of \jsinline|alice|, however, JavaScript would throw no error and would simply add the property to the \jsinline|alice| object as required.
 \begin{adjustwidth}{4cm}{4cm}
 \begin{lstjs}
 class Person {
@@ -605,20 +611,20 @@ alice.gender = "female";
 \end{lstjs}
 \end{adjustwidth}
 
-It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer accidentally makes changes to an Object in this manner, no error message will alert him or her of this, and hence a verification tool would come in extremely handy.
+It is easy to see why this would make JavaScript code much more complicated and error-prone. If the programmer unintentionally makes changes to an object in this manner, no error message will alert him or her of this, and hence a verification tool would come in extremely handy.
 
 \section{Properties}
-There are two types of properties in JavaScript - named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined name strings with JavaScript descriptors, whereas internal properties do not have user-defined names. Named properties can either be data properties or accessor properties. Data properties associate a name with a JavaScript value, plus a set of boolean values that specify additional information about the property. These boolean values will be explained in further detail in section~\ref{sec:attributes}. Accessor properties associate a name with two JavaScript functions, a getter and a setter, in addition to a similar set of boolean values. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the Object's prototype, class, and so on. There are an additional twelve internal properties that only apply to certain types of Objects, for example, Function Objects alone have the [[Call]] internal method.
+There are two types of properties in JavaScript --- named properties and internal properties \cite{EcmaScript}. Named properties, by definition, associate user-defined strings with JavaScript descriptors, whereas internal properties do not have user-defined names and are associated directly to values. Named properties can either be data properties or accessor properties. Data properties associate a name with a JavaScript value, plus a set of boolean values that specify additional information about the property. These boolean values will be explained in further detail in section~\ref{sec:attributes}. Accessor properties associate a name with two JavaScript functions, a getter and a setter, in addition to a similar set of boolean values. The getter and setter are used to retrieve or store, respectively, the JavaScript value associated with the property. All objects share a set of twelve internal properties that get defined when the objects are created, including the Object's prototype, class, and so on. There are an additional twelve internal properties that only apply to certain types of Objects; for example, Function objects alone have the [[Call]] internal method.
 
 \subsection{Attributes}\label{sec:attributes}
 Both categories of named JavaScript properties have attributes that serve to describe the state of the property. Data properties and accessor properties share two of these attributes, [[Enumerable]] and [[Configurable]], while they differ in the other two. Data properties have the [[Value]] and [[Writable]] attributes, while accessor properties have [[Get]] and [[Set]].
 
 \begin{description}
-\item[Value] The [[Value]] attribute can take on any of the ECMAScript types, and it represents what is intuitively the value of the property. Valid types are listed below, and the default value is Undefined.
+\item[Value] The [[Value]] attribute can take any of the ECMAScript types, and it intuitively represents the value of the property. Valid types are listed below, with \jsinline|undefined| being the default.
 \begin{multicols}{2}
 \begin{itemize}
-	\item Undefined
-	\item Null
+	\item \jsinline|undefined|
+	\item \jsinline|null|
 	\item Boolean
 	\item String
 	\item Number
@@ -626,41 +632,41 @@ Both categories of named JavaScript properties have attributes that serve to des
 \end{itemize}
 \end{multicols}
 
-\item[Writable] The [[Writable]] attribute is a Boolean value, and it describes whether this property's [[Value]] attribute can be altered using the [[Put]] internal method. The default value is False.
+\item[Writable] The [[Writable]] attribute is a boolean, and it describes whether this property's [[Value]] attribute can be altered using the [[Put]] internal method. The default value is \jsinline|false|. 
 
-\item[Get] The [[Get]] attribute can be of the Function Object type, but the default value is Undefined. When the property's getter is invoked, the [[Call]] internal method of the Function Object is called with no arguments in order to return the property's value.
+\item[Get] The [[Get]] attribute can either be a function object or \jsinline|undefined|. When the property's getter is invoked, the [[Call]] internal method of the function object is called with no arguments in order to return the property's value.
 
-\item[Set] The [[Set]] attribute can be of the Function Object type, but the default value is Undefined. When the property's setter is invoked, the [[Call]] internal method of the Function Object is called with an appropriate assignment value for the property. This setter function call may or may not alter the result of the getter function call, since the setter is not required to set the same variable as the getter retrieves.
+\item[Set] The [[Set]] attribute can either be a function object or \jsinline|undefined|. Once it is invoked, the [[Call]] internal method of the function object is called with an appropriate assignment value for the property. This setter function call may or may not alter the result of the getter function call, since the setter is not required to set the same variable as the getter retrieves. 
 
-\item[Enumerable] The [[Enumerable]] attribute is a Boolean value. If True, the property will be used in for-in enumeration. The default value is False.
+\item[Enumerable] The [[Enumerable]] attribute is a boolean value. If it is equal to \jsinline|true|, the property will be used in a for-in enumeration. The default value is \jsinline|false|.
 
-\item[Configurable] The [[Configurable]] attribute is a Boolean value, and it describes whether the property can be deleted, whether the property's attributes can be altered, and whether a data property can be changed into an accessor property and vice versa. The default value is False.
+\item[Configurable] The [[Configurable]] attribute is a boolean value, and it describes whether the property can be deleted, whether the property's attributes can be altered, and whether a data property can be changed into an accessor property and vice versa. The default value is \jsinline|false|.
 \end{description}
 
 \subsection{Descriptors}\label{sec:descriptors}
-Descriptors are a JavaScript language construct used to describe named property attributes, so that programs can access and manipulate the attributes as necessary. Descriptors are represented as name-value pairs, similar to Objects in a way, except the only valid names are the named property attribute names, and the values are the corresponding attribute values. Thus, descriptors can either be data descriptors or accessor descriptors, determined by the following two abstract operations.
+Descriptors are a JavaScript language construct used to describe named properties, so that programs can access and manipulate the attributes as necessary. They are essentially collections of attributes. Descriptors are represented as name-value pairs, similar to objects in a way, except the only valid names are the named property attribute names, and the values are the corresponding attribute values. Descriptors can either be data descriptors or accessor descriptors, determined by the following two abstract operations.
 
 \begin{description}
-\item[IsDataDescriptor(Desc)] Returns False if Desc is Undefined, and returns True if both the [[Value]] and [[Writable]] fields are present.
+\item[IsDataDescriptor(Desc)] Returns \jsinline|false| if Desc is \jsinline|undefined|, and returns \jsinline|true| if either the [[Value]] or the [[Writable]] field is present.
 
-\item[IsAccessorDescriptor(Desc)] Returns False if Desc is Undefined, and returns True if both the [[Get]] and [[Set]] fields are present.
+\item[IsAccessorDescriptor(Desc)] Returns \jsinline|false| if Desc is \jsinline|undefined|, and returns \jsinline|true| if either the [[Get]] or the [[Set]] field is present.
 \end{description}
 
-In case that a descriptor is defined, but is neither a data descriptor nor an accessor descriptor, then it is a generic descriptor. Because of the similarity in structure between descriptors and Objects, the two can be interchanged using the following abstract operations.
+In case that a descriptor is defined, but is neither a data descriptor nor an accessor descriptor, then it is a generic descriptor. Normally, data descriptors have the [[Value]]. [[Writable]], [[Enumerable]] and [[Configurable]] attributes, while accessor descriptors have the [[Get]], [[Set]], [[Enumerable]] and [[Configurable]] attributes. Because of the similarity in structure between descriptors and Objects, the two can be interchanged using the following abstract operations.
 
 \begin{description}
-\item[FromPropertyDescriptor(Desc)] This operation takes a descriptor, Desc, and converts it into an Object with four properties. If Desc is a data descriptor, the new Object will have two properties named "value" and "writable", and if Desc is an accessor descriptor, the new Object will have two properties named "get" and "set". The new Object will also have the "enumerable" and "configurable" properties. Each new property will be represented by a new data descriptor with the [[Value]] attribute being the descriptor's original value field, and the Boolean value True for the [[Writable]], [[Enumerable]], and [[Configurable]] attributes.
+\item[FromPropertyDescriptor(Desc)] This operation takes a descriptor, Desc, and converts it into an object with four properties. If Desc is a data descriptor, the new object will have two properties named "value" and "writable", and if Desc is an accessor descriptor, the new object will have two properties named "get" and "set". The new object will also have the "enumerable" and "configurable" properties. Each new property will be represented by a new data descriptor with the [[Value]] attribute being the descriptor's original value field, and the boolean value \jsinline|true| for the [[Writable]], [[Enumerable]], and [[Configurable]] attributes.
 
-\item[ToPropertyDescriptor(Obj)] This operation takes an Object, Obj, and converts it into a descriptor by calling the [[HasProperty]] internal method, described in the next section, on each of these String values: "enumerable", "configurable", "value", "writable", "get", "set". If Obj has properties with the same names as these Strings, then the corresponding descriptor field is populated with the value returned by the [[Get]] internal method of Obj with the String as input. If Obj has property names that correspond to both data descriptor and accessor descriptor field names, the conversion operation is considered illegal.
+\item[ToPropertyDescriptor(Obj)] This operation takes an object, Obj, and converts it into a descriptor by calling the [[HasProperty]] internal method, described in the next section, on each of these string values: "enumerable", "configurable", "value", "writable", "get", "set". If Obj has properties with the same names as these strings, then the corresponding descriptor field is populated with the value returned by the [[Get]] internal method of Obj with the string as input. If Obj has property names that correspond to both data descriptor and accessor descriptor field names, the conversion operation is considered illegal.
 \end{description}
 
 \subsection{Internal Properties}
 Internal properties describe additional inherent information about Objects, and they cannot be directly accessed by the programmer. The following internal properties hold one or multiple particular types of JavaScript values, and their values can be modified through implementation-specific helper functions.
 
 \begin{description}
-\item[Prototype] The [[Prototype]] property can be of Object type or Null, and it represents the prototype for the current Object. This property is accessed in the prototype chain to determine inheritance behavior. The prototype chain of any Object must be of finite length. 
+\item[Prototype] The [[Prototype]] property can be either an object or \jsinline|null|, and it represents the prototype for the current object. This property is accessed in the prototype chain to determine inheritance-related behaviour. The prototype chain of any object must be of finite length. 
 
-\item[Class] The [[Class]] property is a String value that specifies the classification of the current Object. The value of [[Class]] for built-in JavaScript Objects are the following.
+\item[Class] The [[Class]] property is a string value that specifies the classification of the current object. The value of [[Class]] for built-in JavaScript objects are the following:
 \begin{multicols}{3}
 \begin{itemize}
 	\item ``Arguments"
@@ -678,62 +684,65 @@ Internal properties describe additional inherent information about Objects, and 
 \end{itemize}
 \end{multicols}
 
-\item[Extensible] The [[Extensible]] property is a Boolean value that indicates whether additional named own properties can be added to the current Object, and once it has been changed to False, it cannot be changed back to True. If the value is False, the values for [[Prototype]] and [[Class]] of the current Object also can no longer be altered. A JavaScript Object would behave more closely to a class-based Object if its [[Extensible]] property is False.
+\item[Extensible] The [[Extensible]] property is a boolean value that indicates whether additional named own properties can be added to the current object, and once it has been changed to \jsinline|false|, it cannot be changed back to \jsinline|true|. If the value is \jsinline|false|, the values for [[Prototype]] and [[Class]] of the current object also can no longer be altered. A JavaScript object behaves more closely as a class-based object when its [[Extensible]] property is \jsinline|false|.
 \end{description}
 
 The following internal properties represent internal methods of the same name, consisting of predefined procedures that operate on the Object in some manner.
 \begin{description}
-\item[GetOwnProperty] The [[GetOwnProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists in the Object itself, and returns Undefined if it does not exist.
+\item[GetOwnProperty] The [[GetOwnProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists in the object itself, and returns \jsinline|undefined| if it does not exist.
 
-\item[GetProperty] The [[GetProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists at any stage within the Object's prototype chain, and returns Undefined if it does not exist. [[GetProperty]] is recursively defined - it first calls the [[GetOwnProperty]] internal method on the current Object, and if the property is not found, it retrieves the value of the [[Prototype]] internal property of the current Object, and calls [[GetProperty]] on the prototype, until the property is found or the entire prototype chain is traversed.
+\item[GetProperty] The [[GetProperty]] internal method takes a property name as input, and returns the descriptor corresponding to the property name if it exists at any stage within the object's prototype chain, and returns \jsinline|undefined| if it does not exist. [[GetProperty]] is recursively defined: it first calls the [[GetOwnProperty]] internal method on the current object, and if the property is not found, it retrieves the value of the [[Prototype]] internal property of the current Object, and calls [[GetProperty]] on the prototype, until the property is found or the entire prototype chain is traversed.
 
-\item[Get] The [[Get]] internal method takes a property name as input, and it calls the [[GetProperty]] internal method using the same property name as input. If [[GetProperty]] returns Undefined, [[Get]] will return Undefined. Otherwise, [[Get]] takes the descriptor returned by [[GetProperty]], and will return the value of the descriptor if it is a data descriptor, or call the getter if it is an accessor descriptor.
+\item[Get] The [[Get]] internal method takes a property name as input, and it calls the [[GetProperty]] internal method using the same property name as input. If [[GetProperty]] returns \jsinline|undefined|, [[Get]] will return \jsinline|undefined|. Otherwise, [[Get]] takes the descriptor returned by [[GetProperty]], and will return the value of the descriptor if it is a data descriptor, or call the getter if it is an accessor descriptor.
 
-\item[CanPut] The [[CanPut]] internal method takes a property name as input. It first calls the [[GetOwnProperty]] and [[GetProperty]] internal methods to to find the descriptor corresponding to the property. It then returns a Boolean value for whether the property's value can be changed, either based on the [[Writable]] attribute if the descriptor found earlier is a data descriptor, or on the [[Setter]] attribute if the descriptor is an accessor descriptor.
+\item[CanPut] The [[CanPut]] internal method takes a property name as input. It first calls the [[GetOwnProperty]] and [[GetProperty]] internal methods to find the descriptor corresponding to the property. It then returns a boolean value for whether the property's value can be changed, either based on the [[Writable]] attribute if the descriptor found earlier is a data descriptor, or on the [[Set]] attribute if the descriptor is an accessor descriptor.
 
-\item[Put] The [[Put]] internal method takes a property name, a JavaScript value, and a Boolean flag for error handling as input. It first calls the [[CanPut]] internal method to determine if a value can be set for the given property. If so, it calls [[GetOwnProperty]] and [[GetProperty]] as necessary to find the descriptor corresponding to the property, and calls the [[DefineOwnProperty]] internal method with thee property name, the descriptor, and the Boolean flag to set the given value to be the value of the given property.
+\item[Put] The [[Put]] internal method takes a property name, a JavaScript value, and a boolean flag for error handling as input. It first calls the [[CanPut]] internal method to determine if a value can be set for the given property. If so, it calls [[GetOwnProperty]] and [[GetProperty]] as necessary to find the descriptor corresponding to the property, and calls the [[DefineOwnProperty]] internal method with the property name, the descriptor, and a boolean flag for error handling to set the given value to be the value of the given property.
 
-\item[HasProperty] The [[HasProperty]] internal method takes a property name as input, and returns a Boolean value for whether the property already exists in the current Object or its prototype chain.
+\item[HasProperty] The [[HasProperty]] internal method takes a property name as input, and returns a boolean value for whether or not the property already exists in the current object or in its prototype chain.
 
-\item[Delete] The [[Delete]] internal method takes a property name and a Boolean flag for error handling as input. It calls [[GetOwnProperty]] to get the descriptor corresponding to the property, and removes the given property from the Object if the descriptor's [[Configurable]] attribute is True. If the current Object does not have the given property as an own property, the method will assume the operation is successful.
+\item[Delete] The [[Delete]] internal method takes a property name and a Boolean flag for error handling as input. It calls [[GetOwnProperty]] to get the descriptor corresponding to the property, and removes the given property from the object if the descriptor's [[Configurable]] attribute is \jsinline|true|. If the current object does not have the given property as an own property, the method will assume the operation is successful.
 
-\item[DefaultValue] The [[DefaultValue]] internal method takes a String or a Number as input, and returns the default value for the current Object. If a String is given as input, [[DefaultValue]] will call [[Get]] with "toString" as the argument first, and if a Number is given as input, it will call with "valueOf" as the argument first. If unsuccessful the first time, [[DefaultValue]] will switch to use the other String value in calling [[Get]]. Then, [[DefaultValue]] would determine whether the result from [[Get]] is callable, and if so, call the corresponding [[Call]] internal method and return. If not, an error will be thrown.
+\item[DefaultValue] The [[DefaultValue]] internal method takes a hint (either \jsinline|"String"| or \jsinline|"Number"|) as input, and returns the default value for the current object. If \jsinline|"String"| is given as input, [[DefaultValue]] will try to convert the object to a string using its \jsinline|toString| method and if that fails, try to convert it to a numer using its \jsinline|"valueOf"| method. The order is reversed if \jsinline|"Number"| is given as input. If neither attempt is successful, [[DefaultValue]] throws an error.
 
-\item[DefineOwnProperty] The [[DefineOwnProperty]] internal method takes a property name, a property descriptor, and a Boolean flag for error handling as input. It returns True if the operation successfully creates or alters the named own property, and False otherwise. This is a complicated internal property that makes use of other internal properties like [[GetOwnProperty]], [[Extensible]], and operates based on the [[Configurable]] and [[Enumerable]] attributes of the descriptor returned by [[GetOwnProperty]], before altering the descriptor based on the [[Writable]] or [[Setter]] attributes for data descriptors and accessor descriptors, respectively. At each stage of the method, an error may be thrown upon certain conditions.
+\item[DefineOwnProperty] The [[DefineOwnProperty]] internal method takes a property name, a property descriptor, and a Boolean flag for error handling as input. It returns \jsinline|true| if the operation successfully creates or alters the named own property, and \jsinline|false| otherwise. This is a complicated internal property that makes use of other internal properties like [[GetOwnProperty]], [[Extensible]], and operates based on the [[Configurable]] and [[Enumerable]] attributes of the descriptor returned by [[GetOwnProperty]], before altering the descriptor based on the [[Writable]] or [[Set]] attributes for data descriptors and accessor descriptors, respectively. At each stage of the method, an error may be thrown upon certain conditions.
 \end{description}
 
 \subsection{Optional Internal Properties}\label{sec:opip}
-There are twelve additional internal properties that could belong to JavaScript Objects, but only specific types of Objects possess these properties. A selection of those optional properties are presented below.
+There are twelve additional internal properties that could belong to JavaScript objects, but only specific types of objects possess these properties. A selection of those optional properties is presented below.
 
 \begin{description}
 \item[Construct]
-The [[Construct]] internal property is an internal method that takes a List as argument returns an Object. The list can consist of any valid JavaScript types, and it is passed to the \textbf{new} operator as an argument. Objects that have this internal property are referred to as \textit{constructors}, because they create new Objects via the \textbf{new} operator.
+The [[Construct]] internal property is an internal method that takes a list as argument and returns an object. The list can consist of any valid JavaScript types, and it is passed to the \jsinline|new| operator as an argument. Objects that have this internal property are referred to as \textit{constructors}, because they can be used to create new objects via the \jsinline|new| operator.
 
 \item[Call]
-The [[Call]] internal property is an internal method that takes two arguments, the first argument can be of any valid JavaScript type representing the caller of a function, and the second argument is a list of any valid JavaScript type representing the arguments passed to the function. This internal method is what executes the code associated with the Object, usually a Function Object, and Objects that possess this internal property is referred to as \textit{callable}. The return value of this method may be any valid JavaScript type or it may be a Reference value if the caller is a callable host object.
+The [[Call]] internal property is specific to function objects, and is an internal method that takes two arguments, the first argument can be of any valid JavaScript type representing the caller of a function, and the second argument is a list of any valid JavaScript type representing the arguments passed to the function. This internal method is what executes the code associated with the function object, and objects that possess this internal property is referred to as \textit{callable}. The return value of this method may be any valid JavaScript type.
 
 \item[ParameterMap]
-The [[ParameterMap]] internal property is an Object property that belongs to JavaScript Objects that are Arguments Objects. The ParameterMap maps the named properties of an Arguments Object to the formal parameters of the function that invoked the Arguments Object. The exact workings of the Arguments Object will be described in Chapter~ref{sec:argumentsobject}.
+The [[ParameterMap]] internal property is an Object property that belongs to JavaScript objects that are \emph{arguments objects}. The ParameterMap maps the named properties of an arguments object to the formal parameters of the function corresponding to the arguments object. The exact workings of the arguments object will be described in Chapter~\ref{sec:argobj}.
 \end{description}
 
 \section{Prototype Inheritance}\label{sec:protoinh}
-As previously mentioned, rather than using class-based inheritance, JavaScript utilizes prototype inheritance. When an object is created using a constructor call, the new object's prototype property is implicitly set to the value of the Object constructor's prototype, and when an object is constructed using object literal notation, the new object's prototype property is set to the default Object.prototype object. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the newly created object may become the prototype of another object, and thus resulting in many layers of prototype referencing, called the prototype chain \cite{EcmaScript}. 
+As previously mentioned, rather than using class-based inheritance, JavaScript utilises prototype inheritance. When an object is created using a constructor call, the new object's [[Prototype]] property is implicitly set to the value of that object constructor's \jsinline|prototype| named property, and when an object is constructed using object literal notation, the new object's prototype property is set to the default \jsinline|Object.prototype| object. Alternatively, an object can also be created with an explicitly stated prototype. In turn, the newly created object may become the prototype of another object, thus resulting in many layers of prototype referencing, called the \emph{prototype chain} \cite{EcmaScript}. 
 
 When a property name is referenced, if the current object cannot resolve the name reference, then the program will find the object's prototype, and attempt to resolve the name reference in the prototype. The process will continue until the property name reference is resolved, or until the prototype points to null. If two objects share the same prototype with a certain property that neither object possesses, then the two share this property through prototype inheritance. This method of inheritance makes JavaScript objects more flexible than traditional class-based objects, some of which can only implement one level of inheritance. An example is given in the code snippet below.
-\begin{adjustwidth}{4cm}{4cm}
+
+\quad
+\begin{minipage}{0.395\textwidth}
+\qquad
 \begin{lstjs}
 var obj = {"physical": true};
 
 function animal() {
 	this.living = true;
 }
-animal.prototype = Object.create(obj);
+animal.prototype = obj;
 var a = new animal();
 
 function rock(hardness) {
 	this.hardness = hardness;
 }
-rock.prototype = Object.create(obj);
+rock.prototype = obj;
 var r = new rock(10);
 r.physical; // returns true
 
@@ -741,108 +750,99 @@ function person(pname, age) {
 	this.pname = pname;
 	this.age = age;
 }
-person.prototype = Object.create(a);
+person.prototype = a;
 var alice = new person("Alice", 36);
 
 \end{lstjs}
-\end{adjustwidth}
+\end{minipage}
+\begin{minipage}{0.54\textwidth}
+The initial value of Object.prototype is the built-in Object prototype object \cite{EcmaScript}, whose prototype property is \jsinline|null|, since it is always at the end of the prototype chain. In the code snippet above, an Object was created with a named property \jsinline|physical|, which has the value \jsinline|true|. Then, a custom object template of \jsinline|animal| type was created with a named property of \jsinline|living|, which also has the value \jsinline|true|. The prototype value for all objects constructed using \jsinline|animal| is then explicitly set to the object instance created. Its original value was \jsinline|Function.prototype|, since \jsinline|animal| was defined as a function, using the \jsinline|function| keyword. 
+\end{minipage}
 
-The initial value of Object.prototype is the built-in Object prototype object \cite{EcmaScript}, whose prototype property is null, since it is always at the end of the prototype chain. In the code snippet above, an Object was created with a named property of \textbf{physical}, which has a value of \textbf{true}. Then, a custom object template of \textbf{animal} type was created with a named property of \textbf{living}, which has a value of \textbf{true}. The prototype value of this \textbf{animal} object type is then explicitly set to the Object instance created. Before using the Object.create() method to set \textbf{animal}'s prototype value, its original value was the Function prototype, since it was defined using the \textbf{function} keyword. 
+In the following lines, a custom object type of \jsinline|rock| was defined with a named property of \jsinline|hardness|, the value of which is taken as an input parameter. Then, the prototype for all objects constructed using \jsinline|rock| is also set to the object created on line 1 in the snippet. Then, an instance of the object \jsinline|rock| is created and assigned to a variable \jsinline|r|, with the \jsinline|hardness| property set to the value \jsinline|10|. At this point, the \jsinline|animal| and |rock| object types both share the same prototype object, \jsinline|obj|, and even though neither of them has the own property \jsinline|physical|, when querying their instance variables for the property \jsinline|physical|, the boolean value \jsinline|true| would be the result, such as in line 14. 
 
-In the following lines, a custom object type of \textbf{rock} was defined with a named property of \textbf{hardness}, the value of which is taken as an input parameter, then the prototype of this object type is also set to the Object created on line 1 in the snippet. Then, a variable instance of the object \textbf{rock} is created and named \textbf{r}, with the \textbf{hardness} property set to the value \textbf{10}. At this point, the \textbf{animal} and \textbf{rock} object types both share the same prototype object, \textbf{obj}, and even though neither of them has the own property \textbf{physical}, when querying their instance variables for the property \textbf{physical}, the boolean value \textbf{true} would be the result, such as in line 13. 
-
-Next, to show that the prototype chain can be extended via multiple objects, a custom object type of \textbf{person} was created, with two parameters, \textbf{pname} and \textbf{age} taken as input for the \textbf{person}'s name and age properties. The prototype value of the new object type is set to be the instance variable \textbf{a} of type \textbf{animal} created previously using Object.create(), and an instance variable \textbf{alice} is created. This new variable has own properties \textbf{pname} and \textbf{age}, and inherits the \textbf{living} property from \textbf{a}, in addition to the \textbf{physical} property from \textbf{obj}.
+Next, to show that the prototype chain can be extended via multiple objects, a custom object type of \jsinline|person| was created, with two parameters, \jsinline|pname| and \jsinline|age| taken as input for the \jsinline|person|'s name and age properties. The prototype value of the new object type is set to be the instance variable \jsinline|a| of type \jsinline|animal| created previously, and an instance variable \jsinline|alice| is created. This new variable has own properties \jsinline|pname| and \jsinline|age|, and inherits the \jsinline|living| property from \jsinline|a|, in addition to the \jsinline|physical| property from \jsinline|obj|.
 
 \begin{figure}[!h]
 \begin{center}
 \begin{tikzpicture}
   \def\d{0.4cm};
   \def\w{1cm};
-  \node (sftvalue) at (\w,0.5mm) {};
   %%%%%%%% person node
-  \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=4, fill=black!35] (person) 
+  \node[sbox,rectangle split,rectangle split parts=4, fill=black!35] (person) 
     {     
-      \nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+      \nodepart{one}{\(\vdots\)}
       \nodepart{two}{\scriptsize $\mathtt{name : "Alice"}$}
       \nodepart{three}{\scriptsize $\mathtt{age : 36}$}
-      \nodepart{four}{\scriptsize prototype: \(l_{\mathsf{animal}}\)}
+      \nodepart{four}{\scriptsize prototype:~\(l_{\mathsf{animal}}\)}
   };
   \node[above left=0cm and 0cm of person,ll] {alice: \(l_{\mathsf{alice}}\)};
   %%%%%%%% end of global 
   %%%%%%%% animal node
-  \node[sbox,sz={\d}{\w},above right= -0.5cm and 1cm of person, rectangle split,rectangle split parts=3,fill=black!25] (animal) 
-    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+  \node[sbox,above right= -0.5cm and 1cm of person, rectangle split,rectangle split parts=3,fill=black!25] (animal) 
+    {\nodepart{one}{\(\vdots\)}
     \nodepart{two}{\scriptsize $\mathtt{living : true}$}
       \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{obj}}\)}};
   \node[above left=0cm and 0cm of animal,ll] {a: \(l_{\mathsf{a}}\)};
   %%%%%%%% end of obj
   %%%%%%%% rock node
-  \node[sbox,sz={\d}{\w},below right= -0.5cm and 1cm of person,rectangle split,rectangle split parts=3,fill=black!25] (rock) 
-    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+  \node[sbox,below right= -0.5cm and 1cm of person,rectangle split,rectangle split parts=3,fill=black!25] (rock) 
+    {\nodepart{one}{\(\vdots\)}
     \nodepart{two}{\scriptsize $\mathtt{hardness : 10}$}
       \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{obj}}\)}};
     \node[above left=0cm and 0cm of rock,ll] {r: \(l_{\mathsf{r}}\)};
   %%%%%%%% end of number 
   %%%%%%%% obj node
-  \node[sbox,sz={\d}{\w},right = 1.25cm of animal, rectangle split,rectangle split parts=3,fill=black!25] (obj) 
-    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+  \node[sbox,right = 1.25cm of animal, rectangle split,rectangle split parts=3,fill=black!25] (obj) 
+    {\nodepart{one}{\(\vdots\)}
     \nodepart{two}{\scriptsize $\mathtt{physical : true}$}
       \nodepart{three}{\scriptsize prototype: \(l_{\mathsf{op}}\)}};
   \node[above left=0cm and 0cm of obj,ll] {Object: \(l_{\mathsf{obj}}\)};
   %%%%%%%% end of obj
   %%%%%%%% objproto node
-  \node[sbox,sz={\d}{\w},right= 1cm of obj, rectangle split,rectangle split parts=2,fill=black!15] (objproto) 
-    {\nodepart{one}{\hspace*{0.75cm}\(\vdots\)}
+  \node[sbox,right= 1cm of obj, rectangle split,rectangle split parts=2,fill=black!15] (objproto) 
+    {\nodepart{one}{\(\vdots\)}
       \nodepart{two}{\scriptsize prototype: null}};
   \node[above left=0cm and 0.15cm of objproto,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
   %%%%%%%% end of objproto
   %%%%%%%% connection 
-  \draw[p] ($(person.four) + (1.8*\w,0)$) to[out=0,in=180] (animal);
-  \draw[p] ($(animal.third) + (1.8*\w,0)$) to [out=0,in=180]  (obj);
-  \draw[p] ($(rock.third) + (1.9*\w,0)$) to [out=0,in=180]  (obj);
-  \draw[p] ($(obj.third) + (1.8*\w,0)$) to [out=0,in=180]  (objproto);
+  \draw[p] ($(person.four) + (2.25*\w,0)$) to[out=0,in=180] (animal);
+  \draw[p] ($(animal.third) + (2.25*\w,0)$) to [out=0,in=180]  (obj);
+  \draw[p] ($(rock.third) + (2.25*\w,0)$) to [out=0,in=180]  (obj);
+  \draw[p] ($(obj.third) + (2.25*\w,0)$) to [out=0,in=180]  (objproto);
   %%%%%%%% end connection
 \end{tikzpicture}
-\caption{Prototype Chain}
+\caption{Prototype Chain Example}
+\vspace*{-0.5cm}
 \label{fig:initheap}
 \end{center}
 \end{figure}
 
-As Figure 3.1 shows, within each object instance, there is a property field named \textbf{prototype}, which holds the location of the Object that serves as its prototype.
+%As Figure 3.1 shows, within each object instance, there is a property field named \textbf{prototype}, which holds the location of the object that serves as its prototype.
 
-The Object.create(O [, Properties]) method mentioned previously is JavaScript's way to create objects with a specific prototype. The method takes one required parameter, \textbf{O}, and optional parameters \textbf{Properties}. \textbf{O} must be of Object or Null types. When this method is called, a new object is created using the object constructor, and the prototype internal property of this new object is set to the input \textbf{O} given. If optional properties are given, those properties are set for the new object accordingly.
+%The Object.create(O [, Properties]) method mentioned previously is JavaScript's way to create objects with a specific prototype. The method takes one required parameter, \textbf{O}, and optional parameters \textbf{Properties}. \textbf{O} must be of Object or Null types. When this method is called, a new object is created using the object constructor, and the prototype internal property of this new object is set to the input \textbf{O} given. If optional properties are given, those properties are set for the new object accordingly.
 
 \section{Initial Heap}\label{sec:jsheap}
-When a JavaScript Object is stored in memory, each memory cell holds a certain piece of information related to this Object. And as a result, a type of representation must exist to keep track of which memory cells are holding what information. A JavaScript heap serves this function of mapping memory locations, $\mathcal{L}$, and property names, $\mathcal{X}_{JS}$, to heap values, $\mathcal{V}_{JS}^h$, and scope chains, $\mathcal{S}ch_{JS}$. 
+When a JavaScript object is stored in memory, each memory cell holds a certain piece of information related to that object. As a result, a type of representation must exist to keep track of which memory cells are holding what information. A JavaScript heap serves this function of mapping memory locations, $\mathcal{L}$, and property names, $\mathcal{X}_{JS}$, to heap values, $\mathcal{V}_{JS}^h$, and scope chains, $\mathcal{S}ch_{JS}$. 
 
-JavaScript heap values can be literals such as numbers, booleans, strings, undefined, and null, or locations, or descriptors represented as a list of these values. In addition, it can also be lambda abstractions, $\lambda \bar{x}.s^m$. A JavaScript object can be viewed as a set of heap cells, denoted by $(l, x) \mapsto v$, that share a location $l$ but have different field names, $m \in \mathcal{X}_{JS}$. The heap cells essentially maps locations and variables to JavaScript values, and the entire heap is composed of many of these heap cells. 
+JavaScript heap values can be literals such as numbers $n$, booleans $b$, strings $m$, \jsinline|undefined|, \jsinline|null|, object locations, or descriptors $d$ (represented as lists of values). In addition, it can also be lambda abstractions, $\lambda \bar{x}.s^m$, representing functions. A JavaScript object can be viewed as a set of heap cells, denoted by $(l, x) \mapsto v$, that share a location $l$ but have different field names, $m \in \mathcal{X}_{JS}$. The heap cells essentially map locations and variables to JavaScript values, and the entire heap is composed of many of these heap cells. 
 
-The JavaScript scope chain is either empty, or it represents a location and a string value that get appended onto another scope chain. The exact workings of a scope chain requires using environmental records, which are objects that map variables and formal parameters in a function to their respective values, and scope chains are simply a list of environmental records with their respective function names.
+The JavaScript scope chain is a (possibly empty) list of location-name pairs. The exact workings of a scope chain requires using environmental records, which are objects that map variables and formal parameters in a function to their respective values, and scope chains are simply a list of environmental records with their respective function names.
 
 \begin{center}
-\begin{tabular}{p{10cm}} \hline
+\begin{tabular}{p{10cm}} 
 \textbf{JavaScript Heap Values} \\
-$\omega \in \mathcal{V}_{JS}^{h} ::= n \myor b \myor m \myor \mathtt{undefined} \myor \mathtt{null} \myor l \myor \bar{v} \myor \lambda \bar{x}.s^m $  \\ \hline
-\end{tabular}
-\vspace{0.3cm}
+$\omega \in \mathcal{V}_{JS}^{h} ::= n \myor b \myor m \myor \mathtt{undefined} \myor \mathtt{null} \myor l \myor d \myor \lambda \bar{x}.s^m $  \\[0.3cm]
 
-\begin{tabular}{p{10cm}} \hline
 \textbf{JavaScript Scope Chains} \\
-$\L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\ \hline
-\end{tabular}
-\vspace{0.3cm}
+$L \in \mathcal{S}ch_{JS} ::= [ ] \myor (l, m) :: L $  \\[0.3cm]
 
-\begin{tabular}{p{10cm}} \hline
 \textbf{JavaScript Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
+$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS}^h \cup \mathcal{S}ch_{JS})$  \\ 
 \end{tabular}
 \end{center}
 
-When a JavaScript program is executed, it must first create a global object that contains all of the global variables declared in the program using the \textbf{var} keyword, and the constructors for all the built-in Object types in JavaScript, including Array and String. Global variables are assigned \textbf{Undefined} as their value if they are not initialized right away. A constructor of an Object is the special function that, along with the \textbf{new} keyword, declares and initializes an Object. The constructor must reserve space in memory to hold the Object, and it creates the internal properties required by the Object and sets them to be their default values. Because constructors are also Objects, they too have the prototype property that points to the prototype object of their specific type, for example, the prototype of the Object constructor holds the Object prototype object, whereas the prototype of the Array constructor holds the Array prototype object. The global object also has a Prototype property like all other Objects, and this property's value is the built-in Object prototype object. For example, the code snippet below would create the initial heap presented in Figure 3.2.
-\begin{center}
-\jsinline|var a, r;|
-\end{center}
-As more code in the program is run, more Objects and other variable instances would be created and added to the JavaScript heap.
+When a JavaScript program is executed, it must first create a global object that contains all of the global variables declared in the program using the \textbf{var} keyword, and the constructors for all the built-in object types in JavaScript, including Array, String, Date, Math, RegExp, etc. Global variables are assigned \jsinline|undefined| if they are not initialized right away. A constructor is a special function that, along with the \jsinline|new| keyword, declares and initialises a specific object type. The constructor must reserve space in memory to hold the object, and it creates the internal properties required by the object and sets them to be their default values. Because constructors are also objects, they too have the prototype property that points to the prototype object of their specific type. For example, the prototype of the object constructor holds the object prototype object, whereas the prototype of the \jsinline|String| constructor holds the \jsinline|String.prototype| object. The global object also has a \jsinline|prototype| property like all other objects, and this property's value is implementation-dependent; for us, it is the built-in \jsinline|Object.prototype| object. As more code in the program is run, more objects and other variable instances would be created and added to the JavaScript heap. For example, the code snippet \jsinline|var a, r;| would create the initial heap presented in Figure 3.2.
 
 \begin{figure}[!h]
 \begin{center}
@@ -854,7 +854,7 @@ As more code in the program is run, more Objects and other variable instances wo
   \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=6, fill=black!35] (global) 
     {     
       \nodepart{one}\scriptsize Object: \(l_{\mathsf{obj}}\)
-      \nodepart{two}{\hspace*{0.75cm}\(\vdots\)}
+      \nodepart{two}{\hspace*{0cm}\(\vdots\)}
       \nodepart{three}{\scriptsize String: \(l_{\mathsf{string}}\)}
       \nodepart{four}{\scriptsize $\mathtt{a : undefined}$}
       \nodepart{five}{\scriptsize $\mathtt{r : undefined}$}
@@ -864,25 +864,25 @@ As more code in the program is run, more Objects and other variable instances wo
   %%%%%%%% end of global 
   %%%%%%%% obj node
   \node[sbox,sz={\d}{\w},above right= -1.2cm and 0.75cm of global, rectangle split,rectangle split parts=2,fill=black!25] (obj) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
       \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{op}}\)}};
   \node[above left=0cm and 0cm of obj,ll] {Object: \(l_{\mathsf{obj}}\)};
   %%%%%%%% end of obj 
   %%%%%%%% number node
   \node[sbox,sz={\d}{\w},below right= -0.3cm and 0.75cm of global,rectangle split,rectangle split parts=2,fill=black!25] (number) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
       \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{sp}}\)}};
     \node[above left=0cm and 0cm of number,ll] {String: \(l_{\mathsf{string}}\)};
   %%%%%%%% end of number 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w},right= 0.75cm of obj, rectangle split,rectangle split parts=3,fill=black!10] (op) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
       \nodepart{second}{\scriptsize@proto: null}};
   \node[above left=0cm and 0.15cm of op,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
   %%%%%%%% end of op 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w}m,right= 0.75cm of number, rectangle split,rectangle split parts=2,fill=black!10] (np) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
     \nodepart{second}{\scriptsize@proto: \(l_{\mathsf{op}}\)}};
   \node[above left=0cm and 0.2cm of np,ll] {String.prototype: \(l_{\mathsf{sp}}\)};
   %%%%%%%% end of op 
@@ -892,12 +892,12 @@ As more code in the program is run, more Objects and other variable instances wo
 
   %%%%%%%%
   %%%%%%%% connection 
-  \draw[p] ($(global.second) + (1.8*\w,0.75cm)$) to[out=0,in=180] (obj);
-  \draw[p] ($(global.three) + (1.8*\w,0)$) to[out=0,in=180] (number);
-  \draw[p] ($(global.six) + (1.8*\w,0)$) to[out=0,in=180] ($(number) - (1cm,0.9cm)$) to[out=0,in=180] ($(np) - (-0.9cm,0.9cm)$) to[out=0,in=0] (op);
-  \draw[p] ($(np.second) + (1.8*\w,0)$) to[out=0,in=0] (op);
-  \draw[p] ($(number.second) + (1.8*\w,0)$) to [out=0,in=180]  (np);
-  \draw[p] ($(obj.second) + (1.8*\w,0)$) to [out=0,in=180]  (op);
+  \draw[p] ($(global.second) + (2.2*\w,0.75cm)$) to[out=0,in=180] (obj);
+  \draw[p] ($(global.three) + (2.2*\w,0)$) to[out=0,in=180] (number);
+  \draw[p] ($(global.six) + (2.2*\w,0)$) to[out=0,in=180] ($(number) - (1cm,0.9cm)$) to[out=0,in=180] ($(np) - (-0.9cm,0.9cm)$) to[out=0,in=0] (op);
+  \draw[p] ($(np.second) + (2.2*\w,0)$) to[out=0,in=0] (op);
+  \draw[p] ($(number.second) + (2.2*\w,0)$) to [out=0,in=180]  (np);
+  \draw[p] ($(obj.second) + (2.2*\w,0)$) to [out=0,in=180]  (op);
   %%%%%%%% end connection
 \end{tikzpicture}
 \caption{ES5 Strict initial heap}
@@ -905,31 +905,36 @@ As more code in the program is run, more Objects and other variable instances wo
 \end{center}
 \end{figure}
 
+\vspace*{-0.7cm}
 \section{Function Objects}
-In general, functions in programming represent a cohesive block of code commands that perform a desired action. This block of code may or may not take arguments as inputs that affect its inner workings, and it may or may not produce a final result value. Functions can be blocks of code that stand alone in a program, or they may be included in class definitions, in which case they would be referred to as \textit{methods} rather than functions. The typical components of a function are the parameters and the body. The parameters are the names of the inputs to the function, and the body is the code block that specifies the actions. A separate scope exists within the function body, meaning variables that are declared and initialized within a function body are destroyed upon the completion of function execution. Although a function can access variables outside its body, unless it makes use of a global variable or produced an output, others cannot access the variables within a function.
+In general, functions in programming represent a cohesive block of code commands that perform a desired action. This block of code may or may not take arguments as inputs that affect its inner workings, and it may or may not produce a final result value. Functions can be blocks of code that stand alone in a program, or they may be included in class definitions, in which case they would be referred to as \textit{methods} rather than functions. The typical components of a function are the parameters and the body. The parameters are the names of the inputs to the function, and the body is the code block that specifies the actions. A separate scope exists within the function body, containing variables that are declared within the function body and destroyed upon the completion of function execution. Each function can access variables that are ``below'' it in the scope chain. For instance, every function can access global variables, and a function \jsinline|g| defined within function \jsinline|f| can access the variables declared in \jsinline|f|, but not vice versa.
 
-In most object oriented languages, functions are represented differently from object classes, but in JavaScript, Function Objects are a special type of Objects. Function Objects are the sole possessor of the  [[HasInstance]], [[Scope]], [[FormalParameters]], and [[Code]] optional internal properties, and the Function.prototype.bind method is the sole possessor of the [[TargetFunction]], [[BoundThis]], and [[BoundArguments]] optional internal properties. Some of these optional internal properties are discussed in detail below.
+In most object oriented languages, functions are represented differently from objects, but in JavaScript, function are indeed a special type of objects. Function objects are the sole possessors of the [[HasInstance]], [[Scope]], [[FormalParameters]], and [[Code]] optional internal properties. Some of these optional internal properties are discussed in detail below.
 
 \begin{description}
-\item[Scope] The [[Scope]] internal property's value is a lexical environment, which indicates the "environment in which the Function object is executed" \cite{EcmaScript}. What this environment encompasses may be unexpected given JavaScript's prototype inheritance.
+\item[Scope] The [[Scope]] internal property's value is a lexical environment, which indicates the "environment in which the function object is executed" \cite{EcmaScript}. What this environment encompasses may sometimes be unexpected, given JavaScript's prototype inheritance.
 
-\item[FormalParameters] The [[FormalParameters]] internal property is a possibly empty list of String values, called the \textit{FormalParameterList} that represents the names of the input arguments to a Function Object. The actual input arguments during a function call do not have to correspond exactly to the formal parameters in a Function Object definition, and this topic will be addressed in section~\ref{sec:argobj}.
+\item[FormalParameters] The [[FormalParameters]] internal property is a list of string values, called the \textit{FormalParameterList} that represents the names of the input arguments to a function object. The actual input arguments during a function call do not have to correspond exactly to the formal parameters in a function object definition, and this topic will be addressed in section~\ref{sec:argobj}.
 
-\item[Code] The [[Code]] internal property holds the actual code block of the Function Object. This is the commands to be executed when a Function Object is called.
+\item[Code] The [[Code]] internal property holds the actual code block of the function object. These are the commands to be executed when a function object is called.
 \end{description}
 
-\subsection{Constructing a Function Object}
-A Function Object can be constructed via a function call or via the constructor. Both follow the syntax below, except the constructor is preceded by the \textbf{new} keyword. \\
-\indent Function (p\textsubscript{0}, p\textsubscript{1}, ..., p\textsubscript{n}, body) \\
-As formal parameters are optional, if there is only one argument provided for the Function initialization, it is taken to be the body. If no argument is provided, the body is taken to be the empty String, and therefore the Function will perform no actions when called.
+\subsection{Creating function objects}
+Function objects are created whenever a function declaration \jsinline|function f(x1, ..., xn) { body }| is found in the code. 
+Here, \jsinline|f| is the function name, \jsinline|xi| are the function parameters, and \jsinline|body| is the sequence of commands
+representing the function body. Both the name, the parameters, as well as the body are all optional. If no name is provided,
+an anonymous function is created. If no body is provided,
+it is implicitly understood to be the empty string, and the function performs no actions when called.
+The value of the [[FormalParameters]] internal property will be set to the list of strings corresponding to the strings \jsinline|xi|. 
+The [[Scope]] of the newly created function object is set accordingly (to the global environment if the function is defined at top level), 
+and its [[Prototype]] is the \jsinline|Function.Prototype| object.
 
-If formal parameters are provided as arguments, the constructor will convert them to Strings, concatenate them together, before passing the whole String value to be processed by the \textit{FormalParameterList}. The value of the [[FormalParameters]] internal property will be set to the list of Strings corresponding to the Strings passed in via the \textit{FormalParameterList}. The [[Scope]] of the newly created Function Object is set to the global environment by default, and its [[Prototype]] is the Function Prototype object, which is \textit{Writable}, not \textit{Enumerable}, and not \textit{Configurable}.
+\subsection{Calling function objects}
+In order for an object to be a function object or be \emph{callable}, it must implement a [[Call]] internal property, described in section~\ref{sec:opip}. When the function is invoked, the [[Call]] internal method will establish a new temporary execution context that includes the formal parameters bountd to the actual arguments passed to the call, and the calling function object. It then executes what is inside the [[Code]] internal property and produces an intermediate result, before restoring the original execution context before the function call. Depending on the type of the result, [[Call]] will either throw an error, return a value, or return \jsinline|undefined|. Function objects can be called in one of three ways. Figure \ref{fig:func} illustrates a sample program and a heap fragment resulting from this program.
 
-\subsection{Calling a Function Object}
-In order to call a Function Object, the Function Object must have a valid [[Call]] internal property, described in section~\ref{sec:opip}. When the Function is invoked, the [[Call]] internal method will establish a new but temporary execution context that includes the [[FormalParameters]] internal property, the actual arguments passed into the function call, and the calling Function Object. It then executes what is inside the [[Code]] internal property as appropriate, and produces an intermediate result, before restoring the original execution context before the function call. Depending on the type of the result, [[Call]] will either thrown an error, return a value, or return Undefined. 
-
-Function Objects can be called in one of three ways. The following code snippet produces the heap structure shown in Figure 3.3.
-\begin{adjustwidth}{4cm}{4cm}
+\begin{figure}[!h]
+\begin{minipage}{0.33\textwidth}
+\vspace*{6mm}
 \begin{lstjs}
 Object.prototype.year = 2016;
 var birthYear = 1990;
@@ -938,10 +943,8 @@ function calcAge() {
 }
 calcAge.prototype.birthYear = 1980;
 \end{lstjs}
-\end{adjustwidth}
-
-\begin{figure}[!h]
-\begin{center}
+\end{minipage}
+\begin{minipage}{0.69\textwidth}
 \begin{tikzpicture}
   \def\d{0.4cm};
   \def\w{1cm};
@@ -949,7 +952,7 @@ calcAge.prototype.birthYear = 1980;
   %%%%%%%% global node
   \node[sbox,sz={\d}{\w},rectangle split,rectangle split parts=3, fill=black!35] (global) 
     {     
-      \nodepart{one}{\scriptsize prototype: \(l_{\mathsf{objproto}}\)}
+      \nodepart{one}{\scriptsize prototype: \(l_{\mathsf{op}}\)}
       \nodepart{two}{\scriptsize birthYear: 1990}
       \nodepart{three}{\scriptsize calcAge}
   };
@@ -957,40 +960,42 @@ calcAge.prototype.birthYear = 1980;
   %%%%%%%% end of global 
   %%%%%%%% number node
   \node[sbox,sz={\d}{\w},below right= -0.3cm and 1cm of global,rectangle split,rectangle split parts=2,fill=black!25] (number) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
       \nodepart{second}{\scriptsize prototype: \(l_{\mathsf{fp}}\)}};
-    \node[above left=0cm and 0cm of number,ll] {Function Object calcAge: \(l_{\mathsf{fo}}\)};
+    \node[above left=0cm and 0cm of number,ll] {function object calcAge: \(l_{\mathsf{fo}}\)};
   %%%%%%%% end of number 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w},above right= -0.5cm and 2cm of global, rectangle split,rectangle split parts=3,fill=black!15] (op) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
       \nodepart{second}{\scriptsize@proto: null}
       \nodepart{third}{\scriptsize year: 2016}};
   \node[above left=0cm and 0.15cm of op,ll] {Object.prototype: \(l_{\mathsf{op}}\)};
   %%%%%%%% end of op 
   %%%%%%%% number op node
   \node[sbox,sz={\d}{\w}m,right= 2cm of number, rectangle split,rectangle split parts=3,fill=black!5] (np) 
-    {\hspace*{0.75cm}\(\vdots\)%
+    {\hspace*{0cm}\(\vdots\)%
     \nodepart{second}{\scriptsize@proto: \(l_{\mathsf{op}}\)}
     \nodepart{third}{\scriptsize birthYear: 1980}};
   \node[above left=0cm and 0.2cm of np,ll] {Function.prototype: \(l_{\mathsf{fp}}\)};
   %%%%%%%% end of op 
   %%%%%%%% connection 
-  \draw[p] ($(global.second) + (1.8*\w,0.75cm)$) to[out=0,in=180] (op);
-  \draw[p] ($(global.three) + (1.8*\w,0)$) to[out=0,in=180] (number);
-  \draw[p] ($(np.second) + (1.8*\w,0)$) to[out=0,in=0] (op);
-  \draw[p] ($(number.second) + (1.8*\w,0)$) to [out=0,in=180]  (np);
+  \draw[p] ($(global.one) + (2.2*\w,0cm)$) to[out=0,in=180] (op);
+  \draw[p] ($(global.three) + (2.2*\w,0)$) to[out=0,in=180] (number);
+  \draw[p] ($(np.second) + (2.2*\w,0)$) to[out=0,in=0] (op);
+  \draw[p] ($(number.second) + (2.2*\w,0)$) to [out=0,in=180]  (np);
   %%%%%%%% end connection
 \end{tikzpicture}
-\caption{Heap of code snippet above}
-\label{fig:initheap}
-\end{center}
+\end{minipage}
+\caption{Function Objects}
+\label{fig:func}
 \end{figure}
 
 \begin{description}
-\item[Function Call] In a function call in strict mode, the \jsinline|this| value would be bound to \textbf{undefined}, so when evaluating \jsinline|this.age| from the calcAge() function, the result would be \textbf{undefined}.
-\item[Method Call] When the function is used as a method call, \jsinline|this| is bound to the global object, so \jsinline|this.birthYear| would be evaluated to 1990, and \jsinline|this.age| would be 2016 - 1990, which equals 26.
-\item[Constructor Call] When the function is used in a constructor call, such as \jsinline|new calcAge()|, \jsinline|this| is bound to the object created by the constructor. This new object would have the function prototype object as its prototype, therefore \jsinline|this.birthYear| would evaluate to 1980, and \jsinline|this.age| would be 36, from 2016 - 1980.
+\item[Function Call: calcAge()] In a function call in strict mode, the \jsinline|this| value is bound to \jsinline|undefined|, so evaluating \jsinline|this.age| in the body of the function would yield an error. In non-strict mode, \jsinline|this| is bound to the global object, so the call would return the value of the global \jsinline|age| variable.
+
+\item[Method Call: o.calcAge()] When the function is used as a method call, the \jsinline|this| value is bound to the object \jsinline|o|. For instance, if we were to call \jsinline|global.calcAge()| (which is not correct JavaScript syntax, but means of illustration), \jsinline|this.birthYear| would be evaluated to 1990, and \jsinline|this.age| would be set to 2016 - 1990, which equals 26.
+
+\item[Constructor Call] When the function is used in a constructor call, such as \jsinline|new calcAge()|, the \jsinline|this| value is bound to the object created by the constructor. This new object would have the \jsinline|Function.prototype| object as its prototype, therefore \jsinline|this.birthYear| would evaluate to 1980, and \jsinline|this.age| would be 36.
 \end{description}
 
 
@@ -1174,7 +1179,7 @@ This method converts the argument, V, into a String value, before calling the [[
 \jsinline|>> true|
 
 \item Object.prototype.isPrototypeOf(V) \newline
-This method first determines whether V is of Object type, since it cannot have a prototype if it is not an Object itself. It then determines whether the prototype internal property of V corresponds to the Object calling this method. If so, the method returns True. Because the Object.prototype object is at the head of all prototype chains by default, it is the prototype of any kind of JavaScript Object by default.
+This method first determines whether V is of Object type, since it cannot have a prototype if it is not an Object itself. It then determines whether the prototype internal property of V corresponds to the Object calling this method. If so, the method returns \jsinline|true|. Because the Object.prototype object is at the head of all prototype chains by default, it is the prototype of any kind of JavaScript Object by default.
 
 \jsinline|var a = new Object();| \\
 \jsinline|var b = new Boolean();| \\
@@ -1308,7 +1313,7 @@ Both constructors will set the following internal properties of the Array Object
 \item Its [[Extensible]] will be the boolean value \textbf{true}
 \end{itemize}
 
-The Array Object constructor itself is a JavaScript Object, and its prototype property is set to the Function Object prototype, which will not be discussed in further detail here.
+The Array Object constructor itself is a JavaScript Object, and its prototype property is set to the function object prototype, which will not be discussed in further detail here.
 
 \section*{A Working Example}
 \begin{adjustwidth}{4cm}{4cm}
@@ -1648,32 +1653,32 @@ One of the most widely used sorting algorithms is Quicksort. This algorithm take
 \chapter{Arguments Object}\label{sec:argobj}
 Like the Array Object, the Arguments Object is also a special type of JavaScript Object whose prototype is is the standard built-in Object prototype and whose [[Class]] internal property's value is "Arguments". It is used to capture all the arguments provided to a function call, and associates the actual arguments provided to the function to named variable references. 
 
-The \textit{CreateArgumentObject} operation, called when the Function Objects execute, is what creates the Arguments Object, and it differs quite drastically in its treatment of code written in strict mode versus non-strict mode. 
+The \textit{CreateArgumentObject} operation, called when the function objects execute, is what creates the Arguments Object, and it differs quite drastically in its treatment of code written in strict mode versus non-strict mode. 
 
 \section{Full ES5}
 \subsection{Internal Methods}\label{sec:argobjIM}
-The non-strict version of \textit{CreateArgumentObject} makes use of the following abstract operations. Both take a String $name$ and an environment record $env$ as input arguments. The exact manner in which Function Objects are created will not be discussed in further detail here.
+The non-strict version of \textit{CreateArgumentObject} makes use of the following abstract operations. Both take a String $name$ and an environment record $env$ as input arguments. The exact manner in which function objects are created will not be discussed in further detail here.
 \begin{description}
-\item[$MakeArgGetter$] Creates a Function Object that returns the value bound for $name$ in $env$ \cite{EcmaScript}.
-\item[$MakeArgSetter$] Creates a Function Object that sets the value bound for $name$ in $env$ \cite{EcmaScript}.
+\item[$MakeArgGetter$] Creates a function object that returns the value bound for $name$ in $env$ \cite{EcmaScript}.
+\item[$MakeArgSetter$] Creates a function object that sets the value bound for $name$ in $env$ \cite{EcmaScript}.
 \end{description}
 
 In addition, the [[Get]], [[GetOwnProperty]], [[DefineOwnProperty]], and [[Delete]] internal methods in the Arguments Object are also overridden with special versions as compared to the default Object.
 
 \subsection{\textit{CreateArgumentObject} Algorithm}
-JavaScript distinguishes between a Function Object's formal parameters and the actual arguments passed into a function call. When \textit{CreateArgumentObject} is first called, it stores the number of actual arguments passed into \textit{len}, creates the new Arguments Object, and sets its "length" property to have a value of \textit{len}. It then creates a new Object named \textit{map} and an empty list named \textit{mappedNames}. It then starts at the end of the arguments list provided to examine one element at a time. It will call [[DefineOwnProperty]] on the Arguments Object and create one new property for each argument - the property name will be the index of the argument in the list, and the property value will be the argument provided. 
+JavaScript distinguishes between a function object's formal parameters and the actual arguments passed into a function call. When \textit{CreateArgumentObject} is first called, it stores the number of actual arguments passed into \textit{len}, creates the new Arguments Object, and sets its "length" property to have a value of \textit{len}. It then creates a new Object named \textit{map} and an empty list named \textit{mappedNames}. It then starts at the end of the arguments list provided to examine one element at a time. It will call [[DefineOwnProperty]] on the Arguments Object and create one new property for each argument - the property name will be the index of the argument in the list, and the property value will be the argument provided. 
 
 \textit{len} may be different from the number of formal parameters that the function takes, in which case the following set of commands would only execute when the index of the provided argument is less than the number of formal parameters. The element at the current index of the formal parameters list will be added as an element in \textit{mappedNames}, and this element and the current environment record are provided as input to \textit{MakeArgGetter} and \textit{MakeArgSetter}. The results of these internal operation calls will be stored as the getter and setter attributes of the new property added to the \textit{map} object with the current index as the property name.
 
 If any arguments corresponding to a formal parameter is added in \textit{mappedNames}, then the \textit{map} Object will be added as the value of the [[ParameterMap]] internal property of the Arguments Object, and the internal methods in~\ref{sec:argobjIM} will be redefined to the overridden versions.
 
-Lastly, a new property named "callee" will be added to the Arguments Object, with the value being the Function Object instance that was called originally, and the Arguments Object itself is returned when the internal operation finishes.
+Lastly, a new property named "callee" will be added to the Arguments Object, with the value being the function object instance that was called originally, and the Arguments Object itself is returned when the internal operation finishes.
 
 \section{ES5 Strict}
 \subsection{\textit{CreateArgumentObject} Algorithm}
 The algorithm of \textit{CreateArgumentObject} starts off the same way for strict code as for non-strict code. They begin to differ, however, with regards to adding elements into the \textit{mappedNames} list. In strict mode, no elements would be added to \textit{mappedNames}, and thus as \textit{mappedNames} is always empty, the [[ParameterMap]] internal property of the Arguments Object will not be set to the \textit{map} Object, and the internal methods in~\ref{sec:argobjIM} will not be redefined to the overridden versions.
 
-Then, instead of only defining a new "callee" property in the Arguments Object, strict code will perform the following actions. Two separate properties, "caller" and "callee", will be defined in the Arguments Object, with the getter and setter attributes set to the built-in [[ThrowTypeError]] Function Object. This means that in strict mode, no getter and setter could be defined given a formal parameter element and the current environment record. This is reasonable because no formal parameters are associated with elements in the \textit{mappedNames} list.
+Then, instead of only defining a new "callee" property in the Arguments Object, strict code will perform the following actions. Two separate properties, "caller" and "callee", will be defined in the Arguments Object, with the getter and setter attributes set to the built-in [[ThrowTypeError]] function object. This means that in strict mode, no getter and setter could be defined given a formal parameter element and the current environment record. This is reasonable because no formal parameters are associated with elements in the \textit{mappedNames} list.
 
 \subsection{JSIL Implementation}
 Since this project works exclusively in strict mode, the JSIL implemented corresponds to the strict mode algorithm, and is hence relatively simple.
@@ -2050,9 +2055,9 @@ Total & 20 \\ \hline
 Before any method implementation, there were five PASSED tests, two FAILED tests, and 27 ABORTED tests. After the first round of coding, 14 additional tests passed, but 13 were still aborted. 
 \begin{itemize}
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T5.js \\
-This test sets the Function prototype slice method to the String prototype slice method, but since the Function Object constructor had not been implemented, it was impossible to run this test.
+This test sets the Function prototype slice method to the String prototype slice method, but since the function object constructor had not been implemented, it was impossible to run this test.
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T14.js \\
-This test passes an empty Function Object into the slice method of a String value, and this empty Object should be converted into \textbf{NaN}. The initial JSIL implementation only took into account cases where the start parameter can be successfully converted to an integer value, thus it failed when trying to index on \textbf{NaN}. Changes to the code was made to set the start value to be the beginning of the String if the start input cannot be successfully converted to an integer.
+This test passes an empty function object into the slice method of a String value, and this empty Object should be converted into \textbf{NaN}. The initial JSIL implementation only took into account cases where the start parameter can be successfully converted to an integer value, thus it failed when trying to index on \textbf{NaN}. Changes to the code was made to set the start value to be the beginning of the String if the start input cannot be successfully converted to an integer.
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T15.js \\
 This test creates a Number Object, sets its prototype.slice method to be that of String's prototype.slice, and calls the method with no inputs. Similar to the previous test case, the initial JSIL implementation failed because an empty argument cannot be transformed into an integer.
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T6.js \\
@@ -2078,10 +2083,10 @@ This test uses \textbf{null} as the start input, which is not an integer and the
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T7.js \\
 This test uses a string value as the start input, therefore it could not be used as a string index in JSIL.
 \item test262/test/built-ins/String/prototype/slice/S15.5.4.13\_A1\_T10.js \\
-This test uses a Function Object as the start input, therefore it could not be used as a string index in JSIL.
+This test uses a function object as the start input, therefore it could not be used as a string index in JSIL.
 \end{itemize}
 
-After fixing the above-mentioned issues, only one test remained in the ABORTED state, but since its passing requires the Function Object constructor, it is out of the scope of this project and is therefore left unimplemented. Otherwise, there remain 31 relevant test cases, all of which were in PASSED.
+After fixing the above-mentioned issues, only one test remained in the ABORTED state, but since its passing requires the function object constructor, it is out of the scope of this project and is therefore left unimplemented. Otherwise, there remain 31 relevant test cases, all of which were in PASSED.
 \begin{table}[ht!]
 \centering
 \begin{subtable}{0.5\textwidth}
@@ -2115,7 +2120,7 @@ Total & 32 \\ \hline
 The substring method was relatively straightforward as well. There were 35 ABORTED tests before method implementation, and after the first round of coding, one test remained ABORTED. 
 \begin{itemize}
 \item test262/test/built-ins/String/prototype/substring/S15.5.4.15\_A1\_T5.js \\
-This test sets the Function prototype substring method to the String prototype substring method, but since the Function Object constructor had not been implemented, it was impossible to run this test.
+This test sets the Function prototype substring method to the String prototype substring method, but since the function object constructor had not been implemented, it was impossible to run this test.
 \end{itemize}
 Excluding the nonrelevant tests, there were a total of 40 test cases, of which 39 passed, and one aborted.
 \begin{table}[ht!]
