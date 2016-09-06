@@ -296,7 +296,7 @@ Currently, many intermediate languages exist; one of the most prominent is CIL, 
 
 \item[Lambda JS / S5] $\lambda$\textsubscript{JS} \cite{Guha:2010} is a small step operational semantics that claims to capture the essential features of JavaScript (ECMAScript 3), except for the \texttt{eval} functionality. S5 extends $\lambda$\textsubscript{JS} to the ECMAScript 5 standard and focuses on JavaScript's strict mode \cite{Politz:2012}. Additional features covered by S5 include accessors and the \texttt{eval} function. JavaScript is translated to the core $\lambda$\textsubscript{JS} language via a desugaring function, and both $\lambda$\textsubscript{JS} and S5 are executable and tested against a Mozilla test suite and the Test262 suite, respectively.
 
-\item[JSIL] is the intermediate language around which this thesis revolves. Like other intermediate languages, JSIL does not have many high-level language constructs. Instead, it is a simple $\texttt{goto}$ language with labels and commands that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript, and since JavaScript heaps are paramount in determining the outcome of running programs, this similarity helps relate JSIL programs with JavaScript programs.\footnote{Active work is in progress for JSIL and pending publication.} The full syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
+\item[JSIL] is the intermediate language around which this thesis revolves. Like other intermediate languages, JSIL does not have many high-level language constructs. Instead, it is a simple $\texttt{goto}$ language with top-level procedures and labels and commands that resemble assembly code. JSIL has a memory model that is similar to that of JavaScript and this similarity helps relate JSIL programs with JavaScript programs easily.\footnote{Active work is in progress for JSIL and pending publication.} The full syntax of JSIL will be discussed in detail in Chapter~\ref{sec:jsil}.
 
 %As seen in the heap models below, JavaScript heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JavaScript values, $\mathcal{V}_{JS}$, and scope chains, $\mathcal{S}ch_{JS}$, whereas JSIL heaps map locations, $\mathcal{L}$, and JavaScript variables, $\mathcal{X}_{JS}$, to JSIL values, $\mathcal{V}_{JSIL}$.
 
@@ -454,7 +454,7 @@ Based on the ECMAScript standard definition, operational semantics for the $\mat
 \end{mathpar}
 
 \noindent The rules above are annotated with the line of the ECMAScript standard description to which they correspond, from which we can see that there exists almost a line-by-line eyeball correspondence, which gives us confidence that the standard has been formalised correctly. 
-\az{While loop in JSIL?}
+%\az{While loop in JSIL?}
 %\subsubsection{JSIL Code}
 %Compared to the JSIL operational semantics, there are a few constructs here not represented above, such as the \textit{fresh}() command, which creates a fresh JSIL variable to hold a return value. 
 %
@@ -1001,11 +1001,10 @@ calcAge.prototype.birthYear = 1980;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{JSIL}\label{sec:jsil}
-As mentioned in section~\ref{sec:ir}, JSIL is a simple goto language whose commands operate on the JSIL heap. As control flow in goto languages are simple, and that there are no nested procedures in JSIL, the simplicity allows for easier logical analysis compared to JavaScript. But JSIL also differs from standard goto languages in that it is dynamic --- its objects are extensible, similar to JavaScript and easily lends itself to JavaScript analysis. JSIL is a top-level language, meaning each procedure that is executed has its own variable store. As any programming language, and especially one during its developmental phase, JSIL has evolved since the beginning of this project. 
+As mentioned in section~\ref{sec:ir}, JSIL is a goto language with top-level procedures. As control flow in goto languages is easier to capture and that there are no nested procedures in JSIL, analysis of JSIL code is comparatively much simpler than that of JavaScript code. But JSIL also differs from standard goto languages in that it is dynamic---it features extensible objects and dynamic procedure calls, similar to JavaScript. JSIL is a top-level language, meaning each there are no nested procedures and each procedure that is executed has its own variable store. As any programming language in general, and during its developmental phase in particular, JSIL has evolved since the beginning of this project. 
 
 \section{Initial JSIL Syntax}
-When JSIL was first developed, it was built as a simplified version of the inner workings of JavaScript. Although the JSIL memory model was designed to be as close to that of JavaScript's from the beginning, there were still aspects that required extension. Most notably, it lacked representation for JavaScript descriptors, described in section~\ref{sec:descriptors}.
-
+When JSIL was first developed, it was built to model a simplified version of the inner workings of JavaScript. Although the JSIL memory model was designed to be as close to that of JavaScript's from the beginning, there were still aspects that required extension. Most notably, it lacked representation for JavaScript descriptors, described in section~\ref{sec:descriptors}.
 The syntax of JSIL at the start of this project was as follows:
 $$
 \arraycolsep=1.5pt
@@ -1013,7 +1012,7 @@ $$
 Variables : &  \mathtt{x} & \in & \mathcal{X}_{JSIL} \\
 Types: & \mathtt{t} & \in & \mathtt{Type} & ::= & \mathtt{Num} \myor \mathtt{Bool} \myor \mathtt{Str} \myor \mathtt{Undef} \myor \mathtt{Ref}_o \myor \mathtt{Ref}_v \myor \mathtt{Obj} \\
 Values: & \mathtt{v} & \in & \mathcal{V}_{JSIL} & ::= &\textit{lit} \myor \textit{l} \myor \textit{r} \myor \mathtt{empty} \myor \mathtt{error} \myor \mathtt{t} \\
-Expressions: & \mathtt{e} & \in & \mathcal{E}_{JSIL} & ::= &\mathtt{v} \myor \mathtt{x} \myor \mathtt{e} \oplus \mathtt{e} \myor \mathtt{typeof}(\mathtt{e}) \myor \mathtt{ref_o}(\mathtt{e,e}) \myor \\
+Expressions: & \mathtt{e} & \in & \mathcal{E}_{JSIL} & ::= &\mathtt{v} \myor \mathtt{x} \myor \ominus \mathtt{e} \oplus \mathtt{e} \myor \mathtt{typeof}(\mathtt{e}) \myor \mathtt{ref_o}(\mathtt{e,e}) \myor \\
 & & & & & \mathtt{ref_v}(\mathtt{e,e}) \myor \mathtt{base}(\mathtt{e}) \myor \mathtt{field}(\mathtt{e}) 
 \\
 Commands: & \mathtt{c} & \in & \mathtt{Cmd} & ::= & \mathtt{skip} \myor \mathtt{x} := \mathtt{e} \myor \mathtt{x} := \mathtt{new}() \myor \mathtt{x} := [\mathtt{e,e}] \myor [\mathtt{e}_1,\mathtt{e}_2] := \mathtt{e}_3 \myor  \\
@@ -1025,14 +1024,14 @@ Procedures: & \mathtt{proc} & \in & \mathtt{Proc} & ::= & \mathtt{proc} \hspace{
 \end{array}
 $$
 
-where $lit$ denotes JavaScript literals (undefined, null, numbers, booleans, and strings), $l$ denotes locations, and $r$ denotes references. \texttt{typeof} returns the type of its argument; $\mathtt{ref_o}$ and $\mathtt{ref_v}$ are used to construct object and variable references, respectively; $\mathtt{base}$ and $\mathtt{field}$ return, respectively, the first and second component of the reference that is passed to them as a parameter. $\mathtt{x := protoField(e_1, e_2)}$ assigns object $\mathtt{e_1}$'s field $\mathtt{e_2}$ to \texttt{x} and $\mathtt{x := protoObj(e_1, e_2)}$ assigns $\mathtt{true}$ to \texttt{x} if object $\mathtt{e_2}$ is in the prototype chain of object $\mathtt{e_1}$ and \texttt{false} otherwise.
+\noindent where $lit$ denotes JavaScript literals (\jsinline|undefined|, \jsinline|null|, numbers, booleans, and strings), $l$ denotes locations, and $r$ denotes JavaScript references. Further, \texttt{typeof} returns the type of its argument; $\mathtt{ref_o}$ and $\mathtt{ref_v}$ are used to construct object and variable references, respectively; $\mathtt{base}$ and $\mathtt{field}$ return, respectively, the first and second component of the reference that is passed to them as a parameter. Finally, $\mathtt{x := protoField(e_1, e_2)}$ assigns the value of object $\mathtt{e_1}$'s field $\mathtt{e_2}$ to \texttt{x} (taking into account the prototype chain of $\mathtt{e_1}$) and $\mathtt{x := protoObj(e_1, e_2)}$ assigns \jsinline|true| to \texttt{x} if object $\mathtt{e_2}$ is in the prototype chain of object $\mathtt{e_1}$ and \jsinline|false| otherwise.
 
-$\mathtt{x} := \mathtt{e}(\overline{e})\ \mathtt{with}\ \textit{j}$ is a dynamic procedure call. When executed, the procedure will evaluate the expression $\mathtt{e}$ with the arguments $\overline{e}$ as provided, and assign the resulting value to $\mathtt{x}$. If evaluating the procedure results in an error, then flow control will proceed to the code block labeled by \textit{j}, otherwise, flow control will continue to the next line in the program. This dynamic procedure call syntax is commonly used in the implementation component in this project, as it is necessary to evaluate results for when internal functions are called.
+$\mathtt{x} := \mathtt{e}(\overline{e})\ \mathtt{with}\ \textit{j}$ is a dynamic procedure call, meaning that the name of the procedure to be called need not be known statically. When executed, the procedure will evaluate the expression $\mathtt{e}$ with the arguments $\overline{e}$ as provided, and assign the resulting value to $\mathtt{x}$. If the evaluation of the procedure results in an error, then control will proceed to the code block labeled by \textit{j}, otherwise, control will continue to the next line in the program. 
 
-A top level JSIL program follows the syntax of proc m($\overline{x}$)$\{\overline{c}\}$, which executes procedure \texttt{m} with $\overline{x}$ as formal parameters and $\overline{c}$ as a list of JSIL commands. The implementation stage of this project defines a number of JavaScript library functions, and each function follows this syntax of top level program. JSIL programs do not have explicit return statements, rather, they contain a return label and optionally an error label, usually denoted as \textit{rlab} and \textit{elab}, respectively. When the program flow of control reaches one of these labels, the corresponding return variable, a normal value $x_{ret}$ or an error value $x_{err}$, will be returned by the procedure.
+A top-level JSIL procedure follows the syntax of proc m($\overline{x}$)$\{\overline{c}\}$, which executes procedure \texttt{m} with $\overline{x}$ as formal parameters and $\overline{c}$ as a list of JSIL commands. The implementation stage of this project defines a number of JavaScript library functions, and each function adheres to this syntax. JSIL procedures do not have explicit return statements, rather, they contain a return label and optionally an error label, usually denoted as \textit{rlab} and \textit{elab}, respectively. When the program flow of control reaches one of these labels, the corresponding return variable, a normal value $x_{ret}$ or an error value $x_{err}$, will be returned by the procedure.
 
 \section{Final JSIL Syntax}\label{sec:finjsilsyntax}
-A number of syntax components have evolved, and the finalized version of JSIL includes representation for descriptors. The syntax is as follows:
+With the decision to fully model JavaScript's descriptors, getters and setters, and internal functions, a number of syntax components of JSIL have evolved. The final syntax of JSIL is as follows:
 $$
 \arraycolsep=1.5pt
 \begin{array}{rrclcl}
@@ -1046,7 +1045,7 @@ References : &  \mathtt{r} & \in & \mathcal{R} & \triangleq & ((\mathcal{L}it \c
 Types: & \mathtt{t} & \in & \mathtt{Type} & ::= & \mathtt{Num} \myor \mathtt{Bool} \myor \mathtt{Str} \myor \mathtt{Undef} \myor \mathtt{Ref}_o \myor \mathtt{Ref}_v \myor \mathtt{Obj} \myor \mathtt{List} \\
 Values: & \mathtt{v} & \in & \mathcal{V}_{JSIL} & ::= &\lambda \myor \textit{l} \myor \textit{r} \myor \mathtt{empty} \myor \mathtt{error} \myor \mathtt{t} \myor \bar{\mathtt{v}} \\
 Expressions: & \mathtt{e} & \in & \mathcal{E}_{JSIL} & ::= &\mathtt{v} \myor \mathtt{x} \myor \ominus \mathtt{e} \myor \mathtt{e} \oplus \mathtt{e} \myor \mathtt{typeof}(\mathtt{e}) \myor \mathtt{ref_o}(\mathtt{e,e}) \myor \\
-& & & & & \mathtt{ref_v}(\mathtt{e,e}) \myor \mathtt{base}(\mathtt{e}) \myor \mathtt{field}(\mathtt{e}) \myor \bar{\mathtt{e}} \myor \mathtt{elt (e, e)}
+& & & & & \mathtt{ref_v}(\mathtt{e,e}) \myor \mathtt{base}(\mathtt{e}) \myor \mathtt{field}(\mathtt{e}) \myor \bar{\mathtt{e}} \myor \mathtt{nth (e, e)}
 \\
 Basic Commands: & \mathtt{bc} & \in & \mathtt{BCmd} & ::= & \mathtt{skip} \myor \mathtt{x} := \mathtt{e} \myor \mathtt{x} := \mathtt{new}() \myor \mathtt{x} := [\mathtt{e,e}] \myor [\mathtt{e}_1,\mathtt{e}_2] := \mathtt{e}_3 \myor  \\
 & & & & & \mathtt{delete}(\mathtt{e,e}) \myor \mathtt{x} := \mathtt{hasField}(\mathtt{e,e}) \\
@@ -1056,21 +1055,24 @@ Procedures: & \mathtt{proc} & \in & \mathtt{Proc} & ::= & \mathtt{proc} \hspace{
 \end{array}
 $$
 
-Compared to the initial syntax, most of the alterations were additions, but there were some deletions as well. The $\mathtt{x := protoField(e_1, e_2)}$ and $\mathtt{x := protoObj(e_1, e_2)}$ commands have been deprecated, since they were found to have not served much use. JSIL references are now explicitly spelled out as consisting of a base, an annotation, and a field name. The base of a reference can either be a location or a literal, $\mathcal{L}it \cup \mathcal{L}$; the annotation, $\mathtt{v} \myor \mathtt{o}$, distinguish the reference as a variable reference or an object reference; and the field name within the variable or object is represented by a string value $\mathcal{S}tr$. Also note that in addition to binary operations $\mathtt{e} \oplus \mathtt{e}$, the updated JSIL syntax also includes unary operations $\ominus \mathtt{e}$ on expressions.
+Compared to the initial syntax, most of the alterations were additions, but there were some deletions as well. The $\mathtt{x := protoField(e_1, e_2)}$ and $\mathtt{x := protoObj(e_1, e_2)}$ commands have been deprecated, since they were rendered obsolete by the internal function [[GetProperty]]. JSIL references consist of a base, an annotation, and a field name. The base of a reference can either be a location or a literal, but not \jsinline|null|; the annotation $\mathtt{v}$ or $\mathtt{o}$, distinguishing between variable references and object references; and the field name within the variable or object is represented by a string value $\mathcal{S}tr$. JSIL also includes a number of binary $(\mathtt{e} \oplus \mathtt{e})$ and unary operators $(\ominus \mathtt{e})$ on expressions.
 
-Next comes an important group of modifications related to lists in JSIL. JSIL now includes a $\mathtt{List}$ type, in addition to the primitive types, references, and objects from before. As a result, JSIL values must now include lists of values, $\bar{\mathtt{v}}$, and JSIL expressions must include lists of expressions, $\bar{\mathtt{e}}$. Lists must also be able to be indexed, and the $\mathtt{elt (e_1, e_2)}$ operator accomplishes this goal, by accessing the $\mathtt{e_2}$-th element of the list $\mathtt{e_1}$. 
+Next comes an important group of modifications related to lists in JSIL. JSIL now includes a $\mathtt{List}$ type, in addition to the primitive types, references, and objects from before. As a result, JSIL values now include lists of values, $\bar{\mathtt{v}}$, and JSIL expressions include lists of expressions, $\bar{\mathtt{e}}$. Lists and strings must also be able to be indexed, and the $\mathtt{nth (e_1, e_2)}$ operator accomplishes this goal, by accessing the $\mathtt{e_2}$-th element of the list or string $\mathtt{e_1}$. 
 
-Lastly, a complex command has been added to the repertoire of JSIL's syntax, $\mathtt{x} := \phi(\mathtt{x_1}, ... , \mathtt{x_n})$, called the $\phi$-node command. During a program's execution, a command can theoretically be reached via multiple paths. For example, if there were \texttt{n} paths, and the \textit{i}-th path was taken during execution, then the value that gets assigned to \texttt{x} will be \texttt{x}\textsubscript{i}. This change was made because performing symbolic verification in static single assignment form requires this functionality, but as it is outside the scope of this project, it will not be further explained.
+Lastly, a complex command has been added to the repertoire of JSIL's syntax, $\mathtt{x} := \phi(\mathtt{x_1}, ... , \mathtt{x_n})$, called the $\phi$-node command. During a program's execution, a command can theoretically be reached via multiple paths. For example, if there were \texttt{n} paths, and the \textit{i}-th path was taken during execution, then the value that gets assigned to \texttt{x} will be \texttt{x}\textsubscript{i}. This change was made because programs in single-static assignment (of which $\phi$-nodes are a key concept) are more amenable to symbolic verification. As this is outside the scope of this project, it will not be further explained.
 
 \section{Contrast JSIL Without and With Descriptors}
 As previously mentioned, descriptors are an important feature in JavaScript that was not included in the initial JSIL implementations, but added in later implementations. Adding the \texttt{List} type enabled representation of descriptors as JSIL lists, which are denoted by double braces \texttt{\{\{\}\}}. A descriptor now takes one of either three forms, each corresponding to a type of JavaScript descriptor.
 \begin{description}
-\item[Data Descriptor] A data descriptor is represented as a JSIL list of five elements, \texttt{\{\{ "d", v, w, e, c\}\}}. The \texttt{"d"} is a string value that represents a \textit{data descriptor}, and the \texttt{w, e, c} are boolean values that represent the [[Writable]], [[Enumerable]], and [[Configurable]] attributes, respectively. The \texttt{v} represents the [[Value]] of the descriptor, and it can take on any of the valid JSIL types.
-\item[Accessor Descriptor] An accessor descriptor is also represented as a JSIL list of five elements, \texttt{\{\{ "a", g, s, e, c\}\}}. The \texttt{"a"} is a string value that represents an \textit{accessor descriptor}, and the \texttt{e, c} are boolean values that represent the [[Enumerable]] and [[Configurable]] attributes, respectively. Lastly, \texttt{g, s} represent the [[Getter]] and [[Setter]] attributes, and taken on JSIL procedures.
-\item[Generic Descriptor] A generic descriptor is defined as a descriptor, but neither a data descriptor nor an accessor descriptor. This means that either the [[Enumerable]] or [[Configurable]] attributes is not undefined, but all the rest of the possible attributes must be undefined. In JSIL, they are represented as a list with seven elements, \texttt{\{\{ "g", v, w, g, s, e, c\}\}}, with \texttt{"g"} meaning \textit{generic descriptor}, and the rest of the letters corresponding to each descriptor attribute as mentioned previously. 
+
+\item[Data Descriptor] A data descriptor is represented as a five-element JSIL list: \jsinline|{{"d", v, w, e, c}}|. The \texttt{"d"} is a string value that represents a \textit{data descriptor}, and the \texttt{w, e, c} are boolean values that represent the [[Writable]], [[Enumerable]], and [[Configurable]] attributes, respectively. The \texttt{v} represents the [[Value]] of the descriptor, and it can hold any JSIL value.
+
+\item[Accessor Descriptor] An accessor descriptor is also represented as a JSIL list of five elements, namely \jsinline|{{"a", g, s, e, c}}|. The \texttt{"a"} is a string value that represents an \textit{accessor descriptor}, and the \texttt{e, c} are boolean values that represent the [[Enumerable]] and [[Configurable]] attributes, respectively. Lastly, \texttt{g} and \texttt{s} represent the [[Get]] and [[Set]] attributes.
+
+\item[Generic Descriptor] A generic descriptor is defined as a descriptor, but neither a data descriptor nor an accessor descriptor. This means that either the [[Enumerable]] or [[Configurable]] attributes are not undefined, but all the rest of the possible attributes must be undefined. In JSIL, they are represented as lists of seven elements, \jsinline|{{"g", v, w, g, s, e, c}}|, with \texttt{"g"} meaning \textit{generic descriptor}, and the rest of the letters corresponding to each descriptor attribute as mentioned previously.
 \end{description}
 
-The following code snippets demonstrate the difference that descriptors can make in JSIL. Many internal functions make use of descriptors, thus without which the JSIL representation of JavaScript would simply be incorrect. On the left is JSIL code for [[Get]] without descriptors, and which will be referred to as \textit{LHS-without}, and on the right, JSIL with descriptors as presented before, and will be referred to as \textit{RHS-with}. The \texttt{n-th} function that takes two arguments, a list and an index position, corresponds to the $\mathtt{elt (e_1, e_2)}$ JSIL command described in section ~\ref{sec:finjsilsyntax}.
+The following code snippets demonstrate the difference that descriptors make in JavaScript and, therefore, in JSIL as well. Many internal functions make use of descriptors, thus without which the JSIL representation of JavaScript would simply be incorrect. On the left is JSIL code for [[Get]] without descriptors, and which will be referred to as \textit{LHS-without}, and on the right, JSIL with descriptors as presented before, and will be referred to as \textit{RHS-with}.
 
 \begin{minipage}{.45\textwidth}
 \begin{lstjsil}
@@ -1088,18 +1090,18 @@ with
 \begin{minipage}{.50\textwidth}
 \begin{lstjsil}
 proc o__get (l, prop) {
-			gp := [l, "@getProperty"];
-			xret := gp (l, prop) with elab;	
-			goto [xret = $$undefined] rlab def;
+				gp := [l, "@getProperty"];
+				xret := gp (l, prop) with elab;	
+				goto [xret = $$undefined] rlab def;
 			
 	def:	d := nth (xret, 0);
-			xret := nth (xret, 1);
-			goto [d = "d"] rlab acc;
+				xret := nth (xret, 1);
+				goto [d = "d"] rlab acc;
 			
 	acc:	goto [xret = $$undefined] rlab get;
 	get:	xsc := [xret, "@scope"];
-			fun := [xret, "@call"];
-			xret := fun (xsc, l) with elab;
+				fun := [xret, "@call"];
+				xret := fun (xsc, l) with elab;
 			
 	rlab:	skip;
 	elab:	skip
@@ -1112,7 +1114,7 @@ with
 \end{lstjsil}
 \end{minipage}
 
-Recall section~\ref{sec:getstandard} presented the ECMAScript standard for the [[Get]] internal function. The JSIL implementation without descriptors is much shorter because all the steps in the standard that deal with descriptors are not applicable. Starting from step 3 which states "If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]]", \textit{LHS-without} simply cannot address the concept of descriptors, whereas \textit{RHS-with} implements step 3 in the \textit{def} code block. The three subsequent steps, "Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]]", "If \textit{getter} is \textbf{undefined}, return \textbf{undefined}", and "Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments" also went unaddressed in \textit{LHS-without}, but were implemented as the \textit{acc} and \textit{get} code blocks in \textit{RHS-with}.
+In Dection~\ref{sec:getstandard}, we presented the ECMAScript standard definition for the [[Get]] internal function. The JSIL implementation without descriptors is much shorter, because all the steps in the standard that deal with descriptors are not applicable. Starting from step 3 which states "If IsDataDescriptor(\textit{desc}) is \textbf{true}, return \textit{desc}.[[Value]]", \textit{LHS-without} simply cannot address the concept of descriptors, whereas \textit{RHS-with} implements step 3 in the \textit{def} code block. The three subsequent steps, "Otherwise, IsAccessorDescriptor(\textit{desc}) must be true so, let \textit{getter} be \textit{desc}.[[Get]]", "If \textit{getter} is \textbf{undefined}, return \textbf{undefined}", and "Return the result calling the [[Call]] internal method of \textit{getter} providing \textit{O} as the \textbf{this} value and providing no arguments" also went unaddressed in \textit{LHS-without}, but were implemented as the \textit{acc} and \textit{get} code blocks in \textit{RHS-with}.
 
 \section{Semantics}
 In order to facilitate analysis of JavaScript and JSIL programs, heap models were created for both languages. Recall the JavaScript heap described in section~\ref{sec:jsheap}, reproduced below for easy reference. The JSIL Heap Model was designed to correspond as closely as possible to the JavaScript Heap Model, as it also maps locations, $\mathcal{L}$, and JavaScript variables, represented as strings $\mathcal{S}tr$, to JSIL values, $\mathcal{V}_{JSIL}$. The reason for this close correspondence stems from the concept of $\beta$ indistinguishability --- if a JavaScript program and a JSIL program are executed in indistinguishable heaps, and that one program's execution terminates if and only if the other terminates, then the outcome of the heaps would be indistinguishable. Because of this, one can ascertain that a JSIL program is faithfully replicating the actions of a JavaScript program, therefore logical analysis on JSIL can replace that on JavaScript. The JSIL memory model, however, does not contain scope chains, making JSIL programs easier to analyze logically.
