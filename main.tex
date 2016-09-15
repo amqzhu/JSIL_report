@@ -145,9 +145,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-JavaScript plays an increasingly important role in programming on the web, and a reliable JavaScript verification tool that could help programmers write correct and secure code remains much to be desired. As JavaScript is an object-oriented dynamic language, analysis of the behavior of JavaScript programs poses great difficulty, and is more easily accomplished using simpler intermediate languages that replicate the actions performed in JavaScript. JSIL, an intermediate language for JavaScript, has been developed for exactly this purpose.
+JavaScript plays an increasingly important role in programming on the web, and a reliable JavaScript verification tool that could help programmers write correct and secure code remains much to be desired. As JavaScript is a dynamic object-oriented language, analysis of the behavior of JavaScript programs poses great difficulty, and is more easily accomplished using simpler intermediate languages that replicate the actions performed in JavaScript. JSIL, an intermediate language for JavaScript, has been developed for exactly this purpose.
 
-This project extends the implementation of JSIL to include various built-in methods in the Object, Array, and String libraries, as well as the arguments object construct. The language in the 5\textsuperscript{th} edition of the JavaScript specification has been faithfully followed during JSIL implementation to ensure its correctness. When the specification is vague and up to interpretation, operational semantics is utilized to ensure clarity of method actions. All JSIL code written is concurrently tested using an automatic testing framework, which lends itself to manual analysis. The testing framework pulls test cases from the official ECMAScript test suite, and all methods implemented have passed all the tests within the scope of this project.
+This project extends the implementation of JSIL to include various built-in methods in the Object, Array, and String libraries, as well as the arguments object construct. The language in the 5\textsuperscript{th} edition of the JavaScript specification has been faithfully followed during JSIL implementation to ensure its correctness. When the specification is vague and up to interpretation, operational semantics is utilized to ensure clarity of method actions. All JSIL code written is concurrently tested first using manually constructed unit tests, then using an automatic testing framework, which lends itself to manual analysis. The testing framework pulls test cases from the official ECMAScript test suite, and all methods implemented have passed all the tests within the scope of this project.
 \end{abstract}
 
 \cleardoublepage
@@ -177,6 +177,17 @@ Lastly, my most heartfelt thanks goes to Petar Maksimovi\'c, who supervised my l
 \chapter{Introduction}
 \label{cha:intro}
 
+\section{Thesis Project}
+To determine whether a computer program is correct, simply eyeballing the program is not enough. Rather, verification tools are needed to analyze and prove the correctness of computer programs, and this project contributes towards the end goal of creating a verification tool for JavaScript development. This project seeks to expand JSIL, an intermediate language for JavaScript, to include the arguments object and other built-in JavaScript library functions. Previous work has already been done by the research group on JSIL and the JavaScript-to-JSIL compiler, and this project will reasonably increase the coverage of this compiler. The compiler extensions from this project will be evaluated by concurrently running tests against ECMAScript Test262 test suite to prove correctness of the implementation.
+
+In order to achieve the goals of this project, significant preparations were undertaken. The first hurdle was operational semantics, which involved self-studying the first four lectures of the second-year Models of Computation course and the ECMAScript operational semantics written for the JavaScript internal functions. Learning the language of symbolic representations was difficult without a strong foundation in logic. The second challenge was reading a programming language specification, and understanding the complexity of programming languages at a low level. Lastly, extensive practice coding in a goto-style intermediate language was necessary implementing JSIL.
+
+This project has completed the Object.prototype library, the Array library, and a subset of the String library methods in their JSIL implementation. The Object.prototype library encompasses seven built-in methods for two pages in the ECMAScript standard, the Array library includes 28 built-in methods for a total of 20 pages, and the subset of String library includes six built-in methods for four pages. The arguments object, a construct encompassing three pages of the standard, has been implemented as well. All of the library methods and constructs, is implemented on the JSIL level in more than 2000 lines of code, and tested against manually written unit tests as well as the standard test suite, Test262, on a continually integrated basis.
+
+The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 21301 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features and non-strict functionality, after which 11557 tests remain. Of these 11557, current implementation of JSIL covers 6517 test cases, and the rest of the 5040 tests need to be worked on. After the completion of this project, 2263 additional tests now pass.
+
+The interactive testing framework is available online from a publicly accessible web address and is continuously integrated into the JSIL project. Each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
+
 \section{What is JavaScript?}
 JavaScript is the unofficial language of the Web---it is implemented in all major browsers, and its main purpose is to add interactivity to web pages by giving the programmer control over the browser's Document Object Model,~i.e.~both the pages' style and their content. In addition, JavaScript is increasingly used on the server side as well, primarily as a means of interacting with databases. It is a high-level, dynamic, untyped language, based on extensible objects and exhibiting a number of intricate, complex, and often unpredictable features. 
 
@@ -195,8 +206,9 @@ Computer scientists have created high-level programming languages such as JavaSc
 Therefore, when a programmer writes a piece of code that is intended to perform a certain task, without proper tools they cannot be entirely sure that their program will perform the task as required without any side effects. In order to reduce the errors and inconsistencies in different implementations of the same language, a formal verification system is necessary so that one could prove that programming languages and programs written in those languages are indeed performing correctly, as expected, with no ambiguities.
 
 \subsection{JavaScript Verification}
+Because of the dynamic nature of JavaScript, it is often difficult for programmers to fully understand JavaScript code, resulting in unexpected outcomes during program execution. A lack of adequate static analysis tools further exacerbates this situation, and this project aims to contribute to resolving the urgent need for a JavaScript verification tool. 
 
-\pmax{JavaScript, Internet, widespread, data security, leaks, this and that}
+Indeed, a current example of web security issues related to JavaScript include cross-site scripting (XSS), that allows a hacker to inject malicious JavaScript code into a harmless web page. The malicious code is executed on the page, and it can potentially steal sensitive user information or spread viruses and malware \cite{security}. By using a verification tool, JavaScript programmers can discover security vulnerabilities, and fix them before releasing their web page to the public.
 
 Previous work on JavaScript verification that makes this project possible includes formal reasoning about JavaScript using program logics \cite{Gardner:2012}; JSCert and JSRef, which are a mechanized specification of the ECMAScript standard and a certified reference interpreter, both written in the Coq proof assistant \cite{Bodin:2014}; and the JSIL intermediate language, which relies on JSCert and is at the core of this project. All of these works will be discussed in more detail in sections~\ref{sec:jslogic} to~\ref{sec:jsverify}.
 
@@ -215,30 +227,20 @@ For languages such as C and Java, efforts to verify program correctness have wel
 
 The ideas presented in sections~\ref{sec:jslogic} and~\ref{sec:jscert} have led to a currently ongoing verification project called JSVerify. Its aims are to use separation logic to reason about JavaScript programs and provide proofs of their correctness. This project ties in with JSVerify in that JSVerify will actually analyse code written in the intermediate language JSIL from this project, in order to determine the correctness of the corresponding JavaScript program. This can be accomplished because there exists a proof of correctness of the translation from JavaScript to JSIL.
 
-\section{Thesis Project}
-
-\pmax{What is the project?}
-
-Previous work has already been done on JSIL and the JavaScript-to-JSIL compiler, and this project seeks to expand JSIL to include the arguments object and other library functions. Concurrently, tests against ECMAScript Test262 will be run to prove correctness for the implementation. 
-
-\subsection{Project Scope}
-This project has completed the Object.prototype library, the Array library, and a subset of the String library methods in their JSIL implementation. The Object.prototype library encompasses seven built-in methods for two pages in the ECMAScript standard, the Array library includes 28 built-in methods for a total of 20 pages, and the subset of String library includes six built-in methods for four pages. Another topic of interest is the arguments object, which is described in detail in Chapter~\ref{sec:argobj}. All of the functions in these libraries as well as the arguments object, will be implemented on the JSIL level, and tested against the standard test suite, Test262, on a continually integrated basis.
-
-\subsection{Testing}
-\az{need to figure out the exact numbers of TCs: Total, Passed, Failed, Aborted, Timeout for each of Object.prototype, Array, and String, plus ES5 vs ES6 tests}
-
-The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 14998 test cases. Previous testing has applied several rounds of filtering to discard irrelevant test cases, including ES6-only features, non-strict functionality and so on, after which 4599 tests remain. Of these 4599, current implementation of JSIL covers 2388 test cases, and the rest of the 2211 tests need to be worked on. The exact number of test cases that this project will cover remains to be defined.
-
-The interactive testing framework is available online from inside the Imperial network, but soon it will be integrated into a publicly accessible web address and will become continuously integrated into the JSIL project. At that point, each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. Thus, JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
-
 \section{Report Outline}
-Following the introduction, in Chapter \ref{cha:bckgnd} we proceed to give an overview of the background and related work for this thesis.
+The rest of the report includes the following nine chapters.
 
-\pmax{Polish as structure finalises.}
-
-It will then provide detailed discussions on the topics of JavaScript, JSIL as an intermediate language, the JavaScript Array Library, and the Arguments Object, before moving on to discuss the process and results of testing the JSIL implementation. Lastly, a brief conclusion will wrap up the topics studied, and introduce possible future extensions. 
-
-
+\begin{description}
+\item[Chapter 2] Gives an overview of the history behind mechanized specifications, related work, and explains operational semantics.
+\item[Chapter 3] Provides detailed discussions on topics of JavaScript, including but not limited to objects, properties, and prototype inheritance.
+\item[Chapter 4] Describes JSIL as an intermediate language --- its syntax and semantics.
+\item[Chapter 5] Explains the JavaScript Object.prototype Library and one method in detail.
+\item[Chapter 6] Provides detailed discussions on topics related to JavaScript Arrays, and explains the Array Library and two methods in detail.
+\item[Chapter 7] Describes the Arguments Object in JavaScript and its JSIL implementation.
+\item[Chapter 8] Explains a subset of the String Library methods.
+\item[Chapter 9] Provides an explanation regarding the testing process, and provides detailed results for the JSIL implementation of the String Library methods.
+\item[Chapter 10] Gives a brief conclusion of the topics studied, evaluates the project, and introduces possible future extensions.
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Background} \label{cha:bckgnd}
@@ -341,7 +343,7 @@ Small step operational semantics is also called structural operational semantics
 
 A more concrete evaluation example, $(1 + 3) + ( 2 + 1 ) \rightarrow 4 + (2 + 1) \rightarrow 4 + 3 \rightarrow 7$, would require first the S-LEFT rule to be applied to $(1 + 3)$, then the S-ADD rule to procude 4 and give the intermediate result $4 + (2 + 1)$; next, the S-RIGHT rule needs to be applied to $(2 + 1)$ and the S-ADD rule to produce 3 to give the intermediate result $4 + 3$; finally, another application of S-ADD yields the final result, which is 7 \cite{Lecture2}.
 
-As for the $\mathtt{while}$ command, only one rule is necessary as the semantics takes care of the recursive looping on its own. Only the initial step needs to be defined and the rule will carry on until it reaches a $\mathtt{skip}$ condition. Details for the small step evaluation rules for sequential composition and conditionals have been omitted. The following small step semantics for the $\mathtt{while}$ command is presented in the Models of Computation course at Imperial for second-year Computing students.\footnote{It was necessary to self-study a portion of the materials presented in the second-year Models of Computation course to get up to speed with operational semantics.}
+As for the $\mathtt{while}$ command, only one rule is necessary as the semantics takes care of the recursive looping on its own. Only the initial step needs to be defined and the rule will carry on until it reaches a $\mathtt{skip}$ condition. Details for the small step evaluation rules for sequential composition and conditionals have been omitted. The following small step semantics for the $\mathtt{while}$ command is presented in the Models of Computation course at Imperial for second-year Computing students.
 
 $$
 \inferrule[SS-WHILE]{ }{\langle \texttt{while B do C, s} \rangle \rightarrow_c \langle \texttt{if B then (C; while B do C) else skip, s} \rangle}
@@ -497,7 +499,9 @@ When the [[Get]] method of object \textit{O} is called with property name \texti
 \noindent Here, we can notice the complexity behind even the simplest of operations in JavaScript. For instance, properties are not associated with values, but with structures called descriptors. These descriptors may be data descriptors, from which we can read the value directly, but can also be accessor descriptors, containing special methods, called getters, via which one obtains the value of the property. All of these concepts will be addressed in detail in Chapter \ref{sec:javascript}.
 
 \subsubsection{ES5 Strict Operational Semantics}
-The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.\begin{mathpar}
+The formalization of [[Get]] also closely follows the ECMAScript standard. Here, \textsubscript{g} refers to [[Get]] and \textsubscript{gp} refers to [[GetProperty]]. In G-getProp, the result of calling [[GetProperty]] with $x$ is stored as $o$, which is then used as the input for the next iteration of [[Get]]. In G-propUndef, if the input for [[Get]] is undefined, then the returned result will be undefined. In G-propDefData, $d$ is a data descriptor, and the return value $v$ is the \textit{Value} attribute of $d$. in G-propDefAccGetUndef, $d$ is an accessor descriptor, and $d$'s \textit{Getter} attribute is undefined, so undefined is returned. Lastly, in G-propDefAccGetDef, $d$ is an accessor descriptor, its \textit{Getter} attribute is defined and assigned as $a_g$, and $a_g$ is called to return the final outcome $o_f$. Here, for added precision, we show the scope chain $L$ and the \jsinline|this| value $v_t$ on the left of the derivation symbol.
+
+\begin{mathpar}
 \inferrule[G-getProp (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}^o_{gp}(x) \rangle \Downarrow \langle h, o \rangle \\\\ L, v_t \vdash \langle h, \mathcal{I}^o_g(o)_1 \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}^o_g(x) \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
 \inferrule[G-propUndef (Step 2)] {L, v_t \vdash \langle h, \mathcal{I}^o_g(\textnormal{desc undefined}_1) \rangle \Downarrow \langle h, \textnormal{desc undefined} \rangle}{}
@@ -1120,21 +1124,21 @@ In Dection~\ref{sec:getstandard}, we presented the ECMAScript standard definitio
 In order to facilitate analysis of JavaScript and JSIL programs, heap models were created for both languages. Recall the JavaScript heap described in section~\ref{sec:jsheap}, reproduced below for easy reference. The JSIL Heap Model was designed to correspond as closely as possible to the JavaScript Heap Model, as it also maps locations, $\mathcal{L}$, and JavaScript variables, represented as strings $\mathcal{S}tr$, to JSIL values, $\mathcal{V}_{JSIL}$. The reason for this close correspondence stems from the concept of $\beta$ indistinguishability --- if a JavaScript program and a JSIL program are executed in indistinguishable heaps, and that one program's execution terminates if and only if the other terminates, then the outcome of the heaps would be indistinguishable. Because of this, one can ascertain that a JSIL program is faithfully replicating the actions of a JavaScript program, therefore logical analysis on JSIL can replace that on JavaScript. The JSIL memory model, however, does not contain scope chains, making JSIL programs easier to analyze logically.
 
 \begin{center}
-\begin{tabular}{p{8cm}} \hline
+\begin{tabular}{p{8cm}}
 \textbf{JavaScript Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\ \hline
+$\texttt{h} \in \mathcal{H}_{JS} : \mathcal{L} \times \mathcal{X}_{JS} \rightharpoonup (\mathcal{V}_{JS} \cup \mathcal{S}ch_{JS})$  \\
 \end{tabular}
 
 \vspace{0.3cm}
-\begin{tabular}{p{8cm}} \hline
+\begin{tabular}{p{8cm}}
 \textbf{JSIL Heap Model} \\
-$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharpoonup \mathcal{V}_{JSIL}  $  \\ \hline
+$\texttt{h} \in \mathcal{H}_{JSIL} : \mathcal{L} \times \mathcal{S}tr \rightharpoonup \mathcal{V}_{JSIL}  $  \\
 \end{tabular}
 
 \vspace{0.3cm}
-\begin{tabular}{p{8cm}} \hline
+\begin{tabular}{p{8cm}}
 \textbf{JSIL Store} \\
-$\rho \in \mathcal{S}to : \mathcal{X}_{JSIL} \rightharpoonup \mathcal{V}_{JSIL}  $  \\ \hline
+$\rho \in \mathcal{S}to : \mathcal{X}_{JSIL} \rightharpoonup \mathcal{V}_{JSIL}  $  \\
 \end{tabular}
 \end{center}
 
@@ -1215,7 +1219,19 @@ The Object.prototype.isPrototypeOf(V) method is chosen to be presented in detail
 \end{enumerate}
 
 \subsection{Pretty Big Step}
-\az{TODO}
+\begin{mathpar}
+\inferrule[OP-IPO-TypeOf (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}_{typeof}(v) \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ L, v_t \vdash \langle h_1, OP-IPO_1(v, o_1) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, OP-IPO(v) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[OP-IPO-False (Step 1)] {type \neq ``object"}{L, v_t \vdash \langle h_1, OP-IPO_1(v, type) \rangle \Downarrow \langle h_1, false \rangle}
+\and
+\inferrule[OP-IPO-ToObject (Step 2)]{L, v_t \vdash \langle h_1, \mathcal{I}_{toObject}(v_t) \rangle \Downarrow \langle h_2, o_2 \rangle \\\\ L, v_t \vdash \langle h_2, OP-IPO_2(v, o_2) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_1, OP-IPO_1(v, ``object") \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[OP-IPO-Null (Step 3ab)]{h_2(v, @proto) = null}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_2, false \rangle}
+\and
+\inferrule[OP-IPO-Same (Step 3ac)]{h_2(v, @proto) = l}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_2, true \rangle}
+\and
+\inferrule[OP-IPO-Repeat (Step 3)]{l' = h_2(v, @proto) \\\\ l' \neq null \\\\ l' \neq l \\\\ L, v_t \vdash \langle h_2, OP-IPO_2(l', l) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_f, o_f \rangle}
+\end{mathpar}
 
 \subsection{JSIL Code}
 
@@ -1504,7 +1520,7 @@ This method is used to filter out all elements in an Array that satisfy certain 
 \item Let $A$ be a new array created as if by the expression \textbf{new Array()} where \textbf{Array} is the standard built-in constructor with that name.
 \item Let $k$ be 0.
 \item Let $to$ be 0.
-\item Repeat, while $k$ < \textit{len}
+\item Repeat, while $k <$ \textit{len}
 \begin{enumerate}
 \item[a.] Let \textit{Pk} be ToString($k$).
 \item[b.] Let \textit{kPresent} be the result of calling the [[HasProperty]] internal method of \textit{O} with argument \textit{Pk}.
@@ -1524,6 +1540,42 @@ This method is used to filter out all elements in an Array that satisfy certain 
 \end{enumerate}
 
 \subsection{Pretty Big Step Operational Semantics}
+\begin{mathpar}
+\inferrule[AP-F (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}_{ToObject}(v_t) \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ L, v_t \vdash \langle h_1, AP-F_1(cf, ot, o_1) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, AP-F(cf, ot) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 2)] {L, v_t \vdash \langle h_1, \mathcal{I}_{g}("length") \rangle \Downarrow \langle h_2, o_2 \rangle \\\\ L, v_t \vdash \langle h_2, AP-F_2(cf, ot, O, o_2) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_1, AP-F_1(cf, ot, O) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 3)]{L, v_t \vdash \langle h_2, \mathcal{I}_{ToUint32}(len) \rangle \Downarrow \langle h_3, o_3 \rangle \\\\ L, v_t \vdash \langle h_3, AP-F_3(cf, ot, O, o_3) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_2, AP-F_2(cf, ot, O, len) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 4)]{L, v_t \vdash \langle h_3, \mathcal{I}_{IsCallable}(cf) \rangle \Downarrow \langle h_4, o_4 \rangle \\\\ L, v_t \vdash \langle h_4, AP-F_4(cf, ot, O, len, o_4) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_3, AP-F_3(cf, ot, O, len) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F-TypeError (Step 4)]{}{L, v_t \vdash \langle h_4, AP-F_4(cf, ot, O, len, false) \rangle \Downarrow \langle h_4, TypeError \rangle}
+\and
+\inferrule[AP-F (Steps 5-6a)]{L, v_t \vdash \langle h_4, AP-F_5(cf, undefined, O, len) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_4, AP-F_4(cf, None, O, len, true) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Steps 5-6b)]{L, v_t \vdash \langle h_4, AP-F_5(cf, thisArg, O, len) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_4, AP-F_4(cf, Some thisArg, O, len, true) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Steps 6,7,8)]{L, v_t \vdash \langle h_4, AC() \rangle \Downarrow \langle h_5, o_5 \rangle \\\\ L, v_t \vdash \langle h_4, AP-F_{Loop}(cf, thisArg, O, len, o_5, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_4, AP-F_5(cf, thisArg, O, len) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 9a)]{L, v_t \vdash \langle h_5, \mathcal{I}_{ToString}(0) \rangle \Downarrow \langle h_6, o_6 \rangle \\\\ L, v_t \vdash \langle h_6, AP-F_6(cf, thisArg, O, len, Arr, o_6, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_5, AP-F_{loop}(cf, thisArg, O, len, Arr, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 9b)]{L, v_t \vdash \langle h_6, \mathcal{I}_{hp}(O, pk) \rangle \Downarrow \langle h_7, o_7 \rangle \\\\ L, v_t \vdash \langle h_7, AP-F_7(cf, thisArg, O, len, Arr, pk, o_7, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_6, AP-F_6(cf, thisArg, O, len, Arr, pk, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F-False (Step 9c)]{L, v_t \vdash \langle h_7, AP-F_{loop}(cf, thisArg, O, len, Arr, 1, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_7, AP-F_7(cf, thisArg, O, len, Arr, pk, false, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F-True (Steps 9c,9ci)]{L, v_t \vdash \langle h_7, \mathcal{I}_{g}(O, pk) \rangle \Downarrow \langle h_8, o_8 \rangle \\\\ L, v_t \vdash \langle h_8, AP-F_8(cf, thisArg, O, len, Arr, o_8, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_7, AP-F_7(cf, thisArg, O, len, Arr, pk, true, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\end{mathpar}
+\begin{mathpar}
+\inferrule[AP-F (Step 9cii)]{L, v_t \vdash \langle h_8, \mathcal{I}_{call}(cf, thisArg, kval, 0, O) \rangle \Downarrow \langle h_9, o_9 \rangle \\\\ L, v_t \vdash \langle h_9, AP-F_9(cf, thisArg, O, len, Arr, kval, o_9, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_8, AP-F_8(cf, thisArg, O, len, Arr, kval, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F (Step 9ciii)]{L, v_t \vdash \langle h_6, \mathcal{I}_{ToBoolean}(selected) \rangle \Downarrow \langle h_10, o_10 \rangle \\\\ L, v_t \vdash \langle h_10, AP-F_10(cf, thisArg, O, len, Arr, kval, selected, o_10, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_9, AP-F_9(cf, thisArg, O, len, Arr, kval, selected, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F-False (Step 9ciii)]{L, v_t \vdash \langle h_10, AP-F_{Loop}(cf, thisArg, O, len, Arr, 1, 0) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_10, AP-F_10(cf, thisArg, O, len, Arr, kval, selected, false, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\and
+\inferrule[AP-F-Loop (Step 9ciii,9c)]{L, v_t \vdash \langle h_6, \mathcal{I}_{ToString}(0) \rangle \Downarrow \langle h_11, o_11 \rangle \\\\ L, v_t \vdash \langle h_11, \mathcal{I}_{dop}(Arr, o_11, kval, true, true, true, false) \rangle \Downarrow \langle h_12, o_12 \rangle \\\\ L, v_t \vdash \langle h_12, AP-F_{Loop}(cf, thisArg, O, len, Arr, 1, 1) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_12, AP-F_10(cf, thisArg, O, len, Arr, kval, selected, true, 0, 0) \rangle \Downarrow \langle h_f, o_f \rangle}
+\end{mathpar}
+
+
 \subsection{JSIL Code}
 \begin{adjustwidth}{2cm}{2cm}
 \begin{lstjsil}
@@ -1818,8 +1870,56 @@ Testing is an integral part of the development process, as test results either c
 
 Testing for this project was done concurrently with implementation, i.e., Array Library implementation and testing were completed before moving on to the String Library. Although testing was completed for all of the Library methods implemented in this project, this chapter will focus on explaining testing for the String Library methods specifically, after first giving an overview of the testing interface.
 
+\section{Unit Tests}
+Prior to running the standardized ECMAScript test suite, however, each library method implemented was tested against multiple manually created unit tests for sanity checking. After each method is coded in JSIL following the ECMAScript standard, different unit tests written in JavaScript were created based on the author's intuition about how the method should operate --- its standard cases, corner cases, and failed cases --- along with the expected outcomes. Each test case is written in a separate JavaScript file, as the framework only allows one test to be run at a given time using the following commands. The first command sets up the testing environment, the second changes the directory from the main directory into the environment directory, the third compiles the JavaScript test file into a JSIL test file using the JavaScript-to-JSIL compiler, the fourth runs the JSIL test file and outputs the result into a text file, and the last command changes the directory back to the parent directory.
+
+\begin{adjustwidth}{2cm}{2cm}
+\begin{lstjs}
+./setup_environment.sh
+cd environment/
+./js2jsil_main.byte -harness -file test_az.js
+./SJSIL_Parser_main.byte -file test_az.jsil -verbose -run > output.txt
+cd ..
+\end{lstjs}
+\end{adjustwidth}
+
+Take the Array.prototype.slice(start, end) method as an example, a typical test case like the following would produce \jsinline|"b, c"| as the result, since the array is zero-indexed, and the start is inclusive while the end is exclusive.
+\begin{adjustwidth}{2cm}{2cm}
+\begin{lstjs}
+var arr = [a, b, c, d, e];
+arr.slice(1, 3);
+\end{lstjs}
+\end{adjustwidth}
+
+Additional unit tests are listed below, with the expected result given in the comments.
+\begin{adjustwidth}{2cm}{2cm}
+\begin{lstjs}
+// test case for when no end argument is given
+var arr = [a, b, c, d, e];
+arr.slice(1, 3); 
+// "d, e"
+
+// test case for when the start argument is negative
+var arr = [a, b, c, d, e];
+arr.slice(-2, 4); 
+// "d"
+
+// test case for when the modified start is greater than end
+var arr = [a, b, c, d, e];
+arr.slice(-2, 2); 
+// ""
+
+// test case for when the end argument is negative
+var arr = [a, b, c, d, e];
+arr.slice(1, -1); 
+// "b, c, d"
+\end{lstjs}
+\end{adjustwidth}
+
+If running these unit tests produced unexpected results, the JSIL implementation would be altered to fix the bugs that the tests have exposed. Once all the custom unit tests pass, there is high confidence that the tests within the standard test suite will pass as well.
+
 \section{The Testing Interface}
-Once a user finishes implementing a feature and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. 
+Once a user finishes implementing some methods and commits to the central repository, located at https://github.com/resource-reasoning/JavaScriptVerification, the testing site records the commit and starts running the test suite on one of the computing lab machines. Because of the large number of tests involved, each test run requires about 30 minutes to complete, and successive commits within that time frame will not commence until the previous one is finished. 
 
 \begin{figure}[h!]
   \caption{Main Testing Screen}
@@ -2158,14 +2258,27 @@ Total & 40 \\ \hline
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}
-\section{Project Summary}
+\section{Project Summary and Contributions}
 This report has described the importance of JavaScript in modern day web computing and provided a sample of previous verification projects for not only JavaScript, but also a variety of other programming languages. This project stemmed from previous work done on JSCert and JSRef, a mechanized specification of the ECMAScript standard and its reference interpreter. Separation logic has been used to reason about JavaScript programs, modeling program execution based on a heap structure. This project has also relied on the use of operational semantics to clarify and mechanize the ECMAScript specification written in English. Indeed, JSCert itself uses pretty big step operational semantics to cover the language constructs in JavaScript. 
 
 The report went on to describe various JavaScript constructs, such as strict mode, Objects and properties, prototype inheritance, and the JavaScript heap, before moving on to describe JSIL as a language. The benefits of utilizing JSIL as an intermediate language include its simplified control flow based on a goto syntax, the elimination of nested procedures, while still preserving extensible objects and dynamic properties, make logical analysis of JSIL programs easier yet still correct with respect to the corresponding JavaScript programs.
 
-The main contributions of this project are the implementations for the Object.prototype, Array, and part of the String libraries in JSIL. A total of 35 library methods were implemented, enabling the passage of more than 2,300 test cases in the ECMAScript Test262 test suite. The details of each library method --- its syntax, purpose, expected result, and sample usage --- were listed in each library's corresponding chapter, and the testing process was described in detail for the String library methods. For selected methods in the Object.prototype and Array libraries, the ECMAScript standard specification, pretty big step operational semantics, as well as JSIL implementation were described in detail. 
+The main contributions of this project are the implementations for the Object.prototype, Array, part of the String libraries, and the arguments object in JSIL. A total of 35 library methods were implemented, enabling the passage of more than 2,200 test cases in the ECMAScript Test262 test suite. The details of each library method --- its syntax, purpose, expected result, and sample usage --- were listed in each library's corresponding chapter, and the testing process was described in detail for the String library methods. For selected methods in the Object.prototype and Array libraries, the ECMAScript standard specification, pretty big step operational semantics, as well as JSIL implementation were described in detail.
 
-The completion of this project marked the end of implementing the core language constructs, as well as the most critical built-in libraries, of JavaScript in JSIL. The only portions of the JSIL reference implementation that remain to be completed are the Function constructor and parts of the String library.
+The completion of this project marked the end of implementing the core language constructs as well as the most critical built-in libraries of JavaScript in JSIL. The only portions of the JSIL reference implementation that remain to be completed are the Function constructor and parts of the String library.
+
+\section{Evaluation}
+The process of implementation was streamlined in the order of reading the ECMAScript standard --- creating JavaScript unit tests --- coding in JSIL --- running JavaScript unit tests based on the JSIL implementation --- running Test262 on the JSIL implementation. Each component of this process is evaluated in the following paragraphs.
+
+Understanding the ECMAScript standard for the libraries and constructs has mostly been straightforward, although certain methods, such as Array.prototype.sort and String.prototype.indexOf, did not provide specific implementation details, but rather only outlined the desired actions to be accomplished. As such, there was freedom to implement as the author saw fit, in terms of efficiency or code clarity. For example, the quicksort algorithm was chosen for Array.prototype.sort, even though other sorting algorithms, such as insertion sort and merge sort were also available alternatives.
+
+The original intent of learning operational semantics was to create a mechanized version of the ECMAScript specification, in order to clarify procedures for when the specification is ambiguous. During this project, however, the ECMAScript standard has mostly been clear enough that creating operational semantics was not necessary. It would have been helpful to create operational semantics for the methods without specific implementation details described previously, but pseudocode was used as an alternative to clarify procedure actions. Also, as creating operational semantics was a difficult task in itself, it provided little benefit to the implementation process as a whole. Operational semantics was, however, produced for the methods that were presented in detail for this report as a learning exercise, and it was used to show the close correspondence between the JSIL implementation and the ECMAScript standard.
+
+Creating and running JavaScript unit tests have also been fairly straightforward, as basic JavaScript programs are easy to write, demanding only ingenuity to cover corner cases. The results of using unit tests before the Test262 suite have been positive, as the unit tests often uncovered most bugs in the JSIL implementation before committing changes to the repository. As a result, many library methods passed all the corresponding tests in the official test suite the first time through, and the other methods required few bug fixes since fixing one component in JSIL often fixed all failing test cases. Indeed, putting in the effort to systematically sanity check the JSIL implementation using unit tests significantly decreased the risk of drastic or complicated bug fixes.
+
+The main difficulties regarding coding in JSIL were threefold --- first was the initial learning curve to master a goto language, and second was understanding the error messages from the parser, and third was keeping up with changes in the language made by other members of the research group. Coding in a goto language was practiced alongside reading operational semantics rules for the internal methods of JavaScript. During coding, however, unexpected error messages could appear, that sometimes did not correspond to the actual error, or gave no additional information than simply, ``syntax error". Thus, debugging could be difficult because there was little external sources, such as Stack Overflow, for help due to the nature of JSIL as a research language. Lastly, as the language is constantly evolving, keeping abreast of the changes in order to always write correct code was challenging since changes made by other members of the research group sometimes went unnoticed, until an error message came up. 
+
+In terms of forecasting the workload, most estimations have been reasonable, and deadlines set in the first report have been met satisfactorily. Implementation of the arguments object, however, took significantly less time than expected. Originally, the arguments object was thought to be rather complicated, as it is an important construct and thus assumed to have required changes to the underlying JSIL model. After understanding the ECMAScript specification, however, the strict mode version of the arguments object turned out to be much simpler than expected, requiring only about 30 lines of JSIL code to implement. Thus, a couple weeks' worth of time was freed up to take on a subset of the String library, which was not initially included in the project proposal, enabling additional passing tests for the Test262 suite.
 
 \section{Future Work}
 Continuing with the direction of this project, there is additional work to be done to implement the rest of the JavaScript libraries in JSIL, including but not limited to the Number, rest of String, Date, and RegExp libraries. But although these libraries are worth implementing, they are not crucial to the progress of the verification tool based on the JSIL language.
