@@ -184,7 +184,7 @@ In order to achieve the goals of this project, significant preparations were und
 
 As part of this project, we have implemented in JSIL the Object.prototype and the Array libraries in full, as well a subset of the String library. The Object.prototype library encompasses seven built-in methods for two pages in the ECMAScript standard; the Array library includes twenty-eight built-in methods for a total of twenty pages; and the subset of String library includes six built-in methods for four pages. The \jsinline|arguments| object, a core JavaScript construct encompassing three pages of the standard, has been implemented as well. The implementation of all of these libraries and constructs amounts to more than two thousand lines of JSIL code, and was systematically tested both against manually written unit tests, as well as the standard ECMAScript Test262 test suite.
 
-The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 21301 test cases, but essentially targets the 11037 tests suitable for ES5 Strict, which is the mode of JavaScript targeted by the JS-2-JSIL compiler. The remaining ones, such as those aimed at ES6-only and non-strict features are filtered out. At the starting point of this project, there were 5574 relevant tests passing. After the completion of this project, there were 2263 additional tests passes, yielding a 40\% increase and a total of 7837 total tests passes.
+The current testing framework includes the entire ECMAScript 6 test suite (ES6 Test262) which consists of 21301 test cases, but essentially targets the 11037 tests suitable for ES5 Strict, which is the mode of JavaScript targeted by the JS-2-JSIL compiler. The remaining ones, such as those aimed at ES6-only and non-strict features are filtered out. At the starting point of this project, there were 5574 relevant tests passing. After the completion of this project, there were 2263 additional tests passes, yielding a 44\% increase and a total of 8025 total tests passes.
 
 %The interactive testing framework is available online from a publicly accessible web address and is continuously integrated into the JSIL project. Each JSIL commit can be viewed from the testing portal, and the results can be compared with previous commits to determine whether the commit improved or worsened test coverage. JSIL development and testing will be done concurrently, and mistakes will be spotted and addressed as soon as they appear.
 
@@ -1220,17 +1220,17 @@ The Object.prototype.isPrototypeOf(V) method is chosen to be presented in detail
 
 \subsection{Pretty Big Step}
 \begin{mathpar}
-\inferrule[OP-IPO-TypeOf (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}_{typeof}(v) \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ L, v_t \vdash \langle h_1, OP-IPO_1(v, o_1) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, OP-IPO(v) \rangle \Downarrow \langle h_f, o_f \rangle}
+\inferrule[$\mathcal{I}_{IPO}^{op}$-TypeOf (Step 1)]{L, v_t \vdash \langle h, \mathcal{I}_{typeOf}(v) \rangle \Downarrow \langle h_1, o_1 \rangle \\\\ L, v_t \vdash \langle h_1, \mathcal{I}_{IPO_1}(v, o_1) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h, \mathcal{I}_{IPO}(v) \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
-\inferrule[OP-IPO-False (Step 1)] {type \neq ``object"}{L, v_t \vdash \langle h_1, OP-IPO_1(v, type) \rangle \Downarrow \langle h_1, false \rangle}
+\inferrule[$\mathcal{I}_{IPO_1}$-False (Step 1)] {type \neq ``object"}{L, v_t \vdash \langle h_1, \mathcal{I}_{IPO_1}(v, type) \rangle \Downarrow \langle h_1, \mathtt{false} \rangle}
 \and
-\inferrule[OP-IPO-ToObject (Step 2)]{L, v_t \vdash \langle h_1, \mathcal{I}_{toObject}(v_t) \rangle \Downarrow \langle h_2, o_2 \rangle \\\\ L, v_t \vdash \langle h_2, OP-IPO_2(v, o_2) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_1, OP-IPO_1(v, ``object") \rangle \Downarrow \langle h_f, o_f \rangle}
+\inferrule[$\mathcal{I}_{IPO}$-ToObject (Step 2)]{L, v_t \vdash \langle h_1, \mathcal{I}_{toObject}(v_t) \rangle \Downarrow \langle h_2, o_2 \rangle \\\\ L, v_t \vdash \langle h_2, \mathcal{I}_{IPO_2}(v, o_2) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_1, \mathcal{I}_{IPO_1}(v, ``object") \rangle \Downarrow \langle h_f, o_f \rangle}
 \and
-\inferrule[OP-IPO-Null (Step 3ab)]{h_2(v, @proto) = null}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_2, false \rangle}
+\inferrule[$\mathcal{I}_{IPO}$-Null (Step 3ab)]{h_2(v, @proto) = \mathtt{null}}{L, v_t \vdash \langle h_2, \mathcal{I}_{IPO_2}(v, l) \rangle \Downarrow \langle h_2, \mathtt{false} \rangle}
 \and
-\inferrule[OP-IPO-Same (Step 3ac)]{h_2(v, @proto) = l}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_2, true \rangle}
+\inferrule[$\mathcal{I}_{IPO}$-Same (Step 3ac)]{h_2(v, @proto) = l}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_2, \mathtt{true} \rangle}
 \and
-\inferrule[OP-IPO-Repeat (Step 3)]{l' = h_2(v, @proto) \\\\ l' \neq null \\\\ l' \neq l \\\\ L, v_t \vdash \langle h_2, OP-IPO_2(l', l) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_2, OP-IPO_2(v, l) \rangle \Downarrow \langle h_f, o_f \rangle}
+\inferrule[$\mathcal{I}_{IPO}$-Repeat (Step 3)]{h_2(v, @proto) = l' \and l' \neq null \and l' \neq l \\\\ L, v_t \vdash \langle h_2, \mathcal{I}_{IPO_2}(l', l) \rangle \Downarrow \langle h_f, o_f \rangle}{L, v_t \vdash \langle h_2, \mathcal{I}_{IPO_2}(v, l) \rangle \Downarrow \langle h_f, o_f \rangle}
 \end{mathpar}
 
 \subsection{JSIL Code}
